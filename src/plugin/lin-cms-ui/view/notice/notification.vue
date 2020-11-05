@@ -97,7 +97,7 @@ export default {
   /* eslint-disable */
   data() {
     return {
-      base: `     
+      base: `
         <template>
           <el-button
             plain
