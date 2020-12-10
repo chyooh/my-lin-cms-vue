@@ -24,7 +24,7 @@
 </template>
 
 <script>
-import Admin from '@/lin/model/admin'
+import Admin from '@/model/admin'
 
 export default {
   props: ['id'],
@@ -76,19 +76,17 @@ export default {
           let res
           try {
             this.loading = true
-            res = await Admin.changePassword(this.form.new_password, this.form.confirm_password, this.id) // eslint-disable-line
+            this.form.id = this.id
+            this.form.type = 2
+            this.form.password = this.form.new_password
+            res = await Admin.updateUser(this.form) // eslint-disable-line
+            this.loading = false
+            this.$message.success(`${res.msg}`)
+            this.resetForm(formName)
+            this.$emit('handlePasswordResult', true)
           } catch (e) {
             this.loading = false
             console.log(e)
-          }
-          if (res.code < window.MAX_SUCCESS_CODE) {
-            this.loading = false
-            this.$message.success(`${res.message}`)
-            this.resetForm(formName)
-            this.$emit('handlePasswordResult', true)
-          } else {
-            this.loading = false
-            this.$message.error(`${res.message}`)
           }
         } else {
           console.log('error submit!!')
@@ -105,3 +103,5 @@ export default {
   },
 }
 </script>
+
+<style lang="scss" scoped></style>

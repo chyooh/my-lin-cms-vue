@@ -11,7 +11,7 @@ todo: 文件判断使用 serveWorker 优化性能
     <template v-for="(item, i) in itemList">
       <template v-if="item.display">
         <div class="thumb-item" :key="item.id" :style="boxStyle" v-loading="item.loading">
-          <el-image class="thumb-item-img" :src="item.display" :fit="fit" style="width: 100%; height: 100%;"></el-image>
+          <el-image class="thumb-item-img" :src="item.display" :fit="fit" style="width: 100%; height: 100%"></el-image>
           <div class="info">
             <i
               v-if="item.file"
@@ -22,7 +22,7 @@ todo: 文件判断使用 serveWorker 优化性能
           </div>
           <div class="control">
             <i v-if="!disabled" class="el-icon-close del" @click.prevent.stop="delItem(item.id)" title="删除"></i>
-            <div v-if="!disabled" class="preview" title="更换图片" @click.prevent.stop="handleClick(item.id)">
+            <div v-if="!disabled" class="preview" title="更换图片" @click.prevent.stop="handleClick(item.id, i)">
               <i class="el-icon-edit"></i>
             </div>
             <div class="control-bottom" v-if="sortable || preview">
@@ -37,7 +37,7 @@ todo: 文件判断使用 serveWorker 优化性能
                 v-if="preview"
                 class="control-bottom-btn el-icon-view"
                 title="预览"
-                style="cursor: pointer;"
+                style="cursor: pointer"
                 @click.stop="previewImg(item, i)"
               ></i>
               <i
@@ -57,11 +57,11 @@ todo: 文件判断使用 serveWorker 优化性能
           :class="{ disabled: disabled }"
           :key="item.id"
           :style="boxStyle"
-          @click="handleClick(item.id)"
-          @keydown="handleKeydown($event, item.id)"
+          @click="handleClick(item.id, i)"
+          @keydown="handleKeydown($event, item.id, i)"
         >
-          <i class="el-icon-plus" style="font-size: 3em;"></i>
-          <div v-html="rulesTip.join('<br>')" style="margin-top: 1em;"></div>
+          <i class="el-icon-plus" style="font-size: 3em"></i>
+          <div v-html="rulesTip.join('<br>')" style="margin-top: 1em"></div>
         </div>
       </template>
     </template>
@@ -240,7 +240,7 @@ export default {
     /** 是否开启自动上传 */
     autoUpload: {
       type: Boolean,
-      default: true,
+      default: false,
     },
     /** 初始化数据 */
     value: {
@@ -460,8 +460,10 @@ export default {
       })
       return this.$axios({
         method: 'post',
-        url: '/cms/file',
-        data,
+        url: '/admin/file/upload',
+        data: {
+          file: data,
+        },
       })
         .then(res => {
           if (!Array.isArray(res) || res.length === 0) {
@@ -547,7 +549,7 @@ export default {
         imgItem.imgId = res.id
         // eslint-disable-next-line
         imgItem.file = null
-        window.URL.revokeObjectURL(imgItem.display)
+        // window.URL.revokeObjectURL(imgItem.display)
       }
 
       if (item.status === 'input' || !item.file) {
@@ -589,7 +591,7 @@ export default {
         const result = await new Promise(resolve => {
           let remoteFucResult
           try {
-            remoteFucResult = this.remoteFuc(item.file, remoteData => {
+            remoteFucResult = this.remoteFuc(item, remoteData => {
               resolve(remoteData || false)
             })
           } catch (err) {
@@ -631,7 +633,6 @@ export default {
      */
     async getValue() {
       const { itemList, isStable, min } = this
-
       // 检查是否有不符合要求的空项
       const l = isStable ? itemList.length : itemList.length - 1
       for (let i = 0; i < l; i += 1) {
@@ -710,6 +711,7 @@ export default {
       // 释放内存
       window.URL.revokeObjectURL(blobUrl)
       this.initItemList(this.itemList)
+      this.$emit('onChange')
     },
     /**
      * 预览图像
@@ -718,6 +720,8 @@ export default {
      */
     previewImg(data, index) {
       // 如果有全局预览方法
+      // console.log(data)
+      // console.log(this.itemList)
       if (this[this.globalImgPriview]) {
         const images = []
         this.itemList.forEach(element => {
@@ -756,6 +760,7 @@ export default {
       itemList[index] = j
       itemList[index + step] = i
       this.itemList = [...itemList]
+      this.$emit('onChange')
     },
     /**
      * 验证上传的图像是否符合要求
@@ -849,7 +854,6 @@ export default {
       const { currentId, autoUpload } = this
       const { files } = e.target
       let imgInfoList
-
       if (!files) return
       /** 中间步骤缓存, 在出错时用于释放 createObjectURL 的内存 */
       let cache = []
@@ -883,6 +887,7 @@ export default {
           this.itemList.forEach(ele => {
             this.uploadImg(ele)
           })
+          // this.uploadImg(createItem(imgInfoList[0]))
         }
       } catch (err) {
         // 清空缓存
@@ -893,6 +898,7 @@ export default {
         console.error(err)
         this.$message.error(err.message)
       }
+      this.$emit('onChange')
     },
     /**
      * 根据信息列表设置图像信息

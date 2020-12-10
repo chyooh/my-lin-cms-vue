@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="container center-container">
     <div class="title">个人中心</div>
     <div class="wrap">
       <el-row>
@@ -23,7 +23,7 @@
               <div class="avatar" title="点击修改头像">
                 <img :src="user.avatar || defaultAvatar" alt="头像" />
                 <label class="mask">
-                  <i class="iconfont icon-icon-test" style="font-size: 20px;"></i>
+                  <i class="iconfont icon-icon-test" style="font-size: 20px"></i>
                   <input ref="avatarInput" type="file" accept="image/*" @change="fileChange" />
                 </label>
               </div>
@@ -40,11 +40,11 @@
               label-width="90px"
               @submit.native.prevent
             >
-              <el-form-item label="原始密码" prop="old_password">
-                <el-input type="password" v-model="form.old_password" autocomplete="off"></el-input>
+              <el-form-item label="原始密码" prop="oldPassword">
+                <el-input type="password" v-model="form.oldPassword" autocomplete="off"></el-input>
               </el-form-item>
-              <el-form-item label="新密码" prop="new_password">
-                <el-input type="password" v-model="form.new_password" autocomplete="off"></el-input>
+              <el-form-item label="新密码" prop="newPassword">
+                <el-input type="password" v-model="form.newPassword" autocomplete="off"></el-input>
               </el-form-item>
               <el-form-item label="确认密码" prop="confirm_password" label-position="top">
                 <el-input type="password" v-model="form.confirm_password" autocomplete="off"></el-input>
@@ -68,7 +68,7 @@
       custom-class="croppa-dialog"
       center
     >
-      <div style="text-align: center;">
+      <div style="text-align: center">
         <div class="avatar-croppa-container">
           <croppa
             ref="croppa"
@@ -86,7 +86,7 @@
             :initial-image="cropImg"
           ></croppa>
         </div>
-        <div style="margin-top: 1em;">通过鼠标滚轮调节头像大小</div>
+        <div style="margin-top: 1em">通过鼠标滚轮调节头像大小</div>
       </div>
       <div slot="footer" class="dialog-footer">
         <el-button @click="cropVisible = false" size="small">取 消</el-button>
@@ -100,7 +100,7 @@
 import { mapActions, mapGetters } from 'vuex'
 import Vue from 'vue'
 import Croppa from 'vue-croppa'
-import User from '@/lin/model/user'
+import User from '@/model/user'
 import 'vue-croppa/dist/vue-croppa.css'
 import defaultAvatar from '@/assets/image/user/user.png'
 
@@ -138,7 +138,7 @@ export default {
     const validatePassword2 = (rule, value, callback) => {
       if (value === '') {
         callback(new Error('请再次输入密码'))
-      } else if (value !== this.form.new_password) {
+      } else if (value !== this.form.newPassword) {
         callback(new Error('两次输入密码不一致!'))
       } else {
         callback()
@@ -148,13 +148,13 @@ export default {
       username: null,
       nickname: null,
       form: {
-        old_password: '',
-        new_password: '',
+        oldPassword: '',
+        newPassword: '',
         confirm_password: '',
       },
       rules: {
-        old_password: [{ validator: oldPassword, trigger: 'blur', required: true }],
-        new_password: [{ validator: validatePassword, trigger: 'blur', required: true }],
+        oldPassword: [{ validator: oldPassword, trigger: 'blur', required: true }],
+        newPassword: [{ validator: validatePassword, trigger: 'blur', required: true }],
         confirm_password: [{ validator: validatePassword2, trigger: 'blur', required: true }],
       },
       cropRule: {
@@ -243,81 +243,41 @@ export default {
         type: 'image/jpeg',
       })
 
-      return this.$axios({
-        method: 'post',
-        url: '/cms/file',
-        data: {
-          file,
-        },
-      }).then(res => {
-        // 清空输入框
-        this.clearFileInput(this.$refs.avatarInput)
-        if (!Array.isArray(res) || res.length !== 1) {
-          this.$message.error('头像上传失败, 请重试')
-          return false
-        }
-        // TODO: 错误码处理
-        // if (res.code === 10110) {
-        //   throw new Error('文件体积过大')
-        // }
-        return this.$axios({
-          method: 'put',
-          url: '/cms/user',
-          data: {
-            avatar: res[0].path,
-          },
-        })
-          .then(putRes => {
-            // eslint-disable-line
-            if (putRes.code < window.MAX_SUCCESS_CODE) {
-              this.$message({
-                type: 'success',
-                message: '更新头像成功',
-              })
-              this.cropVisible = false
-              // 触发重新获取用户信息
-              return User.getInformation()
-            }
-            return Promise.reject(new Error('更新头像失败'))
-          })
-          .then(infoRes => {
-            // eslint-disable-line
-            // 尝试获取当前用户信息
-            const user = infoRes
-            this.setUserAndState(user)
-          })
-      })
+      this.cropVisible = false
+      const loading = this.$loading({ target: '.center-container' })
+      try {
+        const res = await User.upload(file)
+        await User.update({ avatar: JSON.parse(res.data).base, type: 1 })
+
+        this.$message.success('更新头像成功')
+        loading.close()
+
+        const user1 = await User.getCurrentInfo()
+        this.setUserAndState(user1)
+      } catch (e) {
+        loading.close()
+        console.log(e)
+      }
     },
     async blur() {
       if (this.nickname) {
         const { user } = this.$store.state
         if (this.nickname !== user.nickname && this.nickname !== '佚名') {
-          this.$axios({
-            method: 'put',
-            url: '/cms/user',
-            data: {
-              nickname: this.nickname,
-            },
-            showBackend: true,
-          })
-            .then(res => {
-              if (res.code < window.MAX_SUCCESS_CODE) {
-                this.$message({
-                  type: 'success',
-                  message: '更新昵称成功',
-                })
-                // 触发重新获取用户信息
-                return User.getInformation()
-              }
-            })
-            .then(res => {
-              // eslint-disable-line
-              this.setUserAndState(res)
-              this.nickname = res.nickname
-            })
+          const loading = this.$loading({ target: '.center-container' })
+          try {
+            await User.update({ nickname: this.nickname, type: 1 })
+
+            this.$message.success('更新昵称成功')
+            loading.close()
+            const user1 = await User.getCurrentInfo()
+            this.setUserAndState(user1)
+          } catch (e) {
+            this.nickname = user.nickname || '佚名'
+            loading.close()
+            console.log(e)
+          }
         }
       }
-      this.nicknameChanged = false
     },
     init() {
       const { user } = this.$store.state
@@ -327,11 +287,11 @@ export default {
       this.$router.push('/center')
     },
     submitForm(formName) {
-      if (this.form.old_password === '' && this.form.new_password === '' && this.form.confirm_password === '') {
+      if (this.form.oldPassword === '' && this.form.newPassword === '' && this.form.confirm_password === '') {
         this.dialogFormVisible = false
         return
       }
-      if (this.form.old_password === this.form.new_password) {
+      if (this.form.oldPassword === this.form.newPassword) {
         this.$message.error('新密码不能与原始密码一样')
         return
       }
@@ -339,16 +299,14 @@ export default {
         // eslint-disable-line
         if (valid) {
           const res = await User.updatePassword(this.form)
-          if (res.code < window.MAX_SUCCESS_CODE) {
-            this.$message.success(`${res.message}`)
-            this.resetForm(formName)
-            this.dialogFormVisible = false
-            setTimeout(() => {
-              this.loginOut()
-              const { origin } = window.location
-              window.location.href = origin
-            }, 1000)
-          }
+          this.$message.success(`${res.msg}`)
+          this.resetForm(formName)
+          this.dialogFormVisible = false
+          setTimeout(() => {
+            this.loginOut()
+            const { origin } = window.location
+            window.location.href = origin
+          }, 1000)
         } else {
           console.log('error submit!!')
           this.$message.error('请填写正确的信息')

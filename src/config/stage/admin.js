@@ -1,19 +1,18 @@
 const adminRouter = {
   route: null,
   name: null,
-  title: '权限管理',
+  title: '系统管理',
   type: 'folder',
   icon: 'iconfont icon-huiyuanguanli',
   filePath: 'view/admin/',
   order: null,
   inNav: true,
-  permission: ['超级管理员独有权限'],
   children: [
     {
       route: '/admin/user/list',
       name: null,
       title: '用户管理',
-      type: 'folder', // 取 route 为默认加载页
+      type: 'tab', // 取 route 为默认加载页
       icon: 'iconfont icon-huiyuanguanli',
       filePath: 'view/admin/user/',
       inNav: true,
@@ -26,7 +25,7 @@ const adminRouter = {
           filePath: 'view/admin/user/user-list.vue',
           inNav: true,
           icon: 'iconfont icon-huiyuanguanli',
-          permission: ['超级管理员独有权限'],
+          permission: ['admin:user:list'],
         },
         {
           title: '添加用户',
@@ -36,14 +35,14 @@ const adminRouter = {
           icon: 'iconfont icon-add',
           name: 'UserCreate',
           filePath: 'view/admin/user/user-create.vue',
-          permission: ['超级管理员独有权限'],
+          permission: ['admin:user:add'],
         },
       ],
     },
     {
       route: '/admin/group/list',
       name: null,
-      title: '分组管理',
+      title: '角色管理',
       type: 'tab', // 取 route 为默认加载页
       icon: null,
       filePath: 'view/admin/group',
@@ -55,9 +54,9 @@ const adminRouter = {
           name: 'groupList',
           inNav: true,
           filePath: 'view/admin/group/group-list.vue',
-          title: '分组列表',
+          title: '角色列表',
           icon: 'iconfont icon-huiyuanguanli',
-          permission: ['超级管理员独有权限'],
+          permission: ['admin:role:list'],
         },
         {
           route: '/admin/group/add',
@@ -65,9 +64,9 @@ const adminRouter = {
           name: 'GroupCreate',
           filePath: 'view/admin/group/group-create.vue',
           inNav: true,
-          title: '添加分组',
+          title: '添加角色',
           icon: 'iconfont icon-add',
-          permission: ['超级管理员独有权限'],
+          permission: ['admin:role:list'],
         },
         {
           route: '/admin/group/edit',
@@ -75,9 +74,9 @@ const adminRouter = {
           name: 'GroupEdit',
           filePath: 'view/admin/group/group-edit.vue',
           inNav: false,
-          title: '修改分组',
+          title: '修改角色',
           icon: 'iconfont icon-add',
-          permission: ['超级管理员独有权限'],
+          permission: ['admin:role:list'],
         },
       ],
     },

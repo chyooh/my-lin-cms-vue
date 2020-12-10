@@ -1,3 +1,6 @@
+import cookies from 'js-cookie'
+
+const COOKIENAME = 'bhzx-wu2'
 /**
  * 存储tokens
  * @param {string} accessToken
@@ -28,6 +31,7 @@ export function getToken(tokenKey) {
  * 移除token
  */
 export function removeToken() {
-  localStorage.removeItem('access_token')
-  localStorage.removeItem('refresh_token')
+  // localStorage.removeItem('access_token')
+  // localStorage.removeItem('refresh_token')
+  cookies.remove(COOKIENAME)
 }

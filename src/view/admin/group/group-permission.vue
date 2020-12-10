@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import Admin from '@/lin/model/admin'
+import Admin from '@/model/admin'
 
 export default {
   props: ['id', 'title'],
@@ -41,7 +41,7 @@ export default {
       loading: false,
       cacheFlag: true,
       allAuthIds: [],
-      allPermissions: {}, // 所有分组权限
+      allPermissions: {}, // 所有角色权限
       halfPermissions: [], // 该分类下的权限没有全选中
       permission_module_ids: [], // 权限组 集合 id
       permission_module_name: [], // 权限组 module name
@@ -58,20 +58,70 @@ export default {
     }
   },
   methods: {
-    // 获取分组权限
+    // 获取角色权限
     async getGroupPermissions() {
       this.allPermissions = []
       this.halfPermissions = []
       this.permission_module_ids = []
       this.permission_module_name = []
-
-      this.allPermissions = await Admin.getAllPermissions()
-      // 通过判断有没有传入id，来判断当前页面是添加分组还是编辑分组
+      const result = await Admin.getAllMenuList()
+      const list = result.data.rows
+      // console.log(list)
+      const tempObj = {}
+      const permissions = []
+      list.forEach(item => {
+        const obj = {}
+        if (item.children.length) {
+          item.children.forEach(children1 => {
+            permissions.push(children1)
+            obj[children1.menuName] = children1
+            if (children1.children.length) {
+              const templist2 = []
+              children1.children.forEach(children2 => {
+                permissions.push(children2)
+                const obj2 = {}
+                obj2.id = children2.id
+                obj2.module = children1.menuName
+                obj2.name = children2.menuName
+                templist2.push(obj2)
+              })
+              obj[children1.menuName] = templist2
+            } else {
+              const templist1 = []
+              const obj1 = {}
+              obj1.id = children1.id
+              obj1.module = children1.menuName
+              obj1.name = children1.menuName
+              templist1.push(obj1)
+              obj[children1.menuName] = templist1
+            }
+          })
+        }
+        Object.assign(tempObj, obj)
+      })
+      // console.log(tempObj)
+      this.allPermissions = tempObj
+      // 通过判断有没有传入id，来判断当前页面是添加角色还是编辑角色
       if (this.id) {
-        const res = await Admin.getOneGroup(this.id)
+        const result1 = await Admin.getRolePermission(this.id)
+        const res = result1.rows.filter(item => item.parentId !== 0)
+        // console.log(res)
+        if (res.length) {
+          res.forEach(item => {
+            item.name = item.menuName
+            const temItem = permissions.find(item1 => item.parentId === item1.id)
+            // console.log(temItem)
+            if (temItem) {
+              item.module = temItem.menuName
+            } else {
+              item.module = item.menuName
+            }
+          })
+        }
+        // console.log(res)
         let temp = []
         const cache = {}
-        res.permissions.forEach(v => {
+        res.forEach(v => {
           this.permission_module_ids.push(v.id)
           temp.push(v.module)
           // 每个module拥有权限个数
@@ -192,7 +242,6 @@ export default {
         text-indent: 20px;
       }
     }
-
     .permissions-box {
       .module {
         height: 20px;

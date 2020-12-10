@@ -43,6 +43,7 @@ module.exports = {
         ImportDeclaration: 'never',
       },
     ],
+    'linebreak-style': [0, 'error', 'windows'],
   },
   parserOptions: {
     parser: 'babel-eslint',

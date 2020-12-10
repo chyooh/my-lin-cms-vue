@@ -1,6 +1,6 @@
-aa<template>
+<template>
   <div class="container">
-    <div class="title">编辑分组权限</div>
+    <div class="title">编辑角色权限</div>
     <div class="content">
       <el-row>
         <el-col :lg="16" :md="20" :sm="24" :xs="24">
@@ -11,11 +11,11 @@ aa<template>
               @updatePermissions="updatePermissions"
               @getCacheAuthIds="getCacheAuthIds"
               @updateAllPermissions="updateAllPermissions"
-              style="margin-right:-30px;margin-left:-25px;margin-bottom:-10px;"
+              style="margin-right: -30px; margin-left: -25px; margin-bottom: -10px"
             >
             </group-permissions>
           </div>
-          <div style="padding-left:5px;margin-top: 30px;">
+          <div style="padding-left: 5px; margin-top: 30px">
             <el-button type="primary" @click="confirmEdit">确 定</el-button>
             <el-button @click="goBack">返回</el-button>
           </div>
@@ -26,7 +26,7 @@ aa<template>
 </template>
 
 <script>
-import Admin from '@/lin/model/admin'
+import Admin from '@/model/admin'
 import GroupPermissions from './group-permission'
 
 export default {
@@ -53,9 +53,13 @@ export default {
       this.cachePermissions = ids
     },
     async confirmEdit() {
-      let addRes = 0
-      let delRes = 0
-      // 判断是否更改了分组权限
+      // let addRes = 0
+      // let delRes = 0
+      if (!this.$route.query.id) {
+        this.$message.warning('角色ID不能为空')
+        return
+      }
+      // 判断是否更改了角色权限
       if (this.permissions.sort().toString() !== this.cachePermissions.sort().toString()) {
         const deletePermissions = this.cachePermissions
           .concat(this.permissions)
@@ -63,16 +67,23 @@ export default {
         const addPermissions = this.cachePermissions
           .concat(this.permissions)
           .filter(v => !this.cachePermissions.includes(v))
+        console.log(addPermissions)
+        console.log(deletePermissions)
+        console.log(this.permissions)
 
-        if (addPermissions.length > 0) {
-          addRes = await Admin.dispatchPermissions(this.$route.query.id, addPermissions)
-        }
-        if (deletePermissions.length > 0) {
-          delRes = await Admin.removePermissions(this.$route.query.id, deletePermissions)
-        }
-        if (addRes.code < window.MAX_SUCCESS_CODE || delRes.code < window.MAX_SUCCESS_CODE) {
+        try {
+          // if (addPermissions.length > 0) {
+          //   addRes = await Admin.updateRoleMenu(this.$route.query.id, addPermissions.join(','))
+          // }
+          // if (deletePermissions.length > 0) {
+          //   delRes = await Admin.updateRoleMenu(this.$route.query.id, deletePermissions.join(','))
+          // }
+          await Admin.updateRoleMenu(this.$route.query.id, this.permissions.join(','))
           this.$refs.groupPermissions.getGroupPermissions()
           this.$message.success('权限修改成功')
+        } catch (e) {
+          this.loading = false
+          console.log(e)
         }
       }
     },

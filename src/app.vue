@@ -55,5 +55,81 @@ export default {
     transition-delay: 99999s;
     transition: color 99999s ease-out, background-color 99999s ease-out;
   }
+  .my-draw {
+    .el-drawer__body {
+      overflow-y: auto;
+    }
+    :focus {
+      outline: 0;
+    }
+  }
+  .my-draw:focus {
+    outline: 0;
+  }
+  .el-radio--small.is-bordered {
+    margin-bottom: 10px;
+  }
+  .form-container {
+    table {
+      .el-button {
+        margin: 0 10px 10px 0;
+      }
+
+      .el-table__expanded-cell {
+        border-bottom: 1px solid #ebeef5;
+      }
+    }
+
+    .el-input--mini .el-input__inner {
+      width: 130px;
+      padding-right: 10px;
+    }
+    .el-form--inline .el-form-item__label {
+      padding-right: 10px;
+    }
+    .line {
+      display: inline-block;
+      width: 20px;
+      text-align: center;
+    }
+
+    .form-item-div {
+      display: inline-block;
+      margin-right: 15px;
+    }
+  }
+
+  .el-form--inline .el-form-item {
+    margin-bottom: 0px !important;
+    margin-right: 0;
+  }
+  .el-form--inline .el-form-item__content {
+    margin-bottom: 0;
+  }
+  .margin-bottom10 {
+    margin-bottom: 10px;
+  }
+  .margin-right10 {
+    margin-right: 10px;
+  }
+  .goods-create {
+    .el-form-item__content {
+      margin-bottom: 10px;
+    }
+  }
+  .child-container {
+    .el-form-item {
+      .el-form-item__label {
+        line-height: 30px;
+        white-space: nowrap;
+      }
+      .el-form-item__content {
+        line-height: 30px;
+      }
+      .el-input__inner {
+        width: 80px;
+      }
+    }
+  }
 }
 </style>

@@ -1,12 +1,12 @@
 <template>
   <div class="container">
     <div class="title">新建用户</div>
-    <div class="wrap"><user-info :groups="groups" /></div>
+    <div class="wrap"><user-info v-if="groups.length" :groups="groups" /></div>
   </div>
 </template>
 
 <script>
-import Admin from '@/lin/model/admin'
+import Admin from '@/model/admin'
 import UserInfo from './user-info'
 
 export default {
@@ -21,7 +21,9 @@ export default {
   async created() {
     try {
       this.loading = true
-      this.groups = await Admin.getAllGroups()
+      const res = await Admin.getRoleList()
+      this.groups = res.data.rows
+      // console.log(this.groups)
       this.loading = false
     } catch (e) {
       this.loading = false

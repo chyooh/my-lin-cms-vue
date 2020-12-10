@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <div class="title">新建分组信息</div>
+    <div class="title">新建角色信息</div>
     <el-row>
       <el-col :lg="16" :md="20" :sm="24" :xs="24">
         <div class="content">
@@ -13,11 +13,11 @@
             label-width="100px"
             @submit.native.prevent
           >
-            <el-form-item label="分组名称" prop="name">
-              <el-input size="medium" clearable v-model="form.name"></el-input>
+            <el-form-item label="角色名称" prop="roleName">
+              <el-input size="medium" clearable v-model="form.roleName"></el-input>
             </el-form-item>
-            <el-form-item label="分组描述" prop="info">
-              <el-input size="medium" clearable v-model="form.info"></el-input>
+            <el-form-item label="角色描述" prop="descriptions">
+              <el-input size="medium" clearable v-model="form.descriptions"></el-input>
             </el-form-item>
             <el-form-item>
               <group-permissions
@@ -40,7 +40,7 @@
 </template>
 
 <script>
-import Admin from '@/lin/model/admin'
+import Admin from '@/model/admin'
 import GroupPermissions from './group-permission'
 
 export default {
@@ -52,7 +52,7 @@ export default {
     const checkName = (rule, value, callback) => {
       // eslint-disable-line
       if (!value) {
-        return callback(new Error('分组名称不能为空'))
+        return callback(new Error('角色名称不能为空'))
       }
       callback()
     }
@@ -60,12 +60,12 @@ export default {
       allPermissions: [], // 所有权限
       permissions: [], // 最终选择的权限
       form: {
-        name: '',
-        info: '',
+        roleName: '',
+        descriptions: '',
       },
       rules: {
-        name: [{ validator: checkName, trigger: ['blur', 'change'], required: true }],
-        info: [],
+        roleName: [{ validator: checkName, trigger: ['blur', 'change'], required: true }],
+        descriptions: [],
       },
       loading: false,
     }
@@ -85,21 +85,27 @@ export default {
           const finalPermissions = this.permissions.filter(x => Object.keys(this.allPermissions).indexOf(x) < 0)
           try {
             this.loading = true
-            res = await Admin.createOneGroup(this.form.name, this.form.info, finalPermissions, this.id) // eslint-disable-line
+            this.form.menuIds = finalPermissions.join(',')
+            res = await Admin.saveRole(this.form) // eslint-disable-line
+            this.loading = false
+            this.$message.success(`${res.msg}`)
+            // this.eventBus.$emit('addGroup', true)
+            this.$router.push('/admin/group/list')
+            this.resetForm('form')
           } catch (e) {
             this.loading = false
             console.log(e)
           }
-          if (res.code < window.MAX_SUCCESS_CODE) {
-            this.loading = false
-            this.$message.success(`${res.message}`)
-            this.eventBus.$emit('addGroup', true)
-            this.$router.push('/admin/group/list')
-            this.resetForm('form')
-          } else {
-            this.loading = false
-            this.$message.error(`${res.message}`)
-          }
+          // if (res.code < window.MAX_SUCCESS_CODE) {
+          //   this.loading = false
+          //   this.$message.success(`${res.message}`)
+          //   this.eventBus.$emit('addGroup', true)
+          //   this.$router.push('/admin/group/list')
+          //   this.resetForm('form')
+          // } else {
+          //   this.loading = false
+          //   this.$message.error(`${res.message}`)
+          // }
         } else {
           this.$message.error('请将信息填写完整')
           return false

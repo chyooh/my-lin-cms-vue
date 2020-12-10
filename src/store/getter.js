@@ -104,7 +104,10 @@ export const sideBarList = (state, getter) => {
       sideConfig.path = target.route || Util.getRandomStr(6)
       sideConfig.children = target.children.map(item => deepGetSideBar(item, level - 1))
       sideConfig.children = sideConfig.children.filter(item => item !== null)
-      return sideConfig
+      if (sideConfig.children && sideConfig.children.length) {
+        return sideConfig
+      }
+      return null
     }
 
     // 处理一级就是 view 的情况
@@ -146,7 +149,6 @@ export const sideBarList = (state, getter) => {
     }
     return null
   }
-
   const sideBar = deepGetSideBar(permissionStageConfig, sideBarLevel)
   return sideBar
 }

@@ -35,12 +35,12 @@ export default {
     },
     toolbar: {
       type: String,
-      default: ` undo redo 
-      | formatselect 
-      | bold italic strikethrough forecolor backcolor formatpainter 
-      | link image | alignleft aligncenter alignright alignjustify 
-      | numlist bullist outdent indent 
-      | removeformat 
+      default: ` undo redo
+      | formatselect
+      | bold italic strikethrough forecolor backcolor formatpainter
+      | link image | alignleft aligncenter alignright alignjustify
+      | numlist bullist outdent indent
+      | removeformat
       | preview fullscreen code`,
     },
     baseUrl: {
@@ -73,8 +73,8 @@ export default {
       statusbar: false, // 隐藏编辑器底部的状态栏
       paste_data_images: true, // 允许粘贴图像
       menubar: this.showMenubar, // 隐藏最上方menu
-      plugins: `print fullpage searchreplace autolink directionality visualblocks 
-        visualchars template codesample charmap hr pagebreak nonbreaking anchor toc insertdatetime 
+      plugins: `print fullpage searchreplace autolink directionality visualblocks
+        visualchars template codesample charmap hr pagebreak nonbreaking anchor toc insertdatetime
         wordcount textpattern help advlist table lists paste preview fullscreen image imagetools code link`,
       toolbar: this.toolbar,
       async images_upload_handler(blobInfo, success, failure) {
@@ -84,14 +84,14 @@ export default {
         _this
           .$axios({
             method: 'post',
-            url: '/cms/file',
+            url: _this.upload_url,
             data: {
               file,
             },
           })
           .then(res => {
-            if (res[0] && res[0].url) {
-              success(res[0].url)
+            if (res.data) {
+              success(JSON.parse(res.data).base)
             }
           })
           .catch(err => failure(err))

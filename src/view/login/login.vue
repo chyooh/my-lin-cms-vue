@@ -1,8 +1,8 @@
 <template>
   <div class="login">
-    <div class="team-name hidden-sm-and-down"><img src="@/assets/image/login/team-name.png" alt="logo" /></div>
+    <!-- <div class="team-name hidden-sm-and-down"><img src="@/assets/image/login/team-name.png" alt="logo" /></div> -->
     <div class="form-box" v-loading="loading" element-loading-background="rgba(0, 0, 0, 0)">
-      <div class="title"><h1 title="Lin">Lin CMS</h1></div>
+      <div class="title"><h1 title="Lin">丫回收 后台管理</h1></div>
       <form class="login-form" autocomplete="off" @submit.prevent="throttleLogin()">
         <div class="form-item nickname">
           <span class="icon account-icon"></span>
@@ -21,7 +21,7 @@
 <script>
 import { mapActions, mapMutations } from 'vuex'
 import AppConfig from '@/config/index'
-import User from '@/lin/model/user'
+import User from '@/model/user'
 import Utils from '@/lin/util/util'
 
 export default {
@@ -32,17 +32,18 @@ export default {
       wait: 2000, // 2000ms之内不能重复发起请求
       throttleLogin: null, // 节流登录
       form: {
-        username: 'root',
-        password: '123456',
+        username: 'test',
+        password: '123',
       },
     }
   },
   methods: {
     async login() {
+      // this.setUserAndState(null)
       const { username, password } = this.form
       try {
         this.loading = true
-        await User.getToken(username, password)
+        await User.login(username, password)
         await this.getInformation()
         this.loading = false
         this.$router.push(AppConfig.defaultRoute)
@@ -55,7 +56,8 @@ export default {
     async getInformation() {
       try {
         // 尝试获取当前用户信息
-        const user = await User.getPermissions()
+        const user = await User.getCurrentInfo()
+        console.log(user)
         this.setUserAndState(user)
         this.setUserPermissions(user.permissions)
       } catch (e) {

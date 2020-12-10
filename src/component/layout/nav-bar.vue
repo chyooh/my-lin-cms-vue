@@ -4,7 +4,7 @@
       <breadcrumb />
       <!-- 暂时放这里 -->
       <div class="right-info">
-        <lin-notify
+        <!-- <lin-notify
           height="370"
           @readMessages="readMessages"
           :trigger="'click'"
@@ -15,7 +15,7 @@
           :value="value"
           :hidden="hidden"
         >
-        </lin-notify>
+        </lin-notify> -->
         <clear-tab></clear-tab>
         <screenfull /> <user></user>
       </div>

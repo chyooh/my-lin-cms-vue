@@ -1,8 +1,10 @@
 <template>
   <div class="app-sidebar">
-    <div class="logo" v-if="!elMenuCollapse"><img src="../../assets/image/logo.png" alt="" /></div>
-    <div class="mobile-logo" v-else><img src="../../assets/image/mobile-logo.png" alt="" /></div>
-    <div style="margin-bottom:50px">
+    <router-link to="/about">
+      <div class="logo" v-if="!elMenuCollapse"><img src="../../assets/image/logo.png" alt="" /></div>
+      <div class="mobile-logo" v-else><img src="../../assets/image/mobile-logo.png" alt="" /></div>
+    </router-link>
+    <div style="margin-bottom: 50px">
       <div v-if="showSidebarSearch" style="margin-top: 15px">
         <div class="search-display" v-if="!showSearchList" @click="toSearch"><i class="el-icon-search"></i></div>
         <el-select
@@ -51,7 +53,7 @@
                 class="subMenuContent"
               >
                 <template slot="title">
-                  <i class="iconfont icon-erjizhibiao"></i>
+                  <i :class="subItem.icon ? subItem.icon : 'iconfont icon-erjizhibiao'"></i>
                   <span slot="title" class="two-folder">{{ subItem.title }}</span>
                 </template>
 
@@ -62,14 +64,14 @@
                   :to="grandchildItem.path"
                   class="circle third"
                 >
-                  <el-menu-item :index="idMap[grandchildItem.name]" style="padding-left: 80px;" class="subMenuContent">
+                  <el-menu-item :index="idMap[grandchildItem.name]" style="padding-left: 80px" class="subMenuContent">
                     {{ grandchildItem.title }}
                   </el-menu-item>
                 </router-link>
               </el-submenu>
               <!-- 二级else -->
               <router-link :to="subItem.path" :key="subItem.name" class="circle" v-else>
-                <el-menu-item :index="idMap[subItem.name]" style="padding-left: 60px;" class="subMenuContent">
+                <el-menu-item :index="idMap[subItem.name]" style="padding-left: 60px" class="subMenuContent">
                   {{ subItem.title }}
                 </el-menu-item>
               </router-link>
@@ -268,7 +270,7 @@ export default {
 
   .mobile-logo {
     width: 64px;
-    height: 86px;
+    height: $header-height;
     display: flex;
     justify-content: center;
     align-items: center;

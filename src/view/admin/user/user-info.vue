@@ -9,39 +9,41 @@
       label-width="100px"
       @submit.native.prevent
     >
-      <el-form-item label="用户名" prop="username">
-        <el-input size="medium" clearable v-model="form.username" :disabled="isEdited"></el-input>
+      <el-form-item label="用户名" prop="userName">
+        <el-input size="medium" clearable v-model="form.userName" :disabled="isEdited"></el-input>
       </el-form-item>
       <el-form-item label="邮箱" prop="email">
-        <el-input
-          size="medium"
-          clearable
-          v-model="form.email"
-          :disabled="isEdited"
-          auto-complete="new-password"
-        ></el-input>
+        <el-input size="medium" clearable v-model="form.email" :disabled="isEdited"></el-input>
       </el-form-item>
       <el-form-item v-if="pageType === 'add'" label="密码" prop="password">
-        <el-input
-          size="medium"
-          clearable
-          type="password"
-          v-model="form.password"
-          auto-complete="new-password"
-        ></el-input>
+        <el-input size="medium" clearable type="password" v-model="form.password"></el-input>
       </el-form-item>
       <el-form-item v-if="pageType === 'add'" label="确认密码" prop="confirm_password" label-position="top">
         <el-input size="medium" clearable type="password" v-model="form.confirm_password" autocomplete="off"></el-input>
       </el-form-item>
-      <el-form-item v-if="pageType !== 'password'" label="选择分组">
-        <el-checkbox-group v-model="form.group_ids" size="small" style="transform: translateY(5px);">
-          <el-checkbox v-for="item in groups" :key="item.id" :label="item.id" border style="margin-left: 0">{{
-            item.name
-          }}</el-checkbox>
-        </el-checkbox-group>
+      <el-form-item
+        label="选择角色"
+        prop="roleId"
+        :rules="{
+          required: true,
+          message: '角色不能为空',
+          trigger: 'blur',
+        }"
+      >
+        <el-radio-group v-model="form.roleId" size="small" style="transform: translateY(5px)">
+          <el-radio v-for="item in groups" :key="item.id" :label="item.id" border style="margin-left: 0">{{
+            item.roleName
+          }}</el-radio>
+        </el-radio-group>
       </el-form-item>
       <el-form-item v-show="submit" class="submit">
-        <el-button type="primary" :loading="loading" @click="submitForm('form')">保 存</el-button>
+        <el-button
+          type="primary"
+          :loading="loading"
+          @click="submitForm('form')"
+          v-permission="{ permission: 'admin:user:add', type: 'disabled' }"
+          >保 存</el-button
+        >
         <el-button @click="resetForm('form')">重 置</el-button>
       </el-form-item>
     </el-form>
@@ -49,8 +51,8 @@
 </template>
 
 <script>
-import Admin from '@/lin/model/admin'
-import User from '@/lin/model/user'
+import Admin from '@/model/admin'
+// import User from '@/model/user'
 
 export default {
   props: {
@@ -64,7 +66,7 @@ export default {
       default: undefined,
     },
     groups: {
-      // 所有分组
+      // 所有角色
       type: Array,
       default: () => {},
     },
@@ -118,15 +120,17 @@ export default {
       loading: false, // 加载动画
       isEdited: false, // 能否编辑
       form: {
-        username: '',
+        userName: '',
         password: '',
         confirm_password: '',
         email: '',
-        group_ids: [],
+        roleId: '',
+        // isEnabled: 0,
+        // isLocked: 0,
       },
       // 验证规则
       rules: {
-        username: [
+        userName: [
           {
             validator: checkUserName,
             trigger: ['blur', 'change'],
@@ -148,58 +152,86 @@ export default {
   methods: {
     // 提交表单
     async submitForm(formName) {
+      console.log('a')
       this.$refs[formName].validate(async valid => {
         // eslint-disable-line
         if (valid) {
+          console.log('b')
           // 新增用户
           let res
+          // if (this.form.isEnabled) {
+          //   this.form.isEnabled = 1
+          // } else {
+          //   this.form.isEnabled = 0
+          // }
+          // if (this.form.isLocked) {
+          //   this.form.isLocked = 1
+          // } else {
+          //   this.form.isLocked = 0
+          // }
           if (this.pageType === 'add') {
+            console.log('c')
             try {
+              // console.log(this.form.roleId)
+              if (!this.form.roleId) {
+                this.$message.error('请选择一个角色')
+                return
+              }
               this.loading = true
-              res = await User.register(this.form)
-              if (res.code < window.MAX_SUCCESS_CODE) {
-                this.loading = false
-                this.$message.success(`${res.message}`)
-                this.eventBus.$emit('addUser', true)
-                this.resetForm(formName)
-              }
-            } catch (e) {
+              res = await Admin.saveUser(this.form)
+
+              // if (res.code < window.MAX_SUCCESS_CODE) {
               this.loading = false
-              if (e.data.code === 10073) {
-                this.$message.error(e.data.message)
-              } else {
-                this.$message.error('新增用户失败')
-              }
+              this.$message.success(`${res.msg}`)
+              // this.eventBus.$emit('addUser', true)
+              this.resetForm(formName)
+              // }
+            } catch (e) {
               console.log(e)
+              this.loading = false
+              // if (e.data.code === 10073) {
+              //   this.$message.error(e.data.message)
+              // } else {
+              //   this.$message.error('新增用户失败')
+              // }
+              // console.log(e)
             }
           } else {
+            console.log('d')
             // 更新用户信息
             if (
-              this.form.email === this.info.email
-              && this.form.group_ids.sort().toString() === this.info.group_ids.sort().toString()
+              this.form.userName === this.info.userName
+              && this.form.email === this.info.email
+              && this.form.roleId === this.info.roleId
             ) {
+              console.log('e')
               this.$emit('handleInfoResult', false)
               return
             }
             try {
-              if (!this.form.group_ids.length) {
-                this.$message.error('至少选择一个分组')
+              if (!this.form.roleId) {
+                this.$message.error('请选择一个角色')
                 return
               }
               this.loading = true
-              res = await Admin.updateOneUser(this.form.email, this.form.group_ids, this.id)
+              this.form.id = this.id
+              this.form.type = 1
+              res = await Admin.updateUser(this.form)
+              this.loading = false
+              this.$message.success(`${res.msg}`)
+              this.$emit('handleInfoResult', true)
             } catch (e) {
               this.loading = false
               console.log(e)
             }
-            if (res.code < window.MAX_SUCCESS_CODE) {
-              this.loading = false
-              this.$message.success(`${res.message}`)
-              this.$emit('handleInfoResult', true)
-            } else {
-              this.loading = false
-              this.$message.error(`${res.message}`)
-            }
+            // if (res.code < window.MAX_SUCCESS_CODE) {
+            //   this.loading = false
+            //   this.$message.success(`${res.message}`)
+            //   this.$emit('handleInfoResult', true)
+            // } else {
+            //   this.loading = false
+            //   this.$message.error(`${res.message}`)
+            // }
           }
         } else {
           console.log('error submit!!')
@@ -212,25 +244,34 @@ export default {
       if (this.pageType === 'edit') {
         this.setInfo()
       } else {
-        this.form.group_ids = []
+        // this.form.roleId = ''
         this.$refs[formName].resetFields()
       }
     },
     setInfo() {
-      this.form.username = this.info.username
+      this.form.userName = this.info.userName
       this.form.email = this.info.email
-      const temp = []
-      this.info.group_ids.forEach(item => {
-        temp.push(item.id)
-      })
-      this.form.group_ids = temp
+      // if (this.info.isEnabled) {
+      //   this.form.isEnabled = true
+      // }
+      // if (this.info.isLocked) {
+      //   this.form.isLocked = true
+      // }
+      // const temp = []
+      // this.info.roleId.forEach(item => {
+      //   temp.push(item.id)
+      // })
+      this.form.roleId = this.info.roleId
     },
   },
   created() {
+    console.log(this.groups)
+    console.log(this.form)
+    console.log(this.info)
     // 通过是否接收到数据来判断当前页面是添加数据还是编辑数据
     if (this.pageType === 'edit') {
       this.setInfo()
-      this.isEdited = true
+      // this.isEdited = true
     }
   },
 }
@@ -239,7 +280,6 @@ export default {
 <style lang="scss" scoped>
 .container {
   margin-top: 20px;
-  margin-left: -5px;
   max-width: 800px;
 
   .submit {

@@ -1,5 +1,5 @@
 <template>
-  <div v-if="data.length">
+  <div v-if="data.length" style="z-index: 9999; position: fixed">
     <div ref="myGallery" class="my-gallery" :data-pswp-uid="radom">
       <div v-if="slides.length">
         <div :key="radom + '_' + index" v-for="(l, index) in slides"><img preview :src="l" alt="" /></div>

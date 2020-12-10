@@ -1,17 +1,23 @@
 import adminConfig from './admin'
-import bookConfig from './book' // 引入图书管理路由文件
-import pluginsConfig from './plugin'
+import orderConfig from './order'
+import couponConfig from './coupon'
+import goodsConfig from './goods'
+import specConfig from './spec'
+import categoryConfig from './category'
+
+// import bookConfig from './book' // 引入图书管理路由文件
+// import pluginsConfig from './plugin'
 import Utils from '@/lin/util/util'
 
 // eslint-disable-next-line import/no-mutable-exports
 let homeRouter = [
   {
-    title: '林间有风',
+    title: '首页',
     type: 'view',
     name: Symbol('about'),
     route: '/about',
     filePath: 'view/about/about.vue',
-    inNav: true,
+    inNav: false,
     icon: 'iconfont icon-iconset0103',
     order: 1,
   },
@@ -36,6 +42,24 @@ let homeRouter = [
     icon: 'iconfont icon-rizhiguanli',
   },
   {
+    title: '图标',
+    type: 'view',
+    name: Symbol('icon'),
+    route: '/icon',
+    filePath: 'view/test/test-icon.vue',
+    inNav: false,
+    icon: 'iconfont icon-rizhiguanli',
+  },
+  {
+    title: 'element组件',
+    type: 'view',
+    name: Symbol('element'),
+    route: '/element',
+    filePath: 'view/test/test-element.vue',
+    inNav: false,
+    icon: 'iconfont icon-rizhiguanli',
+  },
+  {
     title: '404',
     type: 'view',
     name: Symbol('404'),
@@ -44,11 +68,16 @@ let homeRouter = [
     inNav: false,
     icon: 'iconfont icon-rizhiguanli',
   },
-  bookConfig,
+  // bookConfig,
+  orderConfig,
+  goodsConfig,
+  specConfig,
+  categoryConfig,
+  couponConfig,
   adminConfig,
 ]
 
-const plugins = [...pluginsConfig]
+const plugins = [] // [...pluginsConfig]
 
 // 筛除已经被添加的插件
 function filterPlugin(data) {

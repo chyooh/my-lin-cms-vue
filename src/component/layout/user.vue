@@ -2,14 +2,14 @@
   <div class="user">
     <el-dropdown>
       <span class="el-dropdown-link">
-        <div class="nav-avatar"><img :src="user.avatar || defaultAvatar" alt="头像" /></div>
+        <div class="nav-avatar"><img :src="(user && user.avatar) || defaultAvatar" alt="头像" /></div>
       </span>
       <el-dropdown-menu slot="dropdown" class="user-box">
         <div class="user-info">
           <div class="avatar" title="点击修改头像">
-            <img :src="user.avatar || defaultAvatar" alt="头像" />
+            <img :src="(user && user.avatar) || defaultAvatar" alt="头像" />
             <label class="mask">
-              <i class="iconfont icon-icon-test" style="font-size: 20px;"></i>
+              <i class="iconfont icon-icon-test" style="font-size: 20px"></i>
               <input ref="avatarInput" type="file" accept="image/*" @change="fileChange" />
             </label>
           </div>
@@ -44,7 +44,7 @@
       custom-class="croppa-dialog"
       center
     >
-      <div style="text-align: center;">
+      <div style="text-align: center">
         <div class="avatar-croppa-container">
           <croppa
             ref="croppa"
@@ -60,10 +60,9 @@
             :show-loading="true"
             :quality="quality"
             :initial-image="cropImg"
-          >
-          </croppa>
+          ></croppa>
         </div>
-        <div style="margin-top: 1em;">通过鼠标滚轮调节头像大小</div>
+        <div style="margin-top: 1em">通过鼠标滚轮调节头像大小</div>
       </div>
       <div slot="footer" class="dialog-footer">
         <el-button @click="cropVisible = false" size="small">取 消</el-button>
@@ -108,7 +107,7 @@
 import { mapActions, mapGetters } from 'vuex'
 import Vue from 'vue'
 import Croppa from 'vue-croppa'
-import User from '@/lin/model/user'
+import User from '@/model/user'
 import 'vue-croppa/dist/vue-croppa.css'
 import defaultAvatar from '@/assets/image/user/user.png'
 
@@ -251,50 +250,54 @@ export default {
         type: 'image/jpeg',
       })
 
-      return this.$axios({
-        method: 'post',
-        url: '/cms/file',
-        data: {
-          file,
-        },
-      }).then(res => {
-        // 清空输入框
-        this.clearFileInput(this.$refs.avatarInput)
-        if (!Array.isArray(res) || res.length !== 1) {
-          this.$message.error('头像上传失败, 请重试')
-          return false
-        }
-        // TODO: 错误码处理
-        // if (res.code === 10110) {
-        //   throw new Error('文件体积过大')
-        // }
-        return this.$axios({
-          method: 'put',
-          url: '/cms/user',
-          data: {
-            avatar: res[0].path,
-          },
-        })
-          .then(putRes => {
-            // eslint-disable-line
-            if (putRes.code < window.MAX_SUCCESS_CODE) {
-              this.$message({
-                type: 'success',
-                message: '更新头像成功',
-              })
-              this.cropVisible = false
-              // 触发重新获取用户信息
-              return User.getInformation()
-            }
-            return Promise.reject(new Error('更新头像失败'))
-          })
-          .then(infoRes => {
-            // eslint-disable-line
-            // 尝试获取当前用户信息
-            const user = infoRes
-            this.setUserAndState(user)
-          })
-      })
+      this.cropVisible = false
+      const loading = this.$loading({ target: '.user' })
+      try {
+        const res = await User.upload(file)
+        await User.update({ avatar: JSON.parse(res.data).base, type: 1 })
+
+        this.$message.success('更新头像成功')
+
+        loading.close()
+        const user1 = await User.getCurrentInfo()
+        this.setUserAndState(user1)
+      } catch (e) {
+        loading.close()
+        console.log(e)
+      }
+      // return this.$axios({
+      //   method: 'post',
+      //   url: '/admin/file/upload',
+      //   data: {
+      //     file,
+      //   },
+      // }).then(async res => {
+      //   // 清空输入框
+      //   this.clearFileInput(this.$refs.avatarInput)
+      //   if (res.code !== 20000) {
+      //     this.$message.error('头像上传失败, 请重试')
+      //     return false
+      //   }
+      //   // TODO: 错误码处理
+      //   // if (res.code === 10110) {
+      //   //   throw new Error('文件体积过大')
+      //   // }
+
+      //   try {
+      //     this.loading = true
+      //     await User.update({ avatar: JSON.parse(res.data).base, type: 1 })
+
+      //     this.$message.success('更新头像成功')
+      //     this.loading = false
+
+      //     this.cropVisible = false
+      //     const user1 = await User.getCurrentInfo()
+      //     this.setUserAndState(user1)
+      //   } catch (e) {
+      //     this.loading = false
+      //     console.log(e)
+      //   }
+      // })
     },
     changeNickname() {
       this.nicknameChanged = true
@@ -306,29 +309,19 @@ export default {
       if (this.nickname) {
         const { user } = this.$store.state
         if (this.nickname !== user.nickname && this.nickname !== '佚名') {
-          this.$axios({
-            method: 'put',
-            url: '/cms/user',
-            data: {
-              nickname: this.nickname,
-            },
-            showBackend: true,
-          })
-            .then(res => {
-              if (res.code < window.MAX_SUCCESS_CODE) {
-                this.$message({
-                  type: 'success',
-                  message: '更新昵称成功',
-                })
-                // 触发重新获取用户信息
-                return User.getInformation()
-              }
-            })
-            .then(res => {
-              // eslint-disable-line
-              this.setUserAndState(res)
-              this.nickname = res.nickname
-            })
+          const loading = this.$loading({ target: '.user-box' })
+          try {
+            await User.update({ nickname: this.nickname, type: 1 })
+
+            this.$message.success('更新昵称成功')
+            loading.close()
+            const user1 = await User.getCurrentInfo()
+            this.setUserAndState(user1)
+          } catch (e) {
+            this.nickname = user.nickname || '佚名'
+            loading.close()
+            console.log(e)
+          }
         }
       }
       this.nicknameChanged = false
@@ -336,7 +329,7 @@ export default {
     init() {
       const { user } = this.$store.state
       this.username = user ? user.username : '未登录'
-      this.groupName = user.groupName ? user.groupName : '超级管理员'
+      this.groupName = user && user.groupName ? user.groupName : '超级管理员'
       this.nickname = user && user.nickname ? user.nickname : '佚名'
     },
     goToCenter() {
@@ -347,9 +340,17 @@ export default {
       this.dialogFormVisible = false
       done()
     },
-    outLogin() {
-      window.location.reload(true)
-      this.loginOut()
+    async outLogin() {
+      try {
+        const res = await User.logout()
+        this.$message.success(`${res.msg}`)
+        setTimeout(() => {
+          window.location.reload(true)
+          this.loginOut()
+        }, 500)
+      } catch (e) {
+        console.log(e)
+      }
     },
     submitForm(formName) {
       if (this.form.old_password === '' && this.form.new_password === '' && this.form.confirm_password === '') {
@@ -404,14 +405,14 @@ export default {
 }
 
 .user {
-  height: 40px;
+  height: 30px;
 
   .el-dropdown-link {
     cursor: pointer;
 
     .nav-avatar {
-      width: 40px;
-      height: 40px;
+      width: 30px;
+      height: 30px;
       border-radius: 50%;
       overflow: hidden;
       margin-right: 10px;

@@ -34,7 +34,17 @@ module.exports = {
       },
     },
   },
-  devServer: {},
+  devServer: {
+    proxy: {
+      '/api': {
+        target: 'http://192.168.0.121:20009/',
+        changeOrigin: true,
+        pathRewrite: {
+          '^/api': '/admin',
+        },
+      },
+    },
+  },
   // node_modules依赖项es6语法未转换问题
   transpileDependencies: ['vuex-persist'],
 }

@@ -31,7 +31,7 @@ import { NavBar, SideBar, AppMain, ReuseTab, MenuTab, BackTop } from '@/componen
 const navBarHeight = 66 // header高度
 const reuseTabHeight = 70 // 历史记录栏高度
 const marginHeight = 20 // 历史记录栏与舞台的间距
-const sideBarWidth = '210px'
+const sideBarWidth = '180px'
 const totalHeight = navBarHeight + reuseTabHeight + marginHeight
 
 export default {
@@ -85,10 +85,10 @@ export default {
     }
 
     this.eventBus.$on('noReuse', () => {
-      this.$refs.operate.style.height = '86px'
+      this.$refs.operate.style.height = '60px'
     })
     this.eventBus.$on('hasReuse', () => {
-      this.$refs.operate.style.height = '45px'
+      this.$refs.operate.style.height = '30px'
     })
   },
   inject: ['eventBus'],
@@ -204,7 +204,7 @@ export default {
       align-items: center;
       background: $header-background;
       padding-left: 20px;
-      height: 86px;
+      height: 60px;
 
       .iconfont {
         font-size: 16px;

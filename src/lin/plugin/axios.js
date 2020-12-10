@@ -1,10 +1,11 @@
 // ajax 封装插件, 使用 axios
 import Vue from 'vue'
 import axios from 'axios'
+import qs from 'qs'
 import Config from '@/config'
 import ErrorCode from '@/config/error-code'
 import store from '@/store'
-import { getToken, saveAccessToken } from '@/lin/util/token'
+import { getToken } from '@/lin/util/token'
 
 const config = {
   baseURL: Config.baseURL || process.env.apiUrl || '',
@@ -16,19 +17,10 @@ const config = {
   validateStatus(status) {
     return status >= 200 && status < 510
   },
-}
-
-/**
- * 错误码是否是refresh相关
- * @param {number} code 错误码
- */
-function refreshTokenException(code) {
-  let flag = false
-  const codes = [10000, 10042, 10050, 10052]
-  if (codes.includes(code)) {
-    flag = true
-  }
-  return flag
+  headers: {
+    'X-Requested-With': 'XMLHttpRequest',
+    'Content-Type': 'application/x-www-form-urlencoded',
+  },
 }
 
 // const retryTime = 2 // 请求失败重试次数
@@ -41,9 +33,7 @@ _axios.interceptors.request.use(
   originConfig => {
     // 有 API 请求重新计时
     Vue.prototype.$_lin_jump()
-
     const reqConfig = { ...originConfig }
-
     // step1: 容错处理
     if (!reqConfig.url) {
       /* eslint-disable-next-line */
@@ -67,6 +57,7 @@ _axios.interceptors.request.use(
         // 防止字段用错
         reqConfig.params = reqConfig.data || {}
       }
+      // reqConfig.params = JSON.stringify(reqConfig.params)
     } else if (reqConfig.method === 'post') {
       if (!reqConfig.data) {
         // 防止字段用错
@@ -122,34 +113,38 @@ _axios.interceptors.request.use(
 // Add a response interceptor
 _axios.interceptors.response.use(
   async res => {
-    let { code, message } = res.data // eslint-disable-line
-    if (res.status.toString().charAt(0) === '2') {
+    let { code, msg } = res.data // eslint-disable-line
+    let { status } = res
+    if (status === 200) {
+      status = res.data.status || null
+    }
+    if (!status && (!code || code === 20000)) {
       return res.data
     }
     return new Promise(async (resolve, reject) => {
-      const { url } = res.config
+      // const { url } = res.config
 
       // refreshToken相关，直接登出
-      if (refreshTokenException(code)) {
-        setTimeout(() => {
-          store.dispatch('loginOut')
-          const { origin } = window.location
-          window.location.href = origin
-        }, 1500)
-        return resolve(null)
-      }
+      // if (refreshTokenException(code)) {
+      //   setTimeout(() => {
+      //     store.dispatch('loginOut')
+      //     const { origin } = window.location
+      //     window.location.href = origin
+      //   }, 1500)
+      //   return resolve(null)
+      // }
       // assessToken相关，刷新令牌
-      if (code === 10041 || code === 10051) {
-        const cache = {}
-        if (cache.url !== url) {
-          cache.url = url
-          const refreshResult = await _axios('cms/user/refresh')
-          saveAccessToken(refreshResult.access_token)
-          // 将上次失败请求重发
-          const result = await _axios(res.config)
-          return resolve(result)
-        }
-      }
+      // if (code === 10041 || code === 10051) {
+      //   const cache = {}
+      //   if (cache.url !== url) {
+      //     cache.url = url
+      //     const refreshResult = await _axios('cms/user/refresh')
+      //     saveAccessToken(refreshResult.access_token)
+      //     // 将上次失败请求重发
+      //     const result = await _axios(res.config)
+      //     return resolve(result)
+      //   }
+      // }
       // 第一种情况：默认直接提示后端返回的异常信息；特殊情况：如果本次请求添加了 handleError: true，用户自己try catch，框架不做处理
       if (res.config.handleError) {
         return reject(res)
@@ -162,15 +157,24 @@ _axios.interceptors.response.use(
         if (errorArr.length > 0 && errorArr[0][1] !== '') {
           message = errorArr[0][1] // eslint-disable-line
         } else {
-          message = ErrorCode['777']
+          msg = ErrorCode['777']
         }
       }
 
       Vue.prototype.$message({
-        message,
+        message: msg || '出错了',
         type: 'error',
       })
       reject()
+      if ((status && status === 400) || code === 400) {
+        setTimeout(() => {
+          store.dispatch('loginOut')
+          const { origin } = window.location
+          console.log(origin)
+          window.location.href = origin
+        }, 1500)
+        // return resolve(null)
+      }
     })
   },
   error => {
@@ -228,7 +232,7 @@ export function post(url, data = {}, params = {}) {
   return _axios({
     method: 'post',
     url,
-    data,
+    data: qs.stringify(data),
     params,
   })
 }

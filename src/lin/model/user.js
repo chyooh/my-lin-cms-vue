@@ -22,11 +22,11 @@ export default class User {
    * @param {string} password 密码
    */
   static async getToken(username, password) {
-    const tokens = await post('cms/user/login', {
+    const tokens = await post('admin/login.json', {
       username,
       password,
     })
-    saveTokens(tokens.access_token, tokens.refresh_token)
+    // saveTokens(tokens.access_token, tokens.refresh_token)
     return tokens
   }
 
@@ -43,7 +43,7 @@ export default class User {
    * 获取当前用户信息和所拥有的权限
    */
   static async getPermissions() {
-    const info = await get('cms/user/permissions')
+    const info = await get('admin/user/getCurrentInfo')
     const storeUser = store.getters.user === null ? {} : store.getters.user
     return Object.assign({ ...storeUser }, info)
   }
