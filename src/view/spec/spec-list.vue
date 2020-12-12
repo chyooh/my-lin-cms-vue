@@ -308,15 +308,4 @@ export default {
     margin: 20px;
   }
 }
-.groupListInfoDialog /deep/ .el-dialog__footer {
-  text-align: left;
-  padding-left: 30px;
-}
-.groupListInfoDialog /deep/ .el-dialog__header {
-  padding-left: 30px;
-}
-
-.groupListInfoDialog /deep/ .el-dialog__body {
-  padding: 30px;
-}
 </style>

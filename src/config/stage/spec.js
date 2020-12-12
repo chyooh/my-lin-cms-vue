@@ -16,7 +16,7 @@ const specRouter = {
       filePath: 'view/spec/spec-list.vue',
       inNav: true,
       icon: 'iconfont icon-shangpinliebiao',
-      permission: ['admin:user:list'],
+      permission: ['admin:spec:list'],
     },
     {
       title: '创建规格',
@@ -26,7 +26,7 @@ const specRouter = {
       filePath: 'view/spec/spec-view.vue',
       inNav: true,
       icon: '',
-      permission: ['admin:user:list'],
+      permission: ['admin:goods:spec:add'],
     },
   ],
 }

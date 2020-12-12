@@ -144,9 +144,9 @@
                             :ref="'name' + index"
                           ></el-input>
                         </el-form-item>
-                        <el-button class="addbtn" type="primary" size="mini" plain @click="addValue(item)"
-                          >添 加</el-button
-                        >
+                        <el-button class="addbtn" type="primary" size="mini" plain @click="addValue(item)">
+                          添 加
+                        </el-button>
                       </div>
                     </el-collapse-item>
                   </el-collapse>
@@ -157,7 +157,7 @@
             </el-form-item>
 
             <el-form-item label="是否推荐" prop="isHandpick">
-              <el-switch v-model="isHandpick"> </el-switch>
+              <el-switch v-model="form.isHandpick" :active-value="1" :inactive-value="2"> </el-switch>
             </el-form-item>
             <el-form-item label="状态" prop="status">
               <el-radio-group v-model="form.status" size="mini">
@@ -190,9 +190,7 @@ import Category from '@/model/category'
 
 /** 生成随机字符串 */
 function createId() {
-  return Math.random()
-    .toString(36)
-    .substring(2)
+  return Math.random().toString(36).substring(2)
 }
 export default {
   components: {
@@ -224,6 +222,7 @@ export default {
       callback()
     }
     return {
+      id: null,
       title: '添加商品',
       type: 'add',
       form: {
@@ -236,12 +235,7 @@ export default {
         status: 1,
         remarks: '',
         avgPrice: null,
-        goodsPrivateSpecIds: null,
-        goodsPrivateSpecList: [],
         initImg: [],
-        price: null, // 每个版本不同价格(公有小属性Id:价格, 公有小属性Id:价格)
-        cutPrice: null, // 每个私有属性所需要扣减的价格(私有小属性id:价格,私有小属性Id:价格)
-        cutPrice1: null, // 每个公有属性所需要扣减的价格(公有小属性id:价格，公有小属性id：价格)
       },
       rules: {
         goodsName: [{ validator: checkName, trigger: ['blur', 'change'], required: true }],
@@ -261,27 +255,15 @@ export default {
       firstCategoryId: [],
       secondCategoryId: [],
 
-      isHandpick: false,
-
-      props: { multiple: true },
-      privateSpec: [],
-      publicSpecInfo: [],
-      privateSpecInfo: [],
-      priceForm: {
-        priceList: [],
-      },
       priceCheck: (rule, value, callback) => {
         if (!value || value < 0) {
           return callback(new Error('价格只能为大于0的数字'))
         }
         callback()
       },
-      goodsPrivateSpec: null,
-      goodsPrivateSpecInfo: [],
       dynamicValidateForm: {
         list: [],
       },
-      tempValue: '',
     }
   },
   methods: {
@@ -290,10 +272,6 @@ export default {
       try {
         const res = await Goods.view(id) // eslint-disable-line
         Object.assign(this.form, res.data.goods)
-        // delete this.form.createTime
-        // delete this.form.updateTime
-        // this.getPublicSpec()
-        // this.getPrivateSpec()
         this.form.initImg = [
           {
             id: createId(),
@@ -302,7 +280,6 @@ export default {
             imgId: createId(),
           },
         ]
-        this.isHandpick = this.form.isHandpick === 1
         const list = []
         res.data.goodsPublicSpecVos.forEach(item => {
           const obj = {}
@@ -338,12 +315,8 @@ export default {
             const { catName, id } = item
             this.firstCategoryId.push({ catName, id })
           })
-          const obj = this.categoryList.find(item => item.id === this.form.firstCategoryId)
-          if (obj && obj.children.length) {
-            obj.children.forEach(item => {
-              const { catName, id } = item
-              this.secondCategoryId.push({ catName, id })
-            })
+          if (this.id) {
+            this.updateSecondIdsByFirstId(this.form.firstCategoryId)
           }
         }
       } catch (e) {
@@ -358,8 +331,8 @@ export default {
           firstCategoryId: this.form.firstCategoryId,
           secondCategoryId: this.form.secondCategoryId,
         })
+        this.dynamicValidateForm.list = []
         if (res.data.length) {
-          this.publicSpecInfo = res.data
           res.data.forEach(item => {
             const obj = {}
             obj.value = item.id
@@ -367,41 +340,41 @@ export default {
             obj.children = []
             this.dynamicValidateForm.list.push(obj)
           })
-        } else {
-          this.dynamicValidateForm.list = []
         }
       } catch (e) {
         console.log(e)
       }
     },
 
-    // 选择一级分类
-    firstCategoryIdChange(val) {
-      this.form.secondCategoryId = null
-      this.secondCategoryId = []
+    updateSecondIdsByFirstId(val) {
       const obj = this.categoryList.find(item => item.id === val)
-      if (obj && obj.children.length) {
+      if (obj.children.length) {
         obj.children.forEach(item => {
           const { catName, id } = item
           this.secondCategoryId.push({ catName, id })
         })
       }
     },
-
     // 选择一级分类
-    secondCategoryIdChange(val) {
-      console.log(val)
+    firstCategoryIdChange(val) {
+      if (val) {
+        this.form.secondCategoryId = null
+        this.secondCategoryId = []
+        this.dynamicValidateForm.list = []
+        this.updateSecondIdsByFirstId(val)
+      }
+    },
+
+    // 选择二级分类
+    secondCategoryIdChange() {
       this.getPublicSpec()
-      // this.getPrivateSpec()
     },
 
     // 提交商品表单
     async submitForm(formName) {
       this.form.goodsPublicSpecInfos = this.getPublicSpecInfos()
       this.$refs.dynamicValidateForm.validate(valid => {
-        if (valid) {
-          this.form.price = this.priceTransform()
-        } else {
+        if (!valid) {
           this.$message.error('请将价格信息填写完整')
           return false
         }
@@ -411,7 +384,6 @@ export default {
         if (valid) {
           try {
             this.loading = true
-            // this.form.goodsPrivateSpecIds = this.getPrivateIds()
             const {
               id,
               goodsName,
@@ -492,89 +464,8 @@ export default {
       }
     },
 
-    // 生成表单的price属性
-    priceTransform() {
-      const list1 = []
-      let price = ''
-      this.priceForm.priceList.forEach(item => {
-        const str = `${item.id}:${item.price}`
-        list1.push(str)
-      })
-      if (list1.length) {
-        price = list1.join(',')
-      }
-      return price
-    },
-
-    // 选择公有属性
-    publicSpecChange(val) {
-      if (val.length) {
-        this.priceForm.priceList = this.filterPriceFlag(val)
-        this.form.price = this.priceTransform()
-      } else {
-        this.priceForm.priceList = []
-        console.log(this.priceForm.priceList)
-      }
-    },
-
-    // 筛选需要填写价格的属性列表
-    filterPriceFlag(val) {
-      const items = []
-      const obj = {}
-      val.forEach(item => {
-        if (!obj[item[0]]) {
-          obj[item[0]] = []
-        }
-        obj[item[0]].push(item[1])
-      })
-      const publicSpecInfo = JSON.parse(JSON.stringify(this.publicSpecInfo))
-      for (const key in obj) {
-        const obj1 = publicSpecInfo.find(
-          item => item.goodsPublicSpec.id === Number(key) && item.goodsPublicSpec.priceFlag === 1,
-        )
-        if (obj1) {
-          obj1.goodsPublicSpecInfoVos = obj1.goodsPublicSpecInfoVos.filter(item => obj[key].includes(item.goodsPublicSpecInfo.id),)
-          if (obj1.goodsPublicSpecInfoVos.length) items.push(obj1)
-        }
-      }
-      const list = []
-      items.forEach(item => {
-        item.goodsPublicSpecInfoVos.forEach(child => {
-          const obj3 = this.priceForm.priceList.find(item1 => item1.id === child.goodsPublicSpecInfo.id)
-          if (obj3) {
-            list.push(obj3)
-          } else {
-            const obj2 = {}
-            obj2.id = child.goodsPublicSpecInfo.id
-            obj2.label = `${item.goodsPublicSpec.goodsPublicSpecName}/${child.goodsPublicSpecInfo.goodsPublicSpecValue}`
-            obj2.price = child.goodsPrices ? child.goodsPrices.price : 100
-            list.push(obj2)
-          }
-        })
-      })
-
-      return list
-    },
-
-    // 生成表单的公有属性goodsPublicSpecIds
-    publicSpecIdsTransform(val) {
-      const list = []
-      const obj = {}
-      val.forEach(item => {
-        if (!obj[item[0]]) {
-          obj[item[0]] = []
-        }
-        obj[item[0]].push(item[1])
-      })
-      let str = ''
-      for (const key in obj) {
-        str = `${key}:${obj[key].join('-')}`
-        list.push(str)
-      }
-      return list.join(',')
-    },
     addValue(item) {
-      console.log(item)
+      // console.log(item)
       if (!item.tempValue) {
         return false
       }
@@ -598,7 +489,7 @@ export default {
       }
     },
     getPublicSpecInfos() {
-      console.log(this.dynamicValidateForm.list)
+      // console.log(this.dynamicValidateForm.list)
       const list = []
       this.dynamicValidateForm.list.forEach(item => {
         if (item.children.length) {
@@ -621,17 +512,12 @@ export default {
   async created() {
     const { id } = this.$route.query
     if (id) {
+      this.id = id
       this.type = 'edit'
       this.title = '编辑商品'
       await this.getView(id)
     }
-    await this.getAllCategory()
-    // await this.getAllPublicSpec()
-  },
-  watch: {
-    isHandpick(newValue) {
-      this.form.isHandpick = newValue ? 1 : 2
-    },
+    this.getAllCategory()
   },
 }
 </script>

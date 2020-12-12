@@ -2,8 +2,14 @@ import { get, post } from '@/lin/plugin/axios'
 
 class Time {
   // 添加一个星期有哪几天取件的时间
-  async saveDay(week) {
-    const res = await get('pickup/time/day/save.json', { week })
+  async save(week) {
+    const res = await post('pickup/time/day/save.json', { week })
+    return res
+  }
+
+  // 更新星期几
+  async update(id, dayValue) {
+    const res = await post('pickup/time/pickday/update.json', { id, dayValue })
     return res
   }
 
@@ -14,8 +20,14 @@ class Time {
   }
 
   // 添加一天取件的时间范围
-  async saveHour(from, to) {
-    const res = await post('pickup/time/hour/save.json', { from, to })
+  async saveHour(from, to, dayId) {
+    const res = await post('pickup/time/hour/save.json', { from, to, dayId })
+    return res
+  }
+
+  // 添加一天取件的时间范围
+  async updateHour(id, fromHour, toHour, dayId) {
+    const res = await post('pickup/time/pickupHours/update.json', { id, fromHour, toHour, dayId })
     return res
   }
 
@@ -26,20 +38,20 @@ class Time {
   }
 
   // 取件时间天所有列表查询
-  async dayList() {
+  async list() {
     const res = await get('pickup/time/day/list.json')
     return res
   }
 
   // 取件时间小时所有的时间列表查询
-  async hourList() {
-    const res = await get('pickup/time/hour/list.json')
-    return res
-  }
+  // async hourList() {
+  //   const res = await get('pickup/time/hour/list.json')
+  //   return res
+  // }
 
   // 根据天的ID查询一天的回收时间范围
   async findByDayId(id) {
-    const res = await get('pickup/time/findByDayId', { id })
+    const res = await get('pickup/time/findByDayId.json', { id })
     return res
   }
 }

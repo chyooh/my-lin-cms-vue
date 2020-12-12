@@ -4,6 +4,8 @@ import couponConfig from './coupon'
 import goodsConfig from './goods'
 import specConfig from './spec'
 import categoryConfig from './category'
+import logisticsConfig from './logistics'
+import pickupTimeConfig from './pickup-time'
 
 // import bookConfig from './book' // 引入图书管理路由文件
 // import pluginsConfig from './plugin'
@@ -74,6 +76,8 @@ let homeRouter = [
   specConfig,
   categoryConfig,
   couponConfig,
+  logisticsConfig,
+  pickupTimeConfig,
   adminConfig,
 ]
 

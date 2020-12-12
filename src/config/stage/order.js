@@ -16,7 +16,7 @@ const orderRouter = {
       filePath: 'view/order/order-list.vue',
       inNav: true,
       icon: 'iconfont icon-dingdanliebiao',
-      permission: ['admin:user:list'],
+      permission: ['admin:order:view'],
     },
   ],
 }

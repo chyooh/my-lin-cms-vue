@@ -66,7 +66,7 @@ const adminRouter = {
           inNav: true,
           title: '添加角色',
           icon: 'iconfont icon-add',
-          permission: ['admin:role:list'],
+          permission: ['admin:role:add'],
         },
         {
           route: '/admin/group/edit',
@@ -76,7 +76,7 @@ const adminRouter = {
           inNav: false,
           title: '修改角色',
           icon: 'iconfont icon-add',
-          permission: ['admin:role:list'],
+          permission: ['admin:role:edit'],
         },
       ],
     },

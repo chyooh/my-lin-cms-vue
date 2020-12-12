@@ -93,9 +93,7 @@ import UploadImgs from '@/component/base/upload-image'
 
 /** 生成随机字符串 */
 function createId() {
-  return Math.random()
-    .toString(36)
-    .substring(2)
+  return Math.random().toString(36).substring(2)
 }
 export default {
   components: {
@@ -191,10 +189,10 @@ export default {
       //   return
       // }
       if (
-        this.cacheForm.catName !== this.form.catName
-        || this.cacheForm.orderNumber !== this.form.orderNumber
-        || this.cacheForm.coverImage !== this.form.coverImage
-        || this.cacheForm.statusN !== this.form.statusN
+        this.cacheForm.catName !== this.form.catName ||
+        this.cacheForm.orderNumber !== this.form.orderNumber ||
+        this.cacheForm.coverImage !== this.form.coverImage ||
+        this.cacheForm.statusN !== this.form.statusN
       ) {
         // eslint-disable-line
         try {

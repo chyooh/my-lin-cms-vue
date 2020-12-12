@@ -9,6 +9,15 @@ const orderRouter = {
   inNav: true,
   children: [
     {
+      title: '优惠券列表',
+      type: 'view',
+      name: 'couponList',
+      route: '/coupon/list',
+      filePath: 'view/coupon/coupon-list.vue',
+      inNav: true,
+      icon: 'iconfont icon-shangpinliebiao',
+      permission: ['admin:user:list'],
+    }, {
       title: '添加优惠券',
       type: 'view',
       name: 'couponCreate',

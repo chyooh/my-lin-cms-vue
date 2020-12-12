@@ -16,7 +16,7 @@ const categoryRouter = {
       icon: null,
       name: 'categoryList',
       filePath: 'view/category/category-list.vue',
-      permission: ['admin:user:add'],
+      permission: ['admin:spec:list'],
     },
     {
       title: '子分类列表',
