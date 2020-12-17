@@ -87,14 +87,42 @@
       </el-table-column>
       <el-table-column label="操作" fixed="right" width="200">
         <template slot-scope="props">
-          <el-button type="primary" plain @click="handleEdit(props.row)" size="mini">编辑</el-button>
-          <el-button v-if="props.row.status === 1" type="success" plain @click="handleEnable(props.row.id)" size="mini">
+          <el-button
+            v-permission="['admin:logistics_company:view', 'admin:logistics_company:edit']"
+            type="primary"
+            plain
+            @click="handleEdit(props.row)"
+            size="mini"
+            >查看</el-button
+          >
+          <el-button
+            v-permission="'admin:logistics_company:edit'"
+            v-if="props.row.status === 1"
+            type="success"
+            plain
+            @click="handleEnable(props.row.id)"
+            size="mini"
+          >
             启用
           </el-button>
-          <el-button v-if="props.row.status === 2" type="info" plain @click="handleDisable(props.row.id)" size="mini">
+          <el-button
+            v-permission="'admin:logistics_company:edit'"
+            v-if="props.row.status === 2"
+            type="info"
+            plain
+            @click="handleDisable(props.row.id)"
+            size="mini"
+          >
             禁用
           </el-button>
-          <el-button type="danger" plain @click="handleDelete(props.row.id)" size="mini">删除</el-button>
+          <el-button
+            v-permission="'admin:logistics_company:del'"
+            type="danger"
+            plain
+            @click="handleDelete(props.row.id)"
+            size="mini"
+            >删除</el-button
+          >
         </template>
       </el-table-column>
     </el-table>

@@ -24,7 +24,7 @@
           <el-form-item label="是否启用" prop="status">
             <el-switch v-model="form.status" :active-value="2" :inactive-value="1"> </el-switch>
           </el-form-item>
-          <el-form-item class="submit">
+          <el-form-item class="submit" v-permission="['admin:logistics_company:edit', 'admin:logistics_company:add']">
             <el-button type="primary" :loading="loading" @click="submitForm('form')">保 存</el-button>
             <el-button @click="resetForm('form')">重 置</el-button>
           </el-form-item>

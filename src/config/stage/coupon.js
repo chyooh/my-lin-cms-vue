@@ -16,7 +16,7 @@ const orderRouter = {
       filePath: 'view/coupon/coupon-list.vue',
       inNav: true,
       icon: 'iconfont icon-shangpinliebiao',
-      permission: ['admin:user:list'],
+      permission: ['admin:coupon:view'],
     }, {
       title: '添加优惠券',
       type: 'view',
@@ -25,7 +25,7 @@ const orderRouter = {
       filePath: 'view/coupon/coupon-create.vue',
       inNav: true,
       icon: 'iconfont icon-add',
-      permission: ['admin:user:list'],
+      permission: ['admin:coupon:add'],
     },
   ],
 }

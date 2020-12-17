@@ -19,7 +19,7 @@
             <el-form-item label="角色描述" prop="descriptions">
               <el-input size="medium" clearable v-model="form.descriptions"></el-input>
             </el-form-item>
-            <el-form-item>
+            <!-- <el-form-item>
               <group-permissions
                 @updatePermissions="updatePermissions"
                 @updateAllPermissions="updateAllPermissions"
@@ -27,7 +27,7 @@
                 title="分配权限"
               >
               </group-permissions>
-            </el-form-item>
+            </el-form-item> -->
             <el-form-item class="submit">
               <el-button type="primary" :loading="loading" @click="submitForm('form')">保 存</el-button>
               <el-button @click="resetForm('form')">重 置</el-button>
@@ -41,13 +41,13 @@
 
 <script>
 import Admin from '@/model/admin'
-import GroupPermissions from './group-permission'
+// import GroupPermissions from './group-permission'
 
 export default {
-  components: {
-    GroupPermissions,
-  },
-  inject: ['eventBus'],
+  // components: {
+  //   GroupPermissions,
+  // },
+  // inject: ['eventBus'],
   data() {
     const checkName = (rule, value, callback) => {
       // eslint-disable-line
@@ -71,21 +71,21 @@ export default {
     }
   },
   methods: {
-    updatePermissions(permissions) {
-      this.permissions = permissions
-    },
-    updateAllPermissions(allPermissions) {
-      this.allPermissions = allPermissions
-    },
+    // updatePermissions(permissions) {
+    //   this.permissions = permissions
+    // },
+    // updateAllPermissions(allPermissions) {
+    //   this.allPermissions = allPermissions
+    // },
     async submitForm(formName) {
       this.$refs[formName].validate(async valid => {
         // eslint-disable-line
         if (valid) {
           let res
-          const finalPermissions = this.permissions.filter(x => Object.keys(this.allPermissions).indexOf(x) < 0)
+          // const finalPermissions = this.permissions.filter(x => Object.keys(this.allPermissions).indexOf(x) < 0)
           try {
             this.loading = true
-            this.form.menuIds = finalPermissions.join(',')
+            // this.form.menuIds = finalPermissions.join(',')
             res = await Admin.saveRole(this.form) // eslint-disable-line
             this.loading = false
             this.$message.success(`${res.msg}`)
@@ -114,7 +114,7 @@ export default {
     },
     resetForm(formName) {
       this.$refs[formName].resetFields()
-      this.$refs.groupPermissions.getGroupPermissions()
+      // this.$refs.groupPermissions.getGroupPermissions()
     },
   },
 }

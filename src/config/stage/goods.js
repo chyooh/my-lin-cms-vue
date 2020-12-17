@@ -16,7 +16,7 @@ const goodsRouter = {
       filePath: 'view/goods/goods-list.vue',
       inNav: true,
       icon: 'iconfont icon-shangpinliebiao',
-      permission: ['admin:goods:list'],
+      permission: ['admin:goods:view'],
     },
     {
       title: '添加商品',
@@ -27,17 +27,7 @@ const goodsRouter = {
       name: 'goodsCreate',
       filePath: 'view/goods/goods-create.vue',
       permission: ['admin:goods:add'],
-    },
-    {
-      title: '回收商品结算记录',
-      type: 'view',
-      inNav: true,
-      route: '/goods/account',
-      icon: 'iconfont icon-shangpinliebiao',
-      name: 'goodsAccount',
-      filePath: 'view/goods/goods-account.vue',
-      permission: ['admin:goods:list'],
-    },
+    }
   ],
 }
 

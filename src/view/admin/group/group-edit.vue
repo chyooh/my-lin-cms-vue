@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <div class="title">编辑角色权限</div>
+    <div class="title">角色权限</div>
     <div class="content">
       <el-row>
         <el-col :lg="16" :md="20" :sm="24" :xs="24">
@@ -15,7 +15,7 @@
             >
             </group-permissions>
           </div>
-          <div style="padding-left: 5px; margin-top: 30px">
+          <div style="padding-left: 5px; margin-top: 30px; padding-bottom: 30px" v-permission="'admin:role:edit'">
             <el-button type="primary" @click="confirmEdit">确 定</el-button>
             <el-button @click="goBack">返回</el-button>
           </div>
@@ -61,15 +61,15 @@ export default {
       }
       // 判断是否更改了角色权限
       if (this.permissions.sort().toString() !== this.cachePermissions.sort().toString()) {
-        const deletePermissions = this.cachePermissions
-          .concat(this.permissions)
-          .filter(v => !this.permissions.includes(v))
-        const addPermissions = this.cachePermissions
-          .concat(this.permissions)
-          .filter(v => !this.cachePermissions.includes(v))
-        console.log(addPermissions)
-        console.log(deletePermissions)
-        console.log(this.permissions)
+        // const deletePermissions = this.cachePermissions
+        //   .concat(this.permissions)
+        //   .filter(v => !this.permissions.includes(v))
+        // const addPermissions = this.cachePermissions
+        //   .concat(this.permissions)
+        //   .filter(v => !this.cachePermissions.includes(v))
+        // console.log(addPermissions)
+        // console.log(deletePermissions)
+        // console.log(this.permissions)
 
         try {
           // if (addPermissions.length > 0) {

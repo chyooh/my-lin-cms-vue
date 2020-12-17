@@ -28,9 +28,20 @@
       <el-table-column prop="updator" label="更新人" width="80"> </el-table-column>
       <el-table-column label="操作" fixed="right" width="235">
         <template slot-scope="props">
-          <el-button type="primary" plain @click="handleEdit(props.row)" size="mini">编辑</el-button>
-          <el-button type="info" plain @click="goToGroupEditPage(props.row)" size="mini">分配权限</el-button>
-          <el-button type="danger" plain @click="handleDelete(props.row)" size="mini">删除</el-button>
+          <el-button v-permission="'admin:role:edit'" type="primary" plain @click="handleEdit(props.row)" size="mini"
+            >编辑</el-button
+          >
+          <el-button
+            v-permission="'admin:role:edit'"
+            type="info"
+            plain
+            @click="goToGroupEditPage(props.row)"
+            size="mini"
+            >查看权限</el-button
+          >
+          <el-button v-permission="'admin:role:del'" type="danger" plain @click="handleDelete(props.row)" size="mini"
+            >删除</el-button
+          >
         </template>
       </el-table-column>
     </el-table>
@@ -202,7 +213,10 @@ export default {
   },
   async created() {
     await this.getRoleList()
-    this.tableColumn = [{ prop: 'roleName', label: '名称' }, { prop: 'descriptions', label: '信息' }] // 设置表头信息
+    this.tableColumn = [
+      { prop: 'roleName', label: '名称' },
+      { prop: 'descriptions', label: '信息' },
+    ] // 设置表头信息
     this.operate = [
       { name: '信息', func: 'handleEdit', type: 'primary' },
       { name: '权限', func: 'goToGroupEditPage', type: 'info' },

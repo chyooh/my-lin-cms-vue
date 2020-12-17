@@ -69,31 +69,31 @@ export default {
       // console.log(list)
       const tempObj = {}
       const permissions = []
+      const permissionsWithoutFold = []
       list.forEach(item => {
         const obj = {}
+        permissions.push(item)
         if (item.children.length) {
+          obj[item.menuName] = []
           item.children.forEach(children1 => {
             permissions.push(children1)
-            obj[children1.menuName] = children1
             if (children1.children.length) {
-              const templist2 = []
               children1.children.forEach(children2 => {
-                permissions.push(children2)
                 const obj2 = {}
                 obj2.id = children2.id
-                obj2.module = children1.menuName
+                obj2.module = item.menuName
                 obj2.name = children2.menuName
-                templist2.push(obj2)
+                obj[item.menuName].push(obj2)
+                permissions.push(children2)
+                permissionsWithoutFold.push(children2)
               })
-              obj[children1.menuName] = templist2
             } else {
-              const templist1 = []
               const obj1 = {}
               obj1.id = children1.id
-              obj1.module = children1.menuName
+              obj1.module = item.menuName
               obj1.name = children1.menuName
-              templist1.push(obj1)
-              obj[children1.menuName] = templist1
+              obj[item.menuName].push(obj1)
+              permissionsWithoutFold.push(children1)
             }
           })
         }
@@ -102,17 +102,25 @@ export default {
       // console.log(tempObj)
       this.allPermissions = tempObj
       // 通过判断有没有传入id，来判断当前页面是添加角色还是编辑角色
+      // console.log(permissions)
       if (this.id) {
-        const result1 = await Admin.getRolePermission(this.id)
-        const res = result1.rows.filter(item => item.parentId !== 0)
+        const res = await Admin.getRolePermission(this.id)
         // console.log(res)
-        if (res.length) {
-          res.forEach(item => {
+        if (res.rows.length) {
+          res.rows.forEach(item => {
             item.name = item.menuName
-            const temItem = permissions.find(item1 => item.parentId === item1.id)
+            let temItem = permissions.find(item1 => item.parentId === item1.id)
             // console.log(temItem)
             if (temItem) {
               item.module = temItem.menuName
+              if (temItem.parentId === 0) {
+                item.module = temItem.menuName
+              } else {
+                temItem = permissions.find(item1 => temItem.parentId === item1.id)
+                if (temItem.parentId === 0) {
+                  item.module = temItem.menuName
+                }
+              }
             } else {
               item.module = item.menuName
             }
@@ -121,9 +129,12 @@ export default {
         // console.log(res)
         let temp = []
         const cache = {}
-        res.forEach(v => {
-          this.permission_module_ids.push(v.id)
+        res.rows.forEach(v => {
           temp.push(v.module)
+        })
+        const filterPermissions = res.rows.filter(item => permissionsWithoutFold.find(item1 => item.id === item1.id))
+        filterPermissions.forEach(v => {
+          this.permission_module_ids.push(v.id)
           // 每个module拥有权限个数
           if (!cache[v.module]) {
             cache[v.module] = 1
@@ -133,14 +144,18 @@ export default {
         })
         temp = Array.from(new Set(temp))
         // 半选
+        // console.log(filterPermissions)
+        // console.log(this.allPermissions)
+        // console.log(cache)
+        // console.log(temp)
         temp.forEach(item => {
           if (this.allPermissions[item].length !== cache[item]) {
             this.halfPermissions.push(item)
           }
         })
         this.permission_module_name = Array.from(new Set(temp))
+        this.$emit('getCacheAuthIds', this.permission_module_ids.slice())
       }
-      this.$emit('getCacheAuthIds', this.permission_module_ids.slice())
       this.$emit('updatePermissions', this.permission_module_ids)
       this.$emit('updateAllPermissions', this.allPermissions)
     },
@@ -254,7 +269,7 @@ export default {
       .permissions-ul {
         display: flex;
         flex-wrap: wrap;
-        justify-content: space-between;
+        // justify-content: space-between;
         padding: 20px 20px 0;
         background: #f5f5f6;
         margin-bottom: 20px;

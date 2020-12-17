@@ -1,7 +1,9 @@
 <template>
   <div class="container">
     <div class="header">
-      <el-button type="primary" plain @click="create" size="medium">创建子分类</el-button>
+      <el-button v-permission="'admin:category:add'" type="primary" plain @click="create" size="medium"
+        >创建子分类</el-button
+      >
       <div class="title">{{ title1 }}</div>
       <span class="back" @click="back"> <i class="iconfont icon-fanhui"></i> 返回 </span>
     </div>
@@ -18,8 +20,22 @@
       <el-table-column sortable prop="createTime" label="创建时间"> </el-table-column>
       <el-table-column label="操作" fixed="right" width="200">
         <template slot-scope="props">
-          <el-button type="primary" plain @click="handleEdit(props.row)" size="mini">编辑</el-button>
-          <el-button type="danger" plain @click="handleDelete(props.row)" size="mini">删除</el-button>
+          <el-button
+            v-permission="'admin:category:edit'"
+            type="primary"
+            plain
+            @click="handleEdit(props.row)"
+            size="mini"
+            >编辑</el-button
+          >
+          <el-button
+            v-permission="'admin:category:del'"
+            type="danger"
+            plain
+            @click="handleDelete(props.row)"
+            size="mini"
+            >删除</el-button
+          >
         </template>
       </el-table-column>
     </el-table>

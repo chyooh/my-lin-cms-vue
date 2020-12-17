@@ -175,7 +175,25 @@
       </el-table-column>
       <el-table-column label="操作" fixed="right" width="100">
         <template slot-scope="props">
-          <el-button type="primary" plain @click="handleEdit(props.row.goods.id)" size="mini">编辑</el-button>
+          <el-button v-permission="'admin:goods:view'" type="" plain @click="handleView(props.row.goods.id)" size="mini"
+            >查看</el-button
+          >
+          <el-button
+            v-permission="'admin:goods:edit'"
+            type="primary"
+            plain
+            @click="handleEdit(props.row.goods.id)"
+            size="mini"
+            >编辑</el-button
+          >
+          <el-button
+            v-permission="'admin:goods:del'"
+            type="danger"
+            plain
+            @click="handleDel(props.row.goods.id)"
+            size="mini"
+            >删除</el-button
+          >
         </template>
       </el-table-column>
     </el-table>
@@ -282,10 +300,34 @@ export default {
         console.log(e)
       }
     },
+    async handleView(id) {
+      this.$router.push({
+        path: '/goods/add',
+        query: { id, isView: true },
+      })
+    },
     async handleEdit(id) {
       this.$router.push({
         path: '/goods/add',
         query: { id },
+      })
+    },
+    async handleDel(id) {
+      this.$confirm('此操作将永久删除该商品, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      }).then(async () => {
+        try {
+          this.loading = true
+          const res = await Goods.delete(id)
+          this.$message.success(`${res.msg}`)
+          this.getGoodsList()
+          this.loading = false
+        } catch (e) {
+          this.loading = false
+          console.log(e)
+        }
       })
     },
     // 切换table页

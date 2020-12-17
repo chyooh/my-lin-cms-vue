@@ -60,7 +60,7 @@
               提示：决定价格的规格一般只有一个,比如内存（128G的和256G的机型价格不同,那么内存这个规格名就是决定价格的,否则就不是决定价格的）。
             </div>
           </el-form-item>
-          <el-form-item class="submit">
+          <el-form-item class="submit" v-permission="['admin:goods:spec:edit', 'admin:goods:spec:add']">
             <el-button type="primary" :loading="loading" @click="submitForm('form')">保 存</el-button>
             <el-button @click="resetForm('form')">重 置</el-button>
           </el-form-item>

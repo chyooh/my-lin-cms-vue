@@ -34,14 +34,40 @@
       <!-- <el-table-column sortable prop="createTime" label="创建时间" width="150"> </el-table-column> -->
       <el-table-column label="操作" fixed="right" width="200">
         <template slot-scope="props">
-          <el-button type="primary" plain @click="handleEdit(props.row.id)" size="mini">编辑</el-button>
-          <el-button v-if="props.row.status === 2" type="success" plain @click="handleOn(props.row.id)" size="mini"
+          <el-button
+            v-permission="['admin:coupon:view', 'admin:coupon:edit']"
+            type="primary"
+            plain
+            @click="handleEdit(props.row.id)"
+            size="mini"
+            >查看</el-button
+          >
+          <el-button
+            v-permission="'admin:coupon:edit'"
+            v-if="props.row.status === 2"
+            type="success"
+            plain
+            @click="handleOn(props.row.id)"
+            size="mini"
             >上架</el-button
           >
-          <el-button v-if="props.row.status === 1" type="info" plain @click="handleOff(props.row.id)" size="mini"
+          <el-button
+            v-permission="'admin:coupon:edit'"
+            v-if="props.row.status === 1"
+            type="info"
+            plain
+            @click="handleOff(props.row.id)"
+            size="mini"
             >下架</el-button
           >
-          <el-button type="danger" plain @click="handleDelete(props.row.id)" size="mini">删除</el-button>
+          <el-button
+            v-permission="'admin:coupon:del'"
+            type="danger"
+            plain
+            @click="handleDelete(props.row.id)"
+            size="mini"
+            >删除</el-button
+          >
         </template>
       </el-table-column>
     </el-table>

@@ -99,7 +99,7 @@
                 <el-radio :label="4" border disabled>过期</el-radio>
               </el-radio-group>
             </el-form-item>
-            <el-form-item class="submit">
+            <el-form-item class="submit" v-permission="['admin:coupon:edit', 'admin:coupon:add']">
               <el-button type="primary" :loading="loading" @click="submitForm('form')">保 存</el-button>
               <el-button @click="resetForm('form')">重 置</el-button>
             </el-form-item>

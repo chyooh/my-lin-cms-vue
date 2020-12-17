@@ -183,7 +183,7 @@ export default {
               // if (res.code < window.MAX_SUCCESS_CODE) {
               this.loading = false
               this.$message.success(`${res.msg}`)
-              // this.eventBus.$emit('addUser', true)
+              this.$emit('handleInfoResult', true)
               this.resetForm(formName)
               // }
             } catch (e) {
@@ -200,9 +200,9 @@ export default {
             console.log('d')
             // 更新用户信息
             if (
-              this.form.userName === this.info.userName
-              && this.form.email === this.info.email
-              && this.form.roleId === this.info.roleId
+              this.form.userName === this.info.userName &&
+              this.form.email === this.info.email &&
+              this.form.roleId === this.info.roleId
             ) {
               console.log('e')
               this.$emit('handleInfoResult', false)
@@ -265,9 +265,9 @@ export default {
     },
   },
   created() {
-    console.log(this.groups)
-    console.log(this.form)
-    console.log(this.info)
+    // console.log(this.groups)
+    // console.log(this.form)
+    // console.log(this.info)
     // 通过是否接收到数据来判断当前页面是添加数据还是编辑数据
     if (this.pageType === 'edit') {
       this.setInfo()

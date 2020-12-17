@@ -2,7 +2,9 @@
   <div class="container">
     <div class="header">
       <!-- <div class="title">分类列表</div> -->
-      <el-button type="primary" plain @click="create" size="medium">创建分类</el-button>
+      <el-button v-permission="'admin:category:add'" type="primary" plain @click="create" size="medium"
+        >创建分类</el-button
+      >
     </div>
 
     <el-table :data="tableData" :default-sort="{ prop: 'id', order: 'descending' }" stripe v-loading="loading">
@@ -18,8 +20,17 @@
       <el-table-column label="操作" fixed="right" width="235">
         <template slot-scope="props">
           <el-button type="primary" plain @click="goToChildren(props.row)" size="mini">子分类</el-button>
-          <el-button type="info" plain @click="handleEdit(props.row)" size="mini">编辑</el-button>
-          <el-button type="danger" plain @click="handleDelete(props.row)" size="mini">删除</el-button>
+          <el-button v-permission="'admin:category:edit'" type="info" plain @click="handleEdit(props.row)" size="mini"
+            >编辑</el-button
+          >
+          <el-button
+            v-permission="'admin:category:del'"
+            type="danger"
+            plain
+            @click="handleDelete(props.row)"
+            size="mini"
+            >删除</el-button
+          >
         </template>
       </el-table-column>
     </el-table>

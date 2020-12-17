@@ -2,7 +2,9 @@
   <div class="container">
     <div class="header">
       <!-- <div class="title">分类列表</div> -->
-      <el-button type="primary" plain @click="create" size="medium">创建取件时间</el-button>
+      <el-button v-permission="'admin:pickup:time:add'" type="primary" plain @click="create" size="medium"
+        >创建取件时间</el-button
+      >
     </div>
 
     <el-table :data="tableData" :default-sort="{ prop: 'id', order: 'descending' }" stripe v-loading="loading">
@@ -14,7 +16,14 @@
         <template slot-scope="props">
           <el-button type="primary" plain @click="goToChildren(props.row)" size="mini">查看范围</el-button>
           <!-- <el-button type="info" plain @click="handleEdit(props.row)" size="mini">编辑</el-button> -->
-          <el-button type="danger" plain @click="handleDelete(props.row)" size="mini">删除</el-button>
+          <el-button
+            v-permission="'admin:pickup:time:del'"
+            type="danger"
+            plain
+            @click="handleDelete(props.row)"
+            size="mini"
+            >删除</el-button
+          >
         </template>
       </el-table-column>
     </el-table>

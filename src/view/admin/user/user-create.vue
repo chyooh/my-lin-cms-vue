@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="title">新建用户</div>
-    <div class="wrap"><user-info v-if="groups.length" :groups="groups" /></div>
+    <div class="wrap"><user-info v-if="groups.length" :groups="groups" @handleInfoResult="addUser" /></div>
   </div>
 </template>
 
@@ -17,6 +17,13 @@ export default {
     return {
       groups: [],
     }
+  },
+  methods: {
+    addUser(flag) {
+      if (flag === true) {
+        this.$router.push('/admin/user/list')
+      }
+    },
   },
   async created() {
     try {

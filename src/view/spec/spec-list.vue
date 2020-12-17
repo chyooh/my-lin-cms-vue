@@ -99,8 +99,22 @@
       <el-table-column> </el-table-column>
       <el-table-column label="操作" fixed="right" width="150">
         <template slot-scope="props">
-          <el-button type="primary" plain @click="goToChildren(props.row)" size="mini">查看</el-button>
-          <el-button type="danger" plain @click="handleDelete(props.row)" size="mini">删除</el-button>
+          <el-button
+            type="primary"
+            plain
+            @click="goToChildren(props.row)"
+            size="mini"
+            v-permission="['admin:goods:spec:edit', 'admin:goods:spec:view']"
+            >查看</el-button
+          >
+          <el-button
+            type="danger"
+            plain
+            @click="handleDelete(props.row)"
+            size="mini"
+            v-permission="'admin:goods:spec:del'"
+            >删除</el-button
+          >
         </template>
       </el-table-column>
     </el-table>

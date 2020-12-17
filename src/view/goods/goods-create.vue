@@ -261,8 +261,25 @@
               <el-input size="medium" type="textarea" clearable v-model="form.remarks"></el-input>
             </el-form-item>
             <el-form-item class="submit">
-              <el-button type="primary" :loading="loading" @click="submitForm('form')">保 存</el-button>
-              <el-button @click="resetForm('form')">重 置</el-button>
+              <template v-if="!isView">
+                <el-button
+                  v-if="type === 'add'"
+                  v-permission="'admin:goods:add'"
+                  type="primary"
+                  :loading="loading"
+                  @click="submitForm('form')"
+                  >确 定</el-button
+                >
+                <el-button
+                  v-else
+                  v-permission="'admin:goods:edit'"
+                  type="primary"
+                  :loading="loading"
+                  @click="submitForm('form')"
+                  >保 存</el-button
+                >
+                <el-button @click="resetForm('form')">重 置</el-button>
+              </template>
             </el-form-item>
           </el-form>
         </div>
@@ -352,6 +369,7 @@ export default {
       callback()
     }
     return {
+      isView: false,
       id: null,
       title: '添加商品',
       type: 'add',
@@ -809,7 +827,10 @@ export default {
   },
 
   async created() {
-    const { id } = this.$route.query
+    const { id, isView } = this.$route.query
+    if (isView) {
+      this.isView = true
+    }
     if (id) {
       this.id = id
       this.type = 'edit'

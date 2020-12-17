@@ -16,7 +16,7 @@ const pickupTimeRouter = {
       filePath: 'view/pickup/pickup-list.vue',
       inNav: true,
       icon: 'iconfont icon-shangpinliebiao',
-      permission: ['admin:user:list'],
+      permission: ['admin:pickup:time:view'],
     }, {
       title: '时间范围列表',
       type: 'view',
@@ -25,7 +25,7 @@ const pickupTimeRouter = {
       filePath: 'view/pickup/pickup-hour.vue',
       inNav: false,
       icon: null,
-      permission: ['admin:user:list'],
+      permission: ['admin:pickup:time:view'],
     },
   ],
 }

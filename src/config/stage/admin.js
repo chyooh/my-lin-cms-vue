@@ -12,10 +12,11 @@ const adminRouter = {
       route: '/admin/user/list',
       name: null,
       title: '用户管理',
-      type: 'tab', // 取 route 为默认加载页
+      type: 'folder', // 取 route 为默认加载页
       icon: 'iconfont icon-huiyuanguanli',
       filePath: 'view/admin/user/',
       inNav: true,
+      permission: ['admin:user:list'],
       children: [
         {
           title: '用户列表',
@@ -25,7 +26,7 @@ const adminRouter = {
           filePath: 'view/admin/user/user-list.vue',
           inNav: true,
           icon: 'iconfont icon-huiyuanguanli',
-          permission: ['admin:user:list'],
+          permission: ['admin:user:view'],
         },
         {
           title: '添加用户',
@@ -43,10 +44,11 @@ const adminRouter = {
       route: '/admin/group/list',
       name: null,
       title: '角色管理',
-      type: 'tab', // 取 route 为默认加载页
+      type: 'folder', // 取 route 为默认加载页
       icon: null,
       filePath: 'view/admin/group',
       inNav: true,
+      permission: ['admin:role:list'],
       children: [
         {
           route: '/admin/group/list',
@@ -56,7 +58,7 @@ const adminRouter = {
           filePath: 'view/admin/group/group-list.vue',
           title: '角色列表',
           icon: 'iconfont icon-huiyuanguanli',
-          permission: ['admin:role:list'],
+          permission: ['admin:role:view'],
         },
         {
           route: '/admin/group/add',

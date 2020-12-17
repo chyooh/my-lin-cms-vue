@@ -203,43 +203,46 @@
       <el-table-column prop="email" label="邮件" :show-overflow-tooltip="false"> </el-table-column>
       <el-table-column label="操作" fixed="right" width="310">
         <template slot-scope="props">
-          <el-popover placement="bottom" width="200" trigger="hover">
-            <el-select
+          <div v-permission="'admin:user:edit'">
+            <el-popover placement="bottom" width="200" trigger="hover">
+              <el-select
+                size="mini"
+                :value="props.row.roleId"
+                @change="modifyRole($event, props.row)"
+                placeholder="请选择角色"
+              >
+                <el-option v-for="(group, index) in groups" :key="index" :label="group.roleName" :value="group.id">
+                </el-option>
+              </el-select>
+              <el-button slot="reference" type="primary" plain size="mini" :loading="props.row.isModify"
+                >编辑角色</el-button
+              >
+            </el-popover>
+            <el-button
+              v-if="props.row.isEnabled"
+              type="info"
+              plain
+              @click="handleForbidden(props.$index, props.row)"
               size="mini"
-              :value="props.row.roleId"
-              @change="modifyRole($event, props.row)"
-              placeholder="请选择角色"
+              >禁用</el-button
             >
-              <el-option v-for="(group, index) in groups" :key="index" :label="group.roleName" :value="group.id">
-              </el-option>
-            </el-select>
-            <el-button slot="reference" type="primary" plain size="mini" :loading="props.row.isModify"
-              >编辑角色</el-button
+            <el-button v-else type="success" plain @click="handleBoot(props.$index, props.row)" size="mini"
+              >启用</el-button
             >
-          </el-popover>
-          <el-button
-            v-if="props.row.isEnabled"
-            type="info"
-            plain
-            @click="handleForbidden(props.$index, props.row)"
-            size="mini"
-            >禁用</el-button
-          >
-          <el-button v-else type="success" plain @click="handleBoot(props.$index, props.row)" size="mini"
-            >启用</el-button
-          >
-          <el-button type="danger" plain @click="resetPassword(props.$index, props.row)" size="mini"
-            >还原密码</el-button
-          >
+            <el-button type="danger" plain @click="resetPassword(props.$index, props.row)" size="mini"
+              >还原密码</el-button
+            >
 
-          <el-button
-            v-if="props.row.isLocked"
-            type="primary"
-            plain
-            @click="handleUnlock(props.$index, props.row)"
-            size="mini"
-            >解锁</el-button
-          >
+            <el-button
+              v-if="props.row.isLocked"
+              type="primary"
+              plain
+              @click="handleUnlock(props.$index, props.row)"
+              size="mini"
+              >解锁</el-button
+            >
+            <el-button type="danger" plain @click="handleDelete(props.$index, props.row)" size="mini">删除</el-button>
+          </div>
         </template>
       </el-table-column>
     </el-table>
@@ -312,8 +315,16 @@ export default {
       // selectGroup: '', // 选中的分组Id
       groups: [], // 所有分组
       groupsWithEmpty: [], // 下拉筛选角色
-      isEnabledSelects: [{ label: '不限', value: null }, { label: '启用', value: 1 }, { label: '禁用', value: 0 }],
-      isLockedSelects: [{ label: '不限', value: null }, { label: '锁定', value: 1 }, { label: '未锁定', value: 0 }],
+      isEnabledSelects: [
+        { label: '不限', value: null },
+        { label: '启用', value: 1 },
+        { label: '禁用', value: 0 },
+      ],
+      isLockedSelects: [
+        { label: '不限', value: null },
+        { label: '锁定', value: 1 },
+        { label: '未锁定', value: 0 },
+      ],
       // group_id: undefined,
       activeTab: '修改信息',
       form: {
@@ -407,28 +418,28 @@ export default {
       await this.getAdminUsers('changePage')
       this.loading = false
     },
-    // handleDelete(index, row) {
-    //   // let res
-    //   this.$confirm('此操作将永久删除该用户, 是否继续?', '提示', {
-    //     confirmButtonText: '确定',
-    //     cancelButtonText: '取消',
-    //     type: 'warning',
-    //   }).then(async () => {
-    //     try {
-    //       this.loading = true
-    //       await Admin.deleteUser({ ids: row.id })
-    //       this.loading = false
-    //       if (this.total_nums % this.pageCount === 1 && this.currentPage !== 1) {
-    //         // 判断删除的是不是每一页的最后一条数据
-    //         this.currentPage--
-    //       }
-    //       await this.getAdminUsers()
-    //     } catch (e) {
-    //       this.loading = false
-    //       console.log(e)
-    //     }
-    //   })
-    // },
+    handleDelete(index, row) {
+      // let res
+      this.$confirm('此操作将永久删除该用户, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      }).then(async () => {
+        try {
+          this.loading = true
+          await Admin.deleteUser({ ids: row.id })
+          this.loading = false
+          if (this.total_nums % this.pageCount === 1 && this.currentPage !== 1) {
+            // 判断删除的是不是每一页的最后一条数据
+            this.currentPage--
+          }
+          await this.getAdminUsers()
+        } catch (e) {
+          this.loading = false
+          console.log(e)
+        }
+      })
+    },
     async handleBoot(index, row) {
       try {
         this.loading = true

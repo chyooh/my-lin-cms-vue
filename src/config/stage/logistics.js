@@ -16,7 +16,7 @@ const logisticsRouter = {
       filePath: 'view/logistics/logistics-list.vue',
       inNav: true,
       icon: 'iconfont icon-shangpinliebiao',
-      permission: ['admin:goods:list'],
+      permission: ['admin:logistics_company:view'],
     },
     {
       title: '添加物流公司',
@@ -26,7 +26,7 @@ const logisticsRouter = {
       icon: 'iconfont icon-add',
       name: 'logisticsCreate',
       filePath: 'view/logistics/logistics-create.vue',
-      permission: ['admin:goods:add'],
+      permission: ['admin:logistics_company:add'],
     },
   ],
 }
