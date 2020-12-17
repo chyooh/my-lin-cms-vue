@@ -2,6 +2,7 @@
   <div class="container">
     <div class="header">
       <el-button type="primary" plain @click="create" size="medium">创建子分类</el-button>
+      <div class="title">{{ title1 }}</div>
       <span class="back" @click="back"> <i class="iconfont icon-fanhui"></i> 返回 </span>
     </div>
 
@@ -14,20 +15,6 @@
       </el-table-column>
       <el-table-column fixed prop="catName" label="名称" width="100"> </el-table-column>
       <el-table-column sortable prop="orderNumber" label="排序" width="100"> </el-table-column>
-      <el-table-column prop="status" label="状态" width="200">
-        <template slot-scope="props">
-          <el-switch
-            :class="`statusRef${props.row.id}`"
-            v-model="props.row.statusN"
-            active-color="#13ce66"
-            inactive-color="#ff4949"
-            active-text="上线"
-            inactive-text="下线"
-            @change="statusChange($event, props.row)"
-          >
-          </el-switch>
-        </template>
-      </el-table-column>
       <el-table-column sortable prop="createTime" label="创建时间"> </el-table-column>
       <el-table-column label="操作" fixed="right" width="200">
         <template slot-scope="props">
@@ -66,16 +53,6 @@
               @upload="handleUpload"
             />
           </el-form-item>
-          <el-form-item prop="statusN" v-if="type === 'add'">
-            <el-switch
-              v-model="form.statusN"
-              active-color="#13ce66"
-              inactive-color="#ff4949"
-              active-text="上线"
-              inactive-text="下线"
-            >
-            </el-switch>
-          </el-form-item>
         </el-form>
       </div>
       <div slot="footer" class="dialog-footer" style="padding-left: 5px">
@@ -108,21 +85,18 @@ export default {
         // 表单信息
         catName: '',
         orderNumber: 1,
-        statusN: true,
         coverImage: '',
       },
       form: {
         // 表单信息
         catName: '',
         orderNumber: 1,
-        statusN: true,
         coverImage: '',
       },
       cacheForm: {
         // 缓存第一次的表单信息
         catName: '',
         orderNumber: 1,
-        statusN: true,
         coverImage: '',
       },
       loading: false,
@@ -161,7 +135,6 @@ export default {
         const res = await Category.findByParentId(this.parentId)
         if (res.data.length) {
           res.data.forEach(item => {
-            item.statusN = item.status === 1
             item.createTime = new Date(item.createTime).toLocaleString('chinese', { hour12: false })
           })
           this.tableData = res.data
@@ -191,13 +164,11 @@ export default {
       if (
         this.cacheForm.catName !== this.form.catName ||
         this.cacheForm.orderNumber !== this.form.orderNumber ||
-        this.cacheForm.coverImage !== this.form.coverImage ||
-        this.cacheForm.statusN !== this.form.statusN
+        this.cacheForm.coverImage !== this.form.coverImage
       ) {
         // eslint-disable-line
         try {
           let res
-          this.form.status = this.form.statusN ? 1 : 0
           this.form.parentId = this.parentId
           if (this.type === 'add') {
             res = await Category.save(this.form)
@@ -283,27 +254,13 @@ export default {
         this.form.coverImage = ''
       }
     },
-    async statusChange(val, row) {
-      const loading = this.$loading({ target: `.statusRef${row.id}` })
-      try {
-        const data = {}
-        data.id = row.id
-        data.status = val ? 1 : 0
-        const res = await Category.update(data)
-        row.status = data.status
-        loading.close()
-        this.$message.success(`${res.msg}`)
-      } catch (e) {
-        row.statusN = !val
-        loading.close()
-      }
-    },
     back() {
       this.$router.go(-1)
     },
   },
   async created() {
     this.parentId = this.$route.query.parentId
+    this.title1 = this.$route.query.title
     await this.getCategoryList()
   },
 }

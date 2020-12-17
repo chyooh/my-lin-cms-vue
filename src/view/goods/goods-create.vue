@@ -1,6 +1,9 @@
 <template>
   <div class="container goods-create">
-    <div class="title">{{ title }}</div>
+    <div class="title">
+      {{ title }}
+      <span v-if="type === 'edit'" class="back" @click="back"> <i class="iconfont icon-fanhui"></i> 返回 </span>
+    </div>
     <el-row>
       <el-col :lg="20" :md="20" :sm="24" :xs="24">
         <div class="content">
@@ -70,39 +73,41 @@
                   ref="dynamicValidateForm"
                   class="demo-dynamic"
                   :inline="true"
+                  @submit.native.prevent
                   v-if="dynamicValidateForm.list.length"
                 >
                   <el-collapse>
                     <el-collapse-item
-                      :title="item.label"
+                      :title="item.goodsPublicSpecName"
                       :name="index"
                       v-for="(item, index) in dynamicValidateForm.list"
-                      :key="item.value"
+                      :key="item.goodsPublicSpecId"
                     >
                       <div class="item-container" v-for="(child, j) in item.children" :key="j">
-                        <div class="child-title">{{ child.label + ':' }}</div>
+                        <div class="child-title">{{ child.goodsPublicSpecValue + ':' }}</div>
                         <div class="child-container">
-                          <el-form-item>
-                            <el-switch
-                              v-model="child.priceSymbol"
-                              size="mini"
-                              active-color="#13ce66"
-                              inactive-color="#ff4949"
-                              active-text="+"
-                              inactive-text="-"
-                              :active-value="0"
-                              :inactive-value="1"
-                            >
-                            </el-switch>
-                          </el-form-item>
                           <el-form-item
-                            label="价钱"
+                            v-if="item.priceFlag === 1"
+                            label="价格"
                             :key="child.key"
                             :prop="'list.' + index + '.children.' + j + '.price'"
                             :rules="{
                               validator: priceCheck,
                               trigger: 'blur',
                             }"
+                          >
+                            <el-input
+                              size="mini"
+                              v-model="child.price"
+                              type="number"
+                              placeholder="请输入价格"
+                            ></el-input>
+                          </el-form-item>
+                          <el-form-item
+                            v-else
+                            label="扣减价格"
+                            :key="child.key"
+                            :prop="'list.' + index + '.children.' + j + '.price'"
                           >
                             <el-input
                               size="mini"
@@ -131,7 +136,7 @@
                             ></el-input>
                           </el-form-item>
                           <el-form-item>
-                            <el-button size="mini" @click.prevent="removeDomain(item, child)">删除属性值</el-button>
+                            <el-button size="mini" @click.prevent="removeValue(item, child)">删除属性值</el-button>
                           </el-form-item>
                         </div>
                       </div>
@@ -142,6 +147,7 @@
                             v-model="item.tempValue"
                             placeholder="请输入属性值"
                             :ref="'name' + index"
+                            @keyup.enter.native="addValue(item)"
                           ></el-input>
                         </el-form-item>
                         <el-button class="addbtn" type="primary" size="mini" plain @click="addValue(item)">
@@ -156,6 +162,89 @@
               </div>
             </el-form-item>
 
+            <el-form-item label="私有属性" prop="goodsPrivateSpecVos">
+              <div class="public-spec-container">
+                <el-form
+                  :model="dynamicValidateFormPrivate"
+                  ref="dynamicValidateFormPrivate"
+                  class="demo-dynamic"
+                  :inline="true"
+                  @submit.native.prevent
+                  v-if="dynamicValidateFormPrivate.list.length"
+                >
+                  <el-collapse>
+                    <el-collapse-item
+                      :name="index"
+                      v-for="(item, index) in dynamicValidateFormPrivate.list"
+                      :key="index"
+                    >
+                      <div class="private-title" slot="title">
+                        <div>{{ item.goodsPrivateSpecName }}</div>
+                        <el-button size="mini" @click.prevent="removePrivate(item)">删除</el-button>
+                      </div>
+                      <div class="item-container" v-for="(child, j) in item.children" :key="j">
+                        <div class="child-title">{{ child.goodsPrivateSpecValue + ':' }}</div>
+                        <div class="child-container">
+                          <el-form-item
+                            label="扣减价格"
+                            :key="child.key"
+                            :prop="'list.' + index + '.children.' + j + '.price'"
+                          >
+                            <el-input
+                              size="mini"
+                              v-model="child.price"
+                              type="number"
+                              placeholder="请输入价格"
+                            ></el-input>
+                          </el-form-item>
+                          <el-form-item label="是否为结束标记">
+                            <el-switch
+                              v-model="child.end"
+                              size="mini"
+                              active-color="#13ce66"
+                              inactive-color="#ff4949"
+                              :active-value="1"
+                              :inactive-value="0"
+                            >
+                            </el-switch>
+                          </el-form-item>
+                          <el-form-item label="排序">
+                            <el-input
+                              size="mini"
+                              v-model="child.orderNumber"
+                              type="number"
+                              placeholder="请输入排序"
+                            ></el-input>
+                          </el-form-item>
+                          <el-form-item>
+                            <el-button size="mini" @click.prevent="removePrivateValue(item, child)"
+                              >删除属性值</el-button
+                            >
+                          </el-form-item>
+                        </div>
+                      </div>
+                      <div class="add-container">
+                        <el-form-item>
+                          <el-input
+                            size="mini"
+                            v-model="item.tempValue"
+                            placeholder="请输入属性值"
+                            :ref="'name' + index"
+                            @keyup.enter.native="addPrivateValue(item)"
+                          ></el-input>
+                        </el-form-item>
+                        <el-button class="addbtn" type="primary" size="mini" plain @click="addPrivateValue(item)">
+                          添 加
+                        </el-button>
+                      </div>
+                    </el-collapse-item>
+                  </el-collapse>
+                </el-form>
+              </div>
+              <div class="empty">
+                <el-button class="addbtn" type="primary" size="mini" plain @click="addPrivateName()"> 添 加 </el-button>
+              </div>
+            </el-form-item>
             <el-form-item label="是否推荐" prop="isHandpick">
               <el-switch v-model="form.isHandpick" :active-value="1" :inactive-value="2"> </el-switch>
             </el-form-item>
@@ -164,6 +253,7 @@
                 <el-radio :label="1" border>上架</el-radio>
                 <el-radio :label="2" border>下架</el-radio>
                 <el-radio :label="3" border>存为草稿</el-radio>
+                <el-radio :label="4" border disabled>备份</el-radio>
               </el-radio-group>
             </el-form-item>
 
@@ -178,6 +268,39 @@
         </div>
       </el-col>
     </el-row>
+
+    <!-- 弹窗 -->
+    <el-dialog title="添加私有属性" :append-to-body="true" :visible.sync="innerVisible" custom-class="inner-dialog">
+      <div style="margin-top: -25px">
+        <el-form
+          status-icon
+          v-if="innerVisible"
+          ref="form4"
+          label-width="120px"
+          :model="form4"
+          label-position="right"
+          :rules="rules4"
+          style="margin-left: -35px; margin-bottom: -35px; margin-top: 15px"
+        >
+          <el-form-item label="属性名称" prop="goodsPrivateSpecName">
+            <el-input size="medium" clearable v-model="form4.goodsPrivateSpecName"></el-input>
+          </el-form-item>
+          <el-form-item label="规格排序" prop="orderNumber">
+            <el-input size="medium" type="number" clearable v-model="form4.orderNumber"></el-input>
+          </el-form-item>
+          <el-form-item label="是否为单选" prop="onlyOneSelect">
+            <el-switch v-model="form4.onlyOneSelect" :active-value="1" :inactive-value="0"> </el-switch>
+          </el-form-item>
+          <el-form-item label="是否为必选" prop="mustSelect">
+            <el-switch v-model="form4.mustSelect" :active-value="1" :inactive-value="0"> </el-switch>
+          </el-form-item>
+        </el-form>
+      </div>
+      <div slot="footer" class="dialog-footer" style="padding-left: 5px">
+        <el-button type="primary" @click="confirmEdit('form4')">确 定</el-button>
+        <el-button @click="resetForm('form4')">重 置</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -216,8 +339,15 @@ export default {
       callback()
     }
     const checkPublic = (rule, value, callback) => {
-      if (!this.form.goodsPublicSpecInfos) {
+      if (!this.form.goodsPublicSpecInfos || this.form.goodsPublicSpecInfos.length < 1) {
         return callback(new Error('商品属性不能为空'))
+      }
+      callback()
+    }
+
+    const checkOrder = (rule, value, callback) => {
+      if (!value || value < 1) {
+        return callback(new Error('排序只能为大于0的数字'))
       }
       callback()
     }
@@ -225,6 +355,7 @@ export default {
       id: null,
       title: '添加商品',
       type: 'add',
+      innerVisible: false, // 内层弹窗
       form: {
         id: null,
         goodsName: '',
@@ -264,6 +395,22 @@ export default {
       dynamicValidateForm: {
         list: [],
       },
+
+      form4: {
+        // 表单信息
+        goodsPrivateSpecName: '',
+        orderNumber: 1,
+        onlyOneSelect: 1,
+        mustSelect: 1,
+      },
+      rules4: {
+        // 表单验证规则
+        goodsPrivateSpecName: [{ required: true, message: '属性名称不能为空', trigger: 'blur' }],
+        orderNumber: [{ validator: checkOrder, trigger: ['blur', 'change'], required: true }],
+      },
+      dynamicValidateFormPrivate: {
+        list: [],
+      },
     }
   },
   methods: {
@@ -283,23 +430,43 @@ export default {
         const list = []
         res.data.goodsPublicSpecVos.forEach(item => {
           const obj = {}
-          obj.label = item.goodsPublicSpec.goodsPublicSpecName
-          obj.value = item.goodsPublicSpec.id
+          obj.goodsPublicSpecName = item.goodsPublicSpec.goodsPublicSpecName
+          obj.goodsPublicSpecId = item.goodsPublicSpec.id
+          obj.priceFlag = item.goodsPublicSpec.priceFlag
           obj.children = []
           item.goodsPublicSpecInfos.forEach(child => {
             const obj1 = {}
             obj1.id = child.id
-            obj1.value = child.goodsPublicSpecId
-            obj1.label = child.goodsPublicSpecValue
+            obj1.goodsPublicSpecId = child.goodsPublicSpecId
+            obj1.goodsPublicSpecValue = child.goodsPublicSpecValue
             obj1.orderNumber = child.orderNumber
             obj1.end = child.end
             obj1.price = child.price
-            obj1.priceSymbol = child.priceSymbol
             obj.children.push(obj1)
           })
           list.push(obj)
         })
         this.dynamicValidateForm.list = list
+        const list1 = []
+        res.data.goodsPrivateSpecVos.forEach(item => {
+          const obj = {}
+
+          obj.goodsPrivateSpecName = item.goodsPrivateSpec.goodsPrivateSpecName
+          obj.orderNumber = item.goodsPrivateSpec.orderNumber
+          obj.onlyOneSelect = item.goodsPrivateSpec.onlyOneSelect
+          obj.mustSelect = item.goodsPrivateSpec.mustSelect
+          obj.children = []
+          item.goodsPrivateSpecInfos.forEach(child => {
+            const obj1 = {}
+            obj1.goodsPrivateSpecValue = child.goodsPrivateSpecValue
+            obj1.orderNumber = child.orderNumber
+            obj1.end = child.end
+            obj1.price = child.price
+            obj.children.push(obj1)
+          })
+          list1.push(obj)
+        })
+        this.dynamicValidateFormPrivate.list = list1
       } catch (e) {
         console.log(e)
       }
@@ -335,8 +502,9 @@ export default {
         if (res.data.length) {
           res.data.forEach(item => {
             const obj = {}
-            obj.value = item.id
-            obj.label = item.goodsPublicSpecName
+            obj.goodsPublicSpecId = item.id
+            obj.goodsPublicSpecName = item.goodsPublicSpecName
+            obj.priceFlag = item.priceFlag
             obj.children = []
             this.dynamicValidateForm.list.push(obj)
           })
@@ -372,46 +540,24 @@ export default {
 
     // 提交商品表单
     async submitForm(formName) {
-      this.form.goodsPublicSpecInfos = this.getPublicSpecInfos()
-      this.$refs.dynamicValidateForm.validate(valid => {
-        if (!valid) {
-          this.$message.error('请将价格信息填写完整')
-          return false
+      try {
+        this.form.goodsPublicSpecInfos = this.getPublicSpecInfos()
+        this.form.goodsPrivateSpecVos = this.getPrivateSpecVos()
+        this.form.goodsPublicSpecInfoPrices = this.getPublicSpecPrices()
+        if (this.dynamicValidateForm.list.length) {
+          this.$refs.dynamicValidateForm.validate(valid => {
+            if (!valid) {
+              this.$message.error('请将价格信息填写完整')
+              return false
+            }
+          })
         }
-      })
-      this.$refs[formName].validate(async valid => {
-        // eslint-disable-line
-        if (valid) {
-          try {
-            this.loading = true
-            const {
-              id,
-              goodsName,
-              firstCategoryId,
-              secondCategoryId,
-              goodsImage,
-              isHandpick,
-              status,
-              remarks,
-              avgPrice,
-              goodsPublicSpecInfos,
-            } = this.form
-
-            let res
-            if (this.type === 'add') {
-              res = await Goods.save({
-                goodsName,
-                firstCategoryId,
-                secondCategoryId,
-                goodsImage,
-                isHandpick,
-                status,
-                remarks,
-                avgPrice,
-                goodsPublicSpecInfos,
-              })
-            } else {
-              res = await Goods.update({
+        this.$refs[formName].validate(async valid => {
+          // eslint-disable-line
+          if (valid) {
+            try {
+              this.loading = true
+              const {
                 id,
                 goodsName,
                 firstCategoryId,
@@ -422,20 +568,56 @@ export default {
                 remarks,
                 avgPrice,
                 goodsPublicSpecInfos,
-              })
+                goodsPrivateSpecVos,
+                goodsPublicSpecInfoPrices,
+              } = this.form
+
+              let res
+              if (this.type === 'add') {
+                res = await Goods.save({
+                  goodsName,
+                  firstCategoryId,
+                  secondCategoryId,
+                  goodsImage,
+                  isHandpick,
+                  status,
+                  remarks,
+                  avgPrice,
+                  goodsPublicSpecInfos,
+                  goodsPrivateSpecVos,
+                  goodsPublicSpecInfoPrices,
+                })
+              } else {
+                res = await Goods.update({
+                  id,
+                  goodsName,
+                  firstCategoryId,
+                  secondCategoryId,
+                  goodsImage,
+                  isHandpick,
+                  status,
+                  remarks,
+                  avgPrice,
+                  goodsPublicSpecInfos,
+                  goodsPrivateSpecVos,
+                  goodsPublicSpecInfoPrices,
+                })
+              }
+              this.loading = false
+              this.$message.success(`${res.msg}`)
+              this.$router.push('/goods/list')
+            } catch (e) {
+              this.loading = false
+              console.log(e)
             }
-            this.loading = false
-            this.$message.success(`${res.msg}`)
-            this.$router.push('/goods/list')
-          } catch (e) {
-            this.loading = false
-            console.log(e)
+          } else {
+            this.$message.error('请将信息填写完整')
+            return false
           }
-        } else {
-          this.$message.error('请将信息填写完整')
-          return false
-        }
-      })
+        })
+      } catch (e) {
+        console.log(e)
+      }
     },
 
     // 重置表单
@@ -469,43 +651,160 @@ export default {
       if (!item.tempValue) {
         return false
       }
-      const obj = item.children.find(child => child.label === item.tempValue)
+      const obj = item.children.find(child => child.goodsPublicSpecValue === item.tempValue)
       if (!obj) {
         item.children.push({
-          label: item.tempValue,
+          goodsPublicSpecValue: item.tempValue,
           key: Date.now(),
-          priceSymbol: 1,
-          price: 100,
+          price: item.priceFlag === 1 ? 100 : 0,
+          end: 0,
+          orderNumber: 1,
         })
         item.tempValue = ''
       } else {
         this.$message.error('属性值已存在')
       }
     },
-    removeDomain(item, child) {
+    addPrivateValue(item) {
+      if (!item.tempValue) {
+        return false
+      }
+      const obj = item.children.find(child => child.goodsPrivateSpecValue === item.tempValue)
+      if (!obj) {
+        item.children.push({
+          goodsPrivateSpecValue: item.tempValue,
+          key: Date.now(),
+          price: 0,
+          end: 0,
+          orderNumber: 1,
+        })
+        item.tempValue = ''
+      } else {
+        this.$message.error('属性值已存在')
+      }
+    },
+    addPrivateName() {
+      this.innerVisible = true
+    },
+    removePrivate(item) {
+      const index = this.dynamicValidateFormPrivate.list.indexOf(item)
+      if (index !== -1) {
+        this.dynamicValidateFormPrivate.list.splice(index, 1)
+      }
+    },
+    removeValue(item, child) {
+      const index = item.children.indexOf(child)
+      if (index !== -1) {
+        item.children.splice(index, 1)
+      }
+    },
+    removePrivateValue(item, child) {
       const index = item.children.indexOf(child)
       if (index !== -1) {
         item.children.splice(index, 1)
       }
     },
     getPublicSpecInfos() {
-      // console.log(this.dynamicValidateForm.list)
       const list = []
-      this.dynamicValidateForm.list.forEach(item => {
+      const temp = this.dynamicValidateForm.list.filter(item => item.priceFlag !== 1)
+      temp.forEach(item => {
         if (item.children.length) {
           item.children.forEach(child => {
             const obj = {}
-            obj.goodsPublicSpecId = item.value
-            obj.goodsPublicSpecValue = child.label
+            obj.goodsPublicSpecId = item.goodsPublicSpecId
+            obj.goodsPublicSpecValue = child.goodsPublicSpecValue
             obj.orderNumber = child.orderNumber ? Number(child.orderNumber) : 1
             obj.end = child.end
             obj.price = child.price ? Number(child.price) : 0
-            obj.priceSymbol = child.priceSymbol
             list.push(obj)
           })
+        } else {
+          this.$message.error(`请添加属性“${item.goodsPublicSpecName}”的值`)
+          return false
         }
       })
       return list
+    },
+    getPublicSpecPrices() {
+      const list = []
+      const temp = this.dynamicValidateForm.list.filter(item => item.priceFlag === 1)
+      temp.forEach(item => {
+        if (item.children.length) {
+          item.children.forEach(child => {
+            const obj = {}
+            obj.goodsPublicSpecId = item.goodsPublicSpecId
+            obj.goodsPublicSpecValue = child.goodsPublicSpecValue
+            obj.orderNumber = child.orderNumber ? Number(child.orderNumber) : 1
+            obj.end = child.end
+            obj.price = child.price ? Number(child.price) : 0
+            list.push(obj)
+          })
+        } else {
+          this.$message.error(`请添加属性“${item.goodsPublicSpecName}”的值`)
+          return false
+        }
+      })
+      return list
+    },
+    getPrivateSpecVos() {
+      const list = []
+      if (this.dynamicValidateFormPrivate.list.length) {
+        this.dynamicValidateFormPrivate.list.forEach(item => {
+          const obj = {}
+          obj.goodsPrivateSpec = {}
+          obj.goodsPrivateSpec.goodsPrivateSpecName = item.goodsPrivateSpecName
+          obj.goodsPrivateSpec.orderNumber = item.orderNumber
+          obj.goodsPrivateSpec.onlyOneSelect = item.onlyOneSelect
+          obj.goodsPrivateSpec.mustSelect = item.mustSelect
+          obj.goodsPrivateSpecInfos = []
+          if (item.children.length) {
+            item.children.forEach(child => {
+              const obj1 = {}
+              obj1.goodsPrivateSpecValue = child.goodsPrivateSpecValue
+              obj1.orderNumber = child.orderNumber ? Number(child.orderNumber) : 1
+              obj1.end = child.end
+              obj1.price = child.price ? Number(child.price) : 0
+              obj.goodsPrivateSpecInfos.push(obj1)
+            })
+          } else {
+            this.$message.error(`请添加私有属性“${item.goodsPrivateSpecName}”的值`)
+            return false
+          }
+          list.push(obj)
+        })
+      }
+      return list
+    },
+
+    // 确认创建属性值
+    async confirmEdit(form) {
+      this.$refs[form].validate(async valid => {
+        if (valid) {
+          const obj = this.dynamicValidateFormPrivate.list.find(
+            item => item.goodsPrivateSpecName === this[form].goodsPrivateSpecName,
+          )
+          if (!obj) {
+            const { goodsPrivateSpecName, orderNumber, onlyOneSelect, mustSelect } = this[form]
+            this.dynamicValidateFormPrivate.list.push({
+              goodsPrivateSpecName,
+              orderNumber,
+              onlyOneSelect,
+              mustSelect,
+              children: [],
+            })
+            this.innerVisible = false
+            this.resetForm(form)
+          } else {
+            this.$message.error('属性名已存在')
+          }
+        } else {
+          this.$message.error('请将信息填写完整')
+          return false
+        }
+      })
+    },
+    back() {
+      this.$router.go(-1)
     },
   },
 
@@ -532,6 +831,13 @@ export default {
     font-weight: 500;
     text-indent: 40px;
     border-bottom: 1px solid #dae1ec;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    .back {
+      margin-right: 20%;
+      cursor: pointer;
+    }
   }
 
   .content {
@@ -600,5 +906,11 @@ export default {
 .addbtn {
   margin-left: 20px;
   margin-bottom: 10px;
+}
+.private-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
 }
 </style>

@@ -147,7 +147,15 @@
       </el-table-column>
       <el-table-column label="状态" width="150">
         <template slot-scope="props">
-          {{ props.row.goods.status === 1 ? '上架' : '下架' }}
+          {{
+            props.row.goods.status === 1
+              ? '上架'
+              : props.row.goods.status === 2
+              ? '下架'
+              : props.row.goods.status === 3
+              ? '草稿'
+              : '备份'
+          }}
         </template>
       </el-table-column>
       <el-table-column label="回收均价" width="150">
@@ -198,8 +206,18 @@ export default {
       currentPage: 1, // 默认获取第一页的数据
       pageCount: 10, // 每页10条数据
       tableData: [], // 表格数据
-      isHandPick: [{ label: '不限', value: null }, { label: '是', value: 1 }, { label: '否', value: 2 }],
-      status: [{ label: '不限', value: null }, { label: '上架', value: 1 }, { label: '下架', value: 2 }],
+      isHandPick: [
+        { label: '不限', value: null },
+        { label: '是', value: 1 },
+        { label: '否', value: 2 },
+      ],
+      status: [
+        { label: '不限', value: null },
+        { label: '上架', value: 1 },
+        { label: '下架', value: 2 },
+        { label: '草稿', value: 3 },
+        { label: '备份', value: 4 },
+      ],
       loading: false,
       filterForm: {
         filter_goodsName: null,

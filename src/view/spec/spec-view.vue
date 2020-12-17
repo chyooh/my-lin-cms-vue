@@ -48,11 +48,17 @@
           <el-form-item label="规格排序" prop="orderNumber">
             <el-input size="medium" type="number" clearable v-model="form.orderNumber"></el-input>
           </el-form-item>
-          <el-form-item label="是否为多选" prop="onlyOneSelect">
+          <el-form-item label="是否为单选" prop="onlyOneSelect">
             <el-switch v-model="form.onlyOneSelect" :active-value="1" :inactive-value="0"> </el-switch>
           </el-form-item>
           <el-form-item label="是否为必选" prop="mustSelect">
             <el-switch v-model="form.mustSelect" :active-value="1" :inactive-value="0"> </el-switch>
+          </el-form-item>
+          <el-form-item label="是否决定价格" prop="priceFlag">
+            <el-switch v-model="form.priceFlag" :active-value="1" :inactive-value="0"> </el-switch>
+            <div class="info">
+              提示：决定价格的规格一般只有一个,比如内存（128G的和256G的机型价格不同,那么内存这个规格名就是决定价格的,否则就不是决定价格的）。
+            </div>
           </el-form-item>
           <el-form-item class="submit">
             <el-button type="primary" :loading="loading" @click="submitForm('form')">保 存</el-button>
@@ -95,8 +101,9 @@ export default {
         orderNumber: 1,
         firstCategoryId: null,
         secondCategoryId: null,
-        onlyOneSelect: 0,
+        onlyOneSelect: 1,
         mustSelect: 1,
+        priceFlag: 0,
       },
       rules: {
         goodsPublicSpecName: [{ validator: checkName, trigger: ['blur', 'change'], required: true }],
@@ -209,6 +216,7 @@ export default {
       this.form.orderNumber = val.orderNumber
       this.form.onlyOneSelect = val.onlyOneSelect
       this.form.mustSelect = val.mustSelect
+      this.form.priceFlag = val.priceFlag
     }
     this.getAllCategory()
   },
@@ -244,5 +252,10 @@ export default {
     justify-content: flex-end;
     margin: 20px;
   }
+}
+.info {
+  color: #999999;
+  font-size: 12px;
+  line-height: 1.5;
 }
 </style>

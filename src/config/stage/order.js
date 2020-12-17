@@ -13,7 +13,7 @@ const orderRouter = {
       type: 'view',
       name: 'userList',
       route: '/order/list',
-      filePath: 'view/order/order-list.vue',
+      filePath: 'view/order/order-list2.vue',
       inNav: true,
       icon: 'iconfont icon-dingdanliebiao',
       permission: ['admin:order:view'],

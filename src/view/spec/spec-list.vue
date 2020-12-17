@@ -88,15 +88,16 @@
     </el-form>
     <el-table :data="tableData" :default-sort="{ prop: 'id', order: 'descending' }" stripe v-loading="loading">
       <el-table-column fixed prop="id" label="id" sortable width="100"> </el-table-column>
-      <el-table-column fixed prop="goodsPublicSpecName" label="名称" width="100"> </el-table-column>
+      <el-table-column fixed prop="goodsPublicSpecName" label="名称" width="220"> </el-table-column>
       <el-table-column label="分类" width="150">
         <template slot-scope="props">
           {{ `${props.row.secondCategoryName}-${props.row.firstCategoryName}` }}
         </template>
       </el-table-column>
       <el-table-column sortable prop="orderNumber" label="排序" width="100"> </el-table-column>
-      <el-table-column sortable prop="createTime" label="创建时间"> </el-table-column>
-      <el-table-column label="操作" fixed="right" width="235">
+      <el-table-column sortable prop="createTime" label="创建时间" width="220"> </el-table-column>
+      <el-table-column> </el-table-column>
+      <el-table-column label="操作" fixed="right" width="150">
         <template slot-scope="props">
           <el-button type="primary" plain @click="goToChildren(props.row)" size="mini">查看</el-button>
           <el-button type="danger" plain @click="handleDelete(props.row)" size="mini">删除</el-button>

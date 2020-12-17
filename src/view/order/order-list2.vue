@@ -12,57 +12,48 @@
       class="form"
       inline
     >
-      <div class="form-item-div">
-        <el-form-item label="订单号" prop="filter_orderId">
-          <el-input size="mini" clearable v-model="filterForm.filter_orderId"></el-input>
+      <div class="form-item-div form-item-long">
+        <el-form-item label="订单号" prop="orderNo">
+          <el-input size="mini" clearable v-model="filterForm.orderNo"></el-input>
         </el-form-item>
       </div>
+
       <div class="form-item-div">
-        <el-form-item label="手机号" prop="filter_tel">
-          <el-input size="mini" clearable v-model="filterForm.filter_tel"></el-input>
-        </el-form-item>
-      </div>
-      <div class="form-item-div">
-        <el-form-item label="姓名" prop="filter_nickname">
-          <el-input size="mini" clearable v-model="filterForm.filter_nickname" placeholder="请输入用户全名"></el-input>
-        </el-form-item>
-      </div>
-      <div class="form-item-div">
-        <el-form-item label="种类" prop="filter_roleId">
-          <el-select size="mini" v-model="filterForm.filter_roleId" placeholder="请选择角色">
-            <el-option v-for="(group, index) in groupsWithEmpty" :key="index" :label="group.roleName" :value="group.id">
-            </el-option>
-          </el-select>
-        </el-form-item>
-      </div>
-      <div class="form-item-div">
-        <el-form-item label="状态" prop="filter_isLocked">
-          <el-select size="mini" v-model="filterForm.filter_isLocked" placeholder="请选择">
-            <el-option v-for="(group, index) in isLockedSelects" :key="index" :label="group.label" :value="group.value">
-            </el-option>
-          </el-select>
-        </el-form-item>
-      </div>
-      <div class="form-item-div">
-        <el-form-item label="产品名称" prop="filter_name">
-          <el-input size="mini" clearable v-model="filterForm.filter_name" placeholder="请输入产品名称"></el-input>
-        </el-form-item>
-      </div>
-      <div class="form-item-div">
-        <el-form-item label="时间">
-          <el-date-picker
-            size="mini"
-            v-model="filterForm.filter_createDates"
-            type="date"
-            value-format="yyyy-MM-dd"
-            placeholder="选择日期..."
-            :picker-options="{
-              disabledDate(time) {
-                return time.getTime() > Date.now()
-              },
-            }"
-            style="width: 100%"
-          ></el-date-picker>
+        <el-form-item label="创建时间">
+          <el-form-item prop="filter_createTimes">
+            <el-date-picker
+              size="mini"
+              v-model="filterForm.filter_createTimes"
+              type="date"
+              value-format="yyyy-MM-dd"
+              placeholder="选择开始时间"
+              :picker-options="{
+                disabledDate(time) {
+                  return time.getTime() > Date.now()
+                },
+              }"
+              style="width: 100%"
+            ></el-date-picker>
+          </el-form-item>
+          <div class="line">-</div>
+          <el-form-item prop="filter_createTimee">
+            <el-date-picker
+              size="mini"
+              v-model="filterForm.filter_createTimee"
+              type="date"
+              value-format="yyyy-MM-dd"
+              :picker-options="{
+                disabledDate(time) {
+                  return (
+                    time.getTime() > Date.now() ||
+                    time.getTime() < new Date(filterForm.filter_createTimes + ' 00:00:00')
+                  )
+                },
+              }"
+              placeholder="选择结束时间"
+              style="width: 100%"
+            ></el-date-picker>
+          </el-form-item>
         </el-form-item>
       </div>
       <div class="form-item-div">
@@ -72,37 +63,49 @@
         </el-form-item>
       </div>
     </el-form>
-    <el-tabs v-model="activeName" @tab-click="handleTabClick">
-      <el-tab-pane v-for="(item, index) in tabs" :key="item.name" :name="item.name">
-        <span slot="label" class="tabs-label">{{ item.title + '（' + item.amount + '）' }}</span>
+    <el-tabs v-model="activeId" @tab-click="handleTabClick">
+      <el-tab-pane v-for="item in status" :key="item.id" :name="item.id">
+        <span slot="label" class="tabs-label">{{ item.label }}</span>
       </el-tab-pane>
     </el-tabs>
     <div class="table-container">
       <div class="table-title">
         <el-row>
           <el-col :span="6">商品信息</el-col>
-          <el-col :span="2">租金</el-col>
-          <el-col :span="2">押金</el-col>
-          <el-col :span="2">其他</el-col>
-          <el-col :span="3">租期</el-col>
-          <el-col :span="3">实付款</el-col>
+          <el-col :span="2">回收价格</el-col>
+          <el-col :span="2">优惠券</el-col>
+          <el-col :span="2">运费</el-col>
+          <el-col :span="3">预付款</el-col>
           <el-col :span="3">交易状态</el-col>
           <el-col :span="3">用户地址</el-col>
+          <el-col :span="3">备注</el-col>
         </el-row>
       </div>
       <template v-if="tableData.length > 0">
         <div class="goods-item" v-for="(goods, index) in tableData" :key="index">
           <el-row class="goods-title">
-            <div class="margin-right10">{{ goods.date }}</div>
-            <div>订单号：{{ goods.orderId }}</div>
+            <div class="margin-right10">{{ goods.order.createTime }}</div>
+            <div>订单号：{{ goods.order.orderNo }}</div>
           </el-row>
           <el-row class="content">
             <el-col :span="6">
               <div class="shangpin">
-                <img :src="goods.goodsImg" alt="" />
+                <img :src="goods.goodsVos[0].goods.goodsImage" alt="" />
                 <div class="right-shangpin">
-                  <div class="name">{{ goods.goodsName }}</div>
-                  <div>套餐:{{ goods.taocan }}</div>
+                  <div class="name">{{ goods.goodsVos[0].goods.goodsName }}</div>
+                  <div class="tag-container">
+                    <span>规格：</span>
+                    <div>
+                      <el-tag
+                        size="small"
+                        type="info"
+                        v-for="(item, index) in goods.goodsVos[0].goodsPublicSpecVos"
+                        :key="index"
+                      >
+                        {{ item.goodsPublicSpecInfos[0].goodsPublicSpecValue }}
+                      </el-tag>
+                    </div>
+                  </div>
                   <div>
                     <l-icon name="shen" color="#ff9900" width="12" height="12"></l-icon>
                     <l-icon name="qi" color="orange" width="12" height="12"></l-icon>
@@ -115,24 +118,34 @@
               </div>
             </el-col>
             <el-col :span="2">
-              <div>{{ Util.getPriceString(goods.zujin) }}</div>
-              <div>{{ Util.getPriceString(goods.zujin2) }}({{ goods.qishu }}期)</div>
+              <div>{{ Util.getPriceString(goods.goodsPrice) }}</div>
             </el-col>
             <el-col :span="2">
-              <div>{{ Util.getPriceString(goods.yajin1 - goods.jianyajin) }}</div>
-              <div>原{{ Util.getPriceString(goods.yajin1) }}</div>
-              <div>减{{ Util.getPriceString(goods.jianyajin) }}</div>
-              <div>商品押金{{ Util.getPriceString(goods.yajin2) }}</div>
+              <div v-for="(item, index) in goods.coupons" :key="index">
+                <el-tag size="small" type="danger">
+                  {{ item.name }}
+                </el-tag>
+              </div>
             </el-col>
             <el-col :span="2">
-              <div>数量<l-icon name="close" width="12" height="12"></l-icon>{{ goods.shuliang }}</div>
-              <div>运费：{{ Util.getPriceString(goods.yunfei) }}</div>
-              <div>保险：{{ Util.getPriceString(goods.baoxian) }}</div>
+              <div>运费：{{ Util.getPriceString(goods.order.postFee || 0) }}</div>
             </el-col>
-            <el-col :span="3">租期</el-col>
-            <el-col :span="3">实付款</el-col>
-            <el-col :span="3">交易状态</el-col>
-            <el-col :span="3">用户地址</el-col>
+            <el-col :span="3">
+              <div>{{ Util.getPriceString(goods.order.prePayment || 0) }}</div>
+            </el-col>
+            <el-col :span="3">
+              {{ goods.order.status === 0 ? '未完成' : goods.order.status === 1 ? '已完成' : '已取消' }}
+            </el-col>
+            <el-col :span="3">
+              <div>{{ goods.orderShipping.senderName }}</div>
+              <div>{{ goods.orderShipping.senderMobile }}</div>
+              <div>
+                {{
+                  `${goods.orderShipping.senderState} ${goods.orderShipping.senderCity} ${goods.orderShipping.senderDistrict} ${goods.orderShipping.senderAddress}`
+                }}
+              </div>
+            </el-col>
+            <el-col :span="3">{{ goods.order.remark }}</el-col>
           </el-row>
           <el-row class="content">
             <el-col>
@@ -168,7 +181,6 @@
         :background="true"
         :page-size="pageCount"
         :current-page="currentPage"
-        v-if="refreshPagination"
         layout="prev, pager, next, jumper"
         :total="total_nums"
       >
@@ -178,285 +190,76 @@
 </template>
 
 <script>
-import Admin from '@/model/admin'
-import { orderList, tabs } from './data'
+import Order from '@/model/order'
+import { orderList } from './data'
 import Util from '@/util/util'
 // import LinTable from '@/component/base/table/lin-table'
 
 export default {
-  components: {},
-  inject: ['eventBus'],
   data() {
     return {
       id: 0, // 用户id
-      refreshPagination: true, // 页数增加的时候，因为缓存的缘故，需要刷新Pagination组件
       // editIndex: null, // 编辑的行
       total_nums: 0, // 分组内的用户总数
       currentPage: 1, // 默认获取第一页的数据
       pageCount: 10, // 每页10条数据
       tableData: [], // 表格数据
-      // tableColumn: [], // 表头数据
-      // operate: [], // 表格按键操作区
-      dialogFormVisible: false, // 控制弹窗显示
-      // selectGroup: '', // 选中的分组Id
-      groups: [], // 所有分组
-      groupsWithEmpty: [], // 下拉筛选角色
-      isEnabledSelects: [{ label: '不限', value: null }, { label: '启用', value: 1 }, { label: '禁用', value: 0 }],
-      isLockedSelects: [{ label: '不限', value: null }, { label: '锁定', value: 1 }, { label: '未锁定', value: 0 }],
-      // group_id: undefined,
-      activeTab: '修改信息',
-      form: {
-        // 表单信息
-        userName: '',
-        password: '',
-        confirm_password: '',
-        email: '',
-        roleId: '',
-      },
-      loading: false,
       filterForm: {
-        filter_usernamelike: null,
-        filter_nickname: null,
-        filter_roleId: null,
-        filter_isEnabled: null,
-        filter_isLocked: null,
+        orderNo: null,
         filter_createDates: null,
-        filter_createDatee: null, // 日期搜索区间,包括创建时间,更新时间
-        filter_updateDates: null,
-        filter_updateDatee: null, // 日期搜索区间,包括创建时间,更新时间
-        // sortName: null, // 更新时间,创建时间,用户id
-        // sortOrder: null, // desc,asc
+        filter_createDatee: null,
+        status: null,
       },
       Util,
-      activeName: '1',
-      tabs,
+      activeId: '1',
+      status: [
+        { id: '1', label: '全部', value: null },
+        { id: '3', label: '未完成', value: 0 },
+        { id: '2', label: '已完成', value: 1 },
+        { id: '4', label: '已取消', value: 2 },
+      ],
     }
   },
   methods: {
     // 根据分组 刷新/获取分组内的用户
-    async getAdminUsers() {
+    async getOrderList() {
       const { currentPage } = this
+      const loading = this.$loading({ target: '.table-container' })
       try {
-        const obj = JSON.parse(JSON.stringify(this.filterForm))
-        if (obj.filter_isEnabled === true) {
-          obj.filter_isEnabled = 1
-        } else if (obj.filter_isEnabled === false) {
-          obj.filter_isEnabled = 0
-        }
-        if (obj.filter_isLocked === true) {
-          obj.filter_isLocked = 1
-        } else if (obj.filter_isLocked === false) {
-          obj.filter_isLocked = 0
-        }
-        this.loading = true
-        const data = Object.assign(obj, { pageSize: this.pageCount, pageNumber: currentPage })
-        const res = await Admin.getUserList(data) // eslint-disable-line
+        const res = await Order.list({
+          ...this.filterForm,
+          pageSize: this.pageCount,
+          pageNumber: currentPage,
+        }) // eslint-disable-line
         // console.log(res)
-        this.loading = false
-        this.tableData = this.shuffleList(res.data.rows)
-        this.total_nums = res.data.total
+        loading.close()
+        if (res.data.rows.length) {
+          res.data.rows.forEach(item => {
+            item.order.createTime = new Date(item.order.createTime).toLocaleString('chinese', { hour12: false })
+          })
+          this.tableData = res.data.rows
+          this.total_nums = res.data.total
+        } else {
+          this.tableData = []
+          this.total_nums = 0
+        }
       } catch (e) {
-        this.loading = false
+        loading.close()
         console.log(e)
       }
     },
-    // 获取所有分组
-    async getAllGroups() {
-      try {
-        this.loading = true
-        const res = await Admin.getRoleList()
-        this.groups = res.data.rows
-        this.groupsWithEmpty = [{ roleName: '不限', id: null }].concat(this.groups)
-        // this.groups.forEach(item => {
-        //   item.text = item.roleName
-        //   item.value = item.roleName
-        // })
-        this.loading = false
-      } catch (e) {
-        this.loading = false
-        console.log(e)
-      }
-    },
-    // 获取所拥有的权限并渲染  由子组件提供
-    async handleEdit(index, row) {
-      this.id = row.id
-      this.form.userName = row.userName
-      this.form.email = row.email
-      this.form.roleId = row.roleId
-      this.form.isEnabled = row.isEnabled
-      this.form.isLocked = row.isLocked
-      this.dialogFormVisible = true
-    },
-    // 下拉框选择分组
-    // async handleChange() {
-    //   this.currentPage = 1
-    //   this.loading = true
-    //   await this.getAdminUsers()
-    //   this.loading = false
-    // },
     // 切换table页
     async handleCurrentChange(val) {
       this.currentPage = val
       console.log(this.currentPage)
-      const loading = this.$loading({ target: '.table-container' })
-      await this.getAdminUsers()
-    },
-    // handleDelete(index, row) {
-    //   // let res
-    //   this.$confirm('此操作将永久删除该用户, 是否继续?', '提示', {
-    //     confirmButtonText: '确定',
-    //     cancelButtonText: '取消',
-    //     type: 'warning',
-    //   }).then(async () => {
-    //     try {
-    //       this.loading = true
-    //       await Admin.deleteUser({ ids: row.id })
-    //       this.loading = false
-    //       if (this.total_nums % this.pageCount === 1 && this.currentPage !== 1) {
-    //         // 判断删除的是不是每一页的最后一条数据
-    //         this.currentPage--
-    //       }
-    //       await this.getAdminUsers()
-    //     } catch (e) {
-    //       this.loading = false
-    //       console.log(e)
-    //     }
-    //   })
-    // },
-    async handleBoot(index, row) {
-      try {
-        this.loading = true
-        const res = await Admin.boot(row.id)
-        row.isEnabled = 1
-        this.$message.success(`${res.msg}`)
-        this.loading = false
-      } catch (e) {
-        this.loading = false
-        console.log(e)
-      }
-    },
-    async handleForbidden(index, row) {
-      try {
-        this.loading = true
-        const res = await Admin.forbidden(row.id)
-        row.isEnabled = 0
-        this.$message.success(`${res.msg}`)
-        this.loading = false
-      } catch (e) {
-        this.loading = false
-        console.log(e)
-      }
-    },
-    async handleUnlock(index, row) {
-      try {
-        this.loading = true
-        const res = await Admin.unlock(row.id)
-        row.isLocked = 0
-        this.$message.success(`${res.msg}`)
-        this.loading = false
-      } catch (e) {
-        this.loading = false
-        console.log(e)
-      }
-    },
-    async resetPassword(index, row) {
-      this.$confirm('此操作将还原该用户密码, 是否继续?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning',
-      }).then(async () => {
-        try {
-          this.loading = true
-          const res = await Admin.resetPassword(row.id)
-          this.$message.success(`${res.msg}`)
-          this.loading = false
-        } catch (e) {
-          this.loading = false
-          console.log(e)
-        }
-      })
-    },
-    // 提交表单信息
-    confirmEdit() {
-      console.log(this.$refs)
-      if (this.activeTab === '修改信息') {
-        this.$refs.userInfo.submitForm('form')
-        console.log(this.$refs.userInfo)
-      } else {
-        this.$refs.password.submitForm('form')
-        console.log(this.$refs.password)
-      }
-    },
-    // 重置
-    resetForm() {
-      console.log(this.$refs)
-      if (this.activeTab === '修改信息') {
-        this.$refs.userInfo.resetForm('form')
-        console.log(this.$refs.userInfo)
-      } else {
-        this.$refs.password.resetForm('form')
-        console.log(this.$refs.password)
-      }
-    },
-    // 双击 table ro
-    // rowClick(row) {
-    //   this.handleEdit(row)
-    // },
-    // 弹框 右上角 X
-    handleClose(done) {
-      this.dialogFormVisible = false
-      done()
-    },
-    // 切换tab栏
-    handleClick(tab) {
-      this.activeTab = tab.name
-    },
-    // 监听子组件更新用户信息是否成功
-    async handleInfoResult(flag) {
-      this.dialogFormVisible = false
-      if (flag === true) {
-        this.getAdminUsers()
-      }
-    },
-    // 监听子组件更新密码是否成功
-    handlePasswordResult(result) {
-      if (result === true) {
-        this.dialogFormVisible = false
-      }
-    },
-    // 监听添加用户是否成功
-    async addUser(flag) {
-      if (flag === true) {
-        if (this.total_nums % this.pageCount === 0) {
-          // 判断当前页的数据是不是满了，需要增加新的页码
-          this.currentPage++
-        }
-        await this.getAdminUsers()
-        this.refreshPagination = false // 刷新pagination组件
-        this.$nextTick(() => {
-          this.refreshPagination = true
-        })
-      }
-    },
-    shuffleList(users) {
-      const list = []
-      users.forEach(element => {
-        // const groups = []
-        // element.groups.forEach(item => {
-        //   groups.push(item.name)
-        // })
-        element.roleName = element.role ? element.role.roleName : '暂无'
-        list.push(element)
-      })
-      return list
+      await this.getOrderList()
     },
     submitFilterForm(formName) {
-      // const loading = this.$loading({ target: '.table-container' })
       this.$refs[formName].validate(async valid => {
         // eslint-disable-line
         if (valid) {
           this.currentPage = 1
-          await this.getAdminUsers()
+          await this.getOrderList()
         } else {
           console.log('error submit!!')
           this.$message.error('请填写正确的信息')
@@ -465,14 +268,8 @@ export default {
     },
     resetFilterForm(formName) {
       this.$refs[formName].resetFields()
-      console.log(this.filterForm)
+      this.getOrderList()
     },
-    // 筛选控制器
-    // filterHandler(value, row, column) {
-    //   console.log(value, row, column)
-    //   const property = column['property']
-    //   return row[property] === value
-    // },
 
     modifyPrice(id) {
       console.log(id)
@@ -481,18 +278,16 @@ export default {
       console.log(id)
     },
     handleTabClick() {
-      console.log(this.activeName)
+      const obj = this.status.find(item => item.id === this.activeId)
+      if (this.filterForm.status !== obj.value) {
+        this.filterForm.status = obj.value
+        this.getOrderList()
+      }
     },
   },
   async created() {
-    // await this.getAdminUsers()
-    // await Admin.getAllMenuList()
-    // await this.getAllGroups()
-    this.tableData = orderList
-    this.eventBus.$on('addUser', this.addUser)
-  },
-  beforeDestroy() {
-    this.eventBus.$off('addUser', this.addUser)
+    await this.getOrderList()
+    // this.tableData = orderList
   },
 }
 </script>
@@ -553,6 +348,10 @@ export default {
   }
   .table-title {
     padding: 10px 0;
+    font-size: 14px;
+    .el-col {
+      font-weight: 700;
+    }
   }
   .goods-title {
     display: flex;
@@ -570,6 +369,9 @@ export default {
     border-bottom: solid 1px #cccccc;
     .el-col {
       padding: 0 10px;
+      div {
+        margin-bottom: 10px;
+      }
     }
     .beizhu {
       border-bottom: dashed 1px #cccccc;
@@ -579,11 +381,30 @@ export default {
     display: flex;
     align-items: flex-start;
     img {
-      width: 30%;
+      width: 100px;
+      margin-right: 10px;
     }
     .name {
       color: $theme;
     }
   }
+  .tag-container {
+    display: flex;
+    div {
+      flex: 1;
+      .el-tag {
+        margin-right: 5px;
+        margin-bottom: 5px;
+        line-height: 16px;
+        height: 17px;
+      }
+    }
+  }
+}
+.empty {
+  text-align: center;
+  margin: 50px;
+  color: #999;
+  font-size: 14px;
 }
 </style>

@@ -79,7 +79,11 @@ export default {
         border-bottom: 1px solid #ebeef5;
       }
     }
-
+    .form-item-long {
+      .el-input--mini .el-input__inner {
+        width: initial;
+      }
+    }
     .el-input--mini .el-input__inner {
       width: 130px;
       padding-right: 10px;
