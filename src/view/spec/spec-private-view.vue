@@ -108,6 +108,7 @@
 <script>
 import Private from '@/model/private-spec'
 import Category from '@/model/category'
+import Util from '@/util/util'
 
 export default {
   components: {},
@@ -188,7 +189,7 @@ export default {
         const res = await Private.infoList(this.goodsPrivateSpecId)
         if (res.data.length) {
           res.data.forEach(item => {
-            item.createTime = new Date(item.createTime).toLocaleString('chinese', { hour12: false })
+            item.createTime = Util.getDateString(item.createTime)
           })
           this.tableData = res.data
         } else {
@@ -204,8 +205,8 @@ export default {
       this.$refs.form.validate(async valid => {
         if (valid) {
           if (
-            this.cacheForm.goodsPrivateSpecValue !== this.form.goodsPrivateSpecValue
-            || this.cacheForm.orderNumber !== this.form.orderNumber
+            this.cacheForm.goodsPrivateSpecValue !== this.form.goodsPrivateSpecValue ||
+            this.cacheForm.orderNumber !== this.form.orderNumber
           ) {
             try {
               let res

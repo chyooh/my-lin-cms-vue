@@ -3,7 +3,9 @@
     <el-row :gutter="20" type="flex" justify="space-between">
       <el-col :lg="10" :md="16" :sm="20" :xs="20">
         <div class="flex-container">
-          <div class="header">{{ title }}</div>
+          <div class="header">
+            <span v-permission="['admin:goods:spec:edit', 'admin:goods:spec:add']">{{ title }}</span>
+          </div>
           <span v-if="type === 'edit'" class="back" @click="back"> <i class="iconfont icon-fanhui"></i> 返回 </span>
         </div>
         <el-form

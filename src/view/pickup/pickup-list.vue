@@ -57,6 +57,7 @@
 
 <script>
 import Time from '@/model/pickup-time'
+import Util from '@/util/util'
 
 export default {
   data() {
@@ -133,7 +134,7 @@ export default {
         const res = await Time.list()
         if (res.data.length) {
           res.data.forEach(item => {
-            item.createTime = new Date(item.createTime).toLocaleString('chinese', { hour12: false })
+            item.createTime = Util.getDateString(item.createTime)
             item.name = this.getWeekName(item.dayValue)
           })
           this.tableData = res.data

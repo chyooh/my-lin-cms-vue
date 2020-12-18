@@ -1,11 +1,176 @@
 <template>
   <div class="container form-container">
-    <div class="title">优惠券列表</div>
+    <!-- <div class="title">优惠券列表</div> -->
+    <el-form
+      :model="filterForm"
+      status-icon
+      label-position="right"
+      ref="filterForm"
+      @submit.native.prevent
+      class="form"
+      inline
+    >
+      <div class="form-item-div">
+        <el-form-item label="优惠券id" prop="id">
+          <el-input size="mini" type="number" clearable v-model="filterForm.id"></el-input>
+        </el-form-item>
+      </div>
+
+      <div class="form-item-div">
+        <el-form-item label="状态" prop="status">
+          <el-select size="mini" v-model="filterForm.status" placeholder="请选择">
+            <el-option v-for="(group, index) in status" :key="index" :label="group.label" :value="group.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
+      </div>
+
+      <div class="form-item-div">
+        <el-form-item label="使用门槛" prop="threshold">
+          <el-select size="mini" v-model="filterForm.threshold" placeholder="请选择">
+            <el-option v-for="(group, index) in threshold" :key="index" :label="group.label" :value="group.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
+      </div>
+
+      <div class="form-item-div">
+        <el-form-item label="面额">
+          <el-form-item prop="formValues">
+            <el-input
+              size="mini"
+              type="number"
+              :min="0"
+              clearable
+              v-model="filterForm.formValues"
+              placeholder="最小面额"
+            ></el-input>
+          </el-form-item>
+          <div class="line">-</div>
+          <el-form-item prop="formValuee">
+            <el-input
+              size="mini"
+              type="number"
+              :min="filterForm.formValues"
+              clearable
+              v-model="filterForm.formValuee"
+              placeholder="最大面额"
+            ></el-input>
+          </el-form-item>
+        </el-form-item>
+      </div>
+      <div class="form-item-div">
+        <el-form-item label="创建时间">
+          <el-form-item prop="filter_createTimes">
+            <el-date-picker
+              size="mini"
+              v-model="filterForm.filter_createTimes"
+              type="date"
+              value-format="yyyy-MM-dd"
+              placeholder="选择开始时间"
+              :picker-options="{
+                disabledDate(time) {
+                  return time.getTime() > Date.now()
+                },
+              }"
+              style="width: 100%"
+            ></el-date-picker>
+          </el-form-item>
+          <div class="line">-</div>
+          <el-form-item prop="filter_createTimee">
+            <el-date-picker
+              size="mini"
+              v-model="filterForm.filter_createTimee"
+              type="date"
+              value-format="yyyy-MM-dd"
+              :picker-options="{
+                disabledDate(time) {
+                  return (
+                    time.getTime() > Date.now() ||
+                    time.getTime() < new Date(filterForm.filter_createTimes + ' 00:00:00')
+                  )
+                },
+              }"
+              placeholder="选择结束时间"
+              style="width: 100%"
+            ></el-date-picker>
+          </el-form-item>
+        </el-form-item>
+      </div>
+
+      <div class="form-item-div">
+        <el-form-item label="优惠券起始时间">
+          <el-form-item prop="filter_startTimes">
+            <el-date-picker
+              size="mini"
+              v-model="filterForm.filter_startTimes"
+              type="date"
+              value-format="yyyy-MM-dd"
+              placeholder="选择开始时间"
+              style="width: 100%"
+            ></el-date-picker>
+          </el-form-item>
+          <div class="line">-</div>
+          <el-form-item prop="filter_startTimee">
+            <el-date-picker
+              size="mini"
+              v-model="filterForm.filter_startTimee"
+              type="date"
+              value-format="yyyy-MM-dd"
+              :picker-options="{
+                disabledDate(time) {
+                  return time.getTime() < new Date(filterForm.filter_startTimes + ' 00:00:00')
+                },
+              }"
+              placeholder="选择结束时间"
+              style="width: 100%"
+            ></el-date-picker>
+          </el-form-item>
+        </el-form-item>
+      </div>
+
+      <div class="form-item-div">
+        <el-form-item label="优惠券过期时间">
+          <el-form-item prop="filter_endTimes">
+            <el-date-picker
+              size="mini"
+              v-model="filterForm.filter_endTimes"
+              type="date"
+              value-format="yyyy-MM-dd"
+              placeholder="选择开始时间"
+              style="width: 100%"
+            ></el-date-picker>
+          </el-form-item>
+          <div class="line">-</div>
+          <el-form-item prop="filter_endTimee">
+            <el-date-picker
+              size="mini"
+              v-model="filterForm.filter_endTimee"
+              type="date"
+              value-format="yyyy-MM-dd"
+              :picker-options="{
+                disabledDate(time) {
+                  return time.getTime() < new Date(filterForm.filter_endTimes + ' 00:00:00')
+                },
+              }"
+              placeholder="选择结束时间"
+              style="width: 100%"
+            ></el-date-picker>
+          </el-form-item>
+        </el-form-item>
+      </div>
+      <div class="form-item-div">
+        <el-form-item class="submit">
+          <el-button size="mini" type="primary" @click="submitFilterForm('filterForm')">搜 索</el-button>
+          <el-button size="mini" @click="resetFilterForm('filterForm')">重 置</el-button>
+        </el-form-item>
+      </div>
+    </el-form>
     <el-table :data="tableData" stripe v-loading="loading">
       <el-table-column fixed prop="id" label="id" width="50"> </el-table-column>
       <el-table-column fixed prop="name" label="名称" width="150"> </el-table-column>
-      <el-table-column fixed prop="totalNum" label="可发放总数" width="90"> </el-table-column>
-      <el-table-column fixed prop="limitNum" label="每人限制领取" width="110"> </el-table-column>
+      <el-table-column fixed prop="totalNum" label="发放总数" width="80"> </el-table-column>
+      <el-table-column fixed prop="limitNum" label="每人限领" width="80"> </el-table-column>
       <el-table-column label="状态" width="50">
         <template slot-scope="props">
           {{
@@ -28,9 +193,25 @@
           {{ props.row.threshold === 1 ? '无门槛' : props.row.thresholdValue }}
         </template>
       </el-table-column>
+      <el-table-column label="指定商品" width="150">
+        <template slot-scope="props">
+          <div v-if="props.row.assign === 1">全部商品可用</div>
+          <div v-else>
+            <el-tag
+              class="goodsid-tag"
+              v-for="(item, index) in props.row.goodsIds"
+              :key="index"
+              size="small"
+              type="danger"
+            >
+              {{ item }}
+            </el-tag>
+          </div>
+        </template>
+      </el-table-column>
       <el-table-column sortable prop="startTime" label="优惠券开始时间" width="150"> </el-table-column>
       <el-table-column sortable prop="endTime" label="优惠券结束时间" width="150"> </el-table-column>
-      <el-table-column prop="url" label="优惠券活动页面链接"> </el-table-column>
+      <el-table-column prop="url" label="优惠券活动页面链接" width="300"> </el-table-column>
       <!-- <el-table-column sortable prop="createTime" label="创建时间" width="150"> </el-table-column> -->
       <el-table-column label="操作" fixed="right" width="200">
         <template slot-scope="props">
@@ -99,6 +280,31 @@ export default {
       tableData: [], // 表格数据
       loading: false,
       Util,
+      threshold: [
+        { label: '不限', value: null },
+        { label: '无门槛', value: 1 },
+        { label: '有门槛', value: 2 },
+      ],
+      status: [
+        { label: '不限', value: null },
+        { label: '上架', value: 1 },
+        { label: '下架', value: 2 },
+        { label: '回收站', value: 3 },
+        { label: '已过期', value: 4 },
+      ],
+      filterForm: {
+        id: null,
+        threshold: null,
+        status: null,
+        formValues: null,
+        formValuee: null,
+        filter_createTimes: null,
+        filter_createTimee: null,
+        filter_startTimes: null,
+        filter_startTimee: null,
+        filter_endTimes: null,
+        filter_endTimee: null,
+      },
     }
   },
   methods: {
@@ -107,14 +313,14 @@ export default {
       const { pageNumber, pageSize } = this
       try {
         this.loading = true
-        const res = await Coupon.list({ pageSize, pageNumber }) // eslint-disable-line
+        const res = await Coupon.list({ ...this.filterForm, pageSize, pageNumber }) // eslint-disable-line
         // console.log(res)
         this.loading = false
         if (res.data.rows.length) {
           res.data.rows.forEach(item => {
             // item.createTime = new Date(item.createTime).toLocaleString('chinese', { hour12: false })
-            item.startTime = new Date(item.startTime).toLocaleString('chinese', { hour12: false })
-            item.endTime = new Date(item.endTime).toLocaleString('chinese', { hour12: false })
+            item.startTime = Util.getDateString(item.startTime)
+            item.endTime = Util.getDateString(item.endTime)
           })
           this.tableData = res.data.rows
           this.total_nums = res.data.total
@@ -183,6 +389,22 @@ export default {
       this.pageNumber = val
       this.getGoodsList()
     },
+    submitFilterForm(formName) {
+      this.$refs[formName].validate(async valid => {
+        // eslint-disable-line
+        if (valid) {
+          this.pageNumber = 1
+          await this.getGoodsList()
+        } else {
+          console.log('error submit!!')
+          this.$message.error('请填写正确的信息')
+        }
+      })
+    },
+    resetFilterForm(formName) {
+      this.$refs[formName].resetFields()
+      this.getGoodsList()
+    },
   },
   created() {
     this.getGoodsList()
@@ -199,7 +421,7 @@ export default {
     color: $parent-title-color;
     font-size: 16px;
     font-weight: 500;
-    text-indent: 40px;
+    text-indent: 20px;
   }
 
   .pagination {
@@ -226,5 +448,8 @@ export default {
   .el-date-editor.el-input {
     width: 100%;
   }
+}
+.goodsid-tag {
+  margin: 2px 5px 2px 0;
 }
 </style>

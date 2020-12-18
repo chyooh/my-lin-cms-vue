@@ -86,6 +86,7 @@
 <script>
 import Private from '@/model/private-spec'
 import Category from '@/model/category'
+import Util from '@/util/util'
 
 export default {
   data() {
@@ -130,7 +131,7 @@ export default {
         const res = await Private.list()
         if (res.data.length) {
           res.data.forEach(item => {
-            item.createTime = new Date(item.createTime).toLocaleString('chinese', { hour12: false })
+            item.createTime = Util.getDateString(item.createTime)
           })
           this.tableData = res.data
         } else {

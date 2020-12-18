@@ -1,6 +1,9 @@
 <template>
   <div class="container goods-create">
-    <div class="title">{{ title }}</div>
+    <div class="title">
+      {{ title }}
+      <span v-if="type === 'edit'" class="back" @click="back"> <i class="iconfont icon-fanhui"></i> 返回 </span>
+    </div>
     <el-row>
       <el-col :lg="16" :md="20" :sm="24" :xs="24">
         <div class="content">
@@ -10,7 +13,7 @@
             :model="form"
             ref="form"
             label-position="right"
-            label-width="100px"
+            label-width="156px"
             @submit.native.prevent
           >
             <el-form-item label="优惠券名称" prop="name">
@@ -112,6 +115,7 @@
 
 <script>
 import Coupon from '@/model/coupon'
+import Util from '@/util/util'
 
 export default {
   data() {
@@ -162,6 +166,7 @@ export default {
         formValue: [{ validator: checkPrice, required: true }],
         startTime: [{ required: true, message: '开始时间不能为空' }],
         endTime: [{ required: true, message: '结束时间不能为空' }],
+        url: [{ required: true, message: '链接不能为空' }],
       },
       loading: false,
     }
@@ -172,6 +177,11 @@ export default {
       try {
         const res = await Coupon.view(id) // eslint-disable-line
         Object.assign(this.form, res.data)
+        this.form.startTime = Util.getDateString(res.data.startTime)
+        this.form.endTime = Util.getDateString(res.data.endTime)
+        if (res.data.assign === 2 && res.data.goodsIds) {
+          this.form.goodsIdsList = res.data.goodsIds
+        }
       } catch (e) {
         console.log(e)
       }
@@ -192,7 +202,7 @@ export default {
           }
           try {
             this.loading = true
-            this.form.goodsids = this.form.goodsIdsList.join(',')
+            this.form.goodsIds = this.form.goodsIdsList.join(',')
             const {
               id,
               name,
@@ -251,7 +261,7 @@ export default {
             this.$router.push('/coupon/list')
           } catch (e) {
             this.loading = false
-            console.log(e)
+            // console.log(e)
           }
         } else {
           this.$message.error('请将信息填写完整')
@@ -263,6 +273,9 @@ export default {
     // 重置表单
     resetForm(formName) {
       this.$refs[formName].resetFields()
+    },
+    back() {
+      this.$router.go(-1)
     },
   },
 
@@ -293,6 +306,13 @@ export default {
     font-weight: 500;
     text-indent: 40px;
     border-bottom: 1px solid #dae1ec;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    .back {
+      margin-right: 20%;
+      cursor: pointer;
+    }
   }
 
   .content {

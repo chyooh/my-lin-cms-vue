@@ -126,7 +126,11 @@ export default {
       currentPage: 1, // 默认获取第一页的数据
       pageCount: 10, // 每页10条数据
       tableData: [], // 表格数据
-      status: [{ label: '不限', value: null }, { label: '已完成', value: 1 }, { label: '未完成', value: 0 }],
+      status: [
+        { label: '不限', value: null },
+        { label: '已完成', value: 1 },
+        { label: '未完成', value: 0 },
+      ],
       loading: false,
       filterForm: {
         id: null,
@@ -153,7 +157,7 @@ export default {
         this.loading = false
         if (res.data.rows.length) {
           res.data.rows.forEach(item => {
-            item.createTime = new Date(item.createTime).toLocaleString('chinese', { hour12: false })
+            item.createTime = Util.getDateString(item.createTime)
           })
           this.tableData = res.data.rows
           this.total_nums = res.data.total

@@ -137,6 +137,7 @@
 <script>
 import Public from '@/model/public-spec'
 import Category from '@/model/category'
+import Util from '@/util/util'
 
 export default {
   data() {
@@ -193,7 +194,7 @@ export default {
         const res = await Public.list({ ...this.filterForm, pageSize: this.pageCount, pageNumber: this.currentPage })
         if (res.data.rows.length) {
           res.data.rows.forEach(item => {
-            item.createTime = new Date(item.createTime).toLocaleString('chinese', { hour12: false })
+            item.createTime = Util.getDateString(item.createTime)
           })
           this.tableData = res.data.rows
         } else {

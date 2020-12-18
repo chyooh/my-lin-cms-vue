@@ -230,12 +230,11 @@ import Goods from '@/model/goods'
 import Public from '@/model/public-spec'
 import Private from '@/model/private-spec'
 import Category from '@/model/category'
+import Util from '@/util/util'
 
 /** 生成随机字符串 */
 function createId() {
-  return Math.random()
-    .toString(36)
-    .substring(2)
+  return Math.random().toString(36).substring(2)
 }
 export default {
   components: {
@@ -402,9 +401,7 @@ export default {
             if (isPrice) {
               const obj = {}
               obj.id = child.goodsPublicSpecInfo.id
-              obj.label = `${item.goodsPublicSpec.goodsPublicSpecName}/${
-                child.goodsPublicSpecInfo.goodsPublicSpecValue
-              }`
+              obj.label = `${item.goodsPublicSpec.goodsPublicSpecName}/${child.goodsPublicSpecInfo.goodsPublicSpecValue}`
               obj.price = child.goodsPrices[0].price
               priceList.push(obj)
             }
@@ -651,7 +648,9 @@ export default {
           item => item.goodsPublicSpec.id === Number(key) && item.goodsPublicSpec.priceFlag === 1,
         )
         if (obj1) {
-          obj1.goodsPublicSpecInfoVos = obj1.goodsPublicSpecInfoVos.filter(item => obj[key].includes(item.goodsPublicSpecInfo.id),)
+          obj1.goodsPublicSpecInfoVos = obj1.goodsPublicSpecInfoVos.filter(item =>
+            obj[key].includes(item.goodsPublicSpecInfo.id),
+          )
           if (obj1.goodsPublicSpecInfoVos.length) items.push(obj1)
         }
       }
@@ -738,8 +737,8 @@ export default {
       this.$refs[formName].validate(async valid => {
         if (valid) {
           if (
-            this.cacheForm3.goodsPrivateSpecName !== this.form3.goodsPrivateSpecName
-            || this.cacheForm3.orderNumber !== this.form3.orderNumber
+            this.cacheForm3.goodsPrivateSpecName !== this.form3.goodsPrivateSpecName ||
+            this.cacheForm3.orderNumber !== this.form3.orderNumber
           ) {
             try {
               this.loading3 = true
@@ -815,8 +814,8 @@ export default {
       this.$refs[form].validate(async valid => {
         if (valid) {
           if (
-            this.cacheForm4.goodsPrivateSpecValue !== this.form4.goodsPrivateSpecValue
-            || this.cacheForm4.orderNumber !== this.form4.orderNumber
+            this.cacheForm4.goodsPrivateSpecValue !== this.form4.goodsPrivateSpecValue ||
+            this.cacheForm4.orderNumber !== this.form4.orderNumber
           ) {
             try {
               let res
@@ -870,7 +869,7 @@ export default {
         const res = await Private.infoList(this.goodsPrivateSpec.id)
         if (res.data.length) {
           res.data.forEach(item => {
-            item.createTime = new Date(item.createTime).toLocaleString('chinese', { hour12: false })
+            item.createTime = Util.getDateString(item.createTime)
           })
           this.tableData = res.data
           this.goodsPrivateSpecInfo = res.data

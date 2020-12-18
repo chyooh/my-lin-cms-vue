@@ -123,7 +123,7 @@
             <el-col :span="2">
               <div v-for="(item, index) in goods.coupons" :key="index">
                 <el-tag size="small" type="danger">
-                  {{ item.name }}
+                  {{ item && item.name }}
                 </el-tag>
               </div>
             </el-col>
@@ -191,7 +191,7 @@
 
 <script>
 import Order from '@/model/order'
-import { orderList } from './data'
+// import { orderList } from './data'
 import Util from '@/util/util'
 // import LinTable from '@/component/base/table/lin-table'
 
@@ -235,9 +235,10 @@ export default {
         loading.close()
         if (res.data.rows.length) {
           res.data.rows.forEach(item => {
-            item.order.createTime = new Date(item.order.createTime).toLocaleString('chinese', { hour12: false })
+            item.order.createTime = Util.getDateString(item.order.createTime)
           })
           this.tableData = res.data.rows
+          // console.log(this.tableData)
           this.total_nums = res.data.total
         } else {
           this.tableData = []
@@ -335,8 +336,6 @@ export default {
   .el-date-editor.el-input {
     width: 100%;
   }
-}
-.tabs-label {
 }
 .table-container {
   font-size: 12px;

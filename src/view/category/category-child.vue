@@ -10,11 +10,11 @@
 
     <el-table :data="tableData" :default-sort="{ prop: 'id', order: 'descending' }" stripe v-loading="loading">
       <el-table-column fixed prop="id" label="id" sortable width="100"> </el-table-column>
-      <el-table-column fixed prop="coverImage" label="图片" width="100">
+      <!-- <el-table-column fixed prop="coverImage" label="图片" width="100">
         <template slot-scope="props">
           <el-image :src="props.row.coverImage" fit="contain"></el-image>
         </template>
-      </el-table-column>
+      </el-table-column> -->
       <el-table-column fixed prop="catName" label="名称" width="100"> </el-table-column>
       <el-table-column sortable prop="orderNumber" label="排序" width="100"> </el-table-column>
       <el-table-column sortable prop="createTime" label="创建时间"> </el-table-column>
@@ -58,7 +58,7 @@
           <el-form-item label="排序" prop="orderNumber">
             <el-input size="medium" type="number" clearable v-model="form.orderNumber"></el-input>
           </el-form-item>
-          <el-form-item prop="coverImage" label="图片">
+          <!-- <el-form-item prop="coverImage" label="图片">
             <upload-imgs
               ref="uploadImgs"
               :value="initImg"
@@ -68,7 +68,7 @@
               @onChange="handleChange('uploadImgs')"
               @upload="handleUpload"
             />
-          </el-form-item>
+          </el-form-item> -->
         </el-form>
       </div>
       <div slot="footer" class="dialog-footer" style="padding-left: 5px">
@@ -81,17 +81,18 @@
 
 <script>
 import Category from '@/model/category'
-import User from '@/model/user'
-import UploadImgs from '@/component/base/upload-image'
+import Util from '@/util/util'
+// import User from '@/model/user'
+// import UploadImgs from '@/component/base/upload-image'
 
 /** 生成随机字符串 */
-function createId() {
-  return Math.random().toString(36).substring(2)
-}
+// function createId() {
+//   return Math.random().toString(36).substring(2)
+// }
 export default {
-  components: {
-    UploadImgs,
-  },
+  // components: {
+  //   UploadImgs,
+  // },
   data() {
     return {
       id: 0, // 角色id
@@ -151,7 +152,7 @@ export default {
         const res = await Category.findByParentId(this.parentId)
         if (res.data.length) {
           res.data.forEach(item => {
-            item.createTime = new Date(item.createTime).toLocaleString('chinese', { hour12: false })
+            item.createTime = Util.getDateString(item.createTime)
           })
           this.tableData = res.data
         } else {
@@ -209,16 +210,16 @@ export default {
       this.form.catName = val.catName
       this.form.orderNumber = val.orderNumber
       this.form.coverImage = val.coverImage
-      if (val.coverImage) {
-        this.initImg = [
-          {
-            id: createId(),
-            display: val.coverImage,
-            src: '',
-            imgId: createId(),
-          },
-        ]
-      }
+      // if (val.coverImage) {
+      //   this.initImg = [
+      //     {
+      //       id: createId(),
+      //       display: val.coverImage,
+      //       src: '',
+      //       imgId: createId(),
+      //     },
+      //   ]
+      // }
       this.cacheForm = { ...this.form }
       this.type = 'edit'
       this.dialogFormVisible = true
@@ -242,7 +243,7 @@ export default {
       })
     },
     create() {
-      console.log('create')
+      // console.log('create')
       this.form = { ...this.baseForm }
       this.cacheForm = { ...this.baseForm }
       this.initImg = []
@@ -250,26 +251,26 @@ export default {
       this.dialogFormVisible = true
     },
 
-    async remoteFuc(img) {
-      try {
-        const res = await User.upload(img.file)
-        const data = { url: img.display, path: JSON.parse(res.data).base, id: img.id }
-        return data
-      } catch (e) {
-        console.log(e)
-      }
-    },
-    async handleChange(name) {
-      await this.$refs[name].getValue()
-    },
-    handleUpload(result) {
-      console.log(result)
-      if (result.length) {
-        this.form.coverImage = result[0].src
-      } else {
-        this.form.coverImage = ''
-      }
-    },
+    // async remoteFuc(img) {
+    //   try {
+    //     const res = await User.upload(img.file)
+    //     const data = { url: img.display, path: JSON.parse(res.data).base, id: img.id }
+    //     return data
+    //   } catch (e) {
+    //     console.log(e)
+    //   }
+    // },
+    // async handleChange(name) {
+    //   await this.$refs[name].getValue()
+    // },
+    // handleUpload(result) {
+    //   console.log(result)
+    //   if (result.length) {
+    //     this.form.coverImage = result[0].src
+    //   } else {
+    //     this.form.coverImage = ''
+    //   }
+    // },
     back() {
       this.$router.go(-1)
     },

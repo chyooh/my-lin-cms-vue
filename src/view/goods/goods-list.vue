@@ -269,7 +269,7 @@ export default {
         this.loading = false
         if (res.data.rows.length) {
           res.data.rows.forEach(item => {
-            item.goods.createTime = new Date(item.goods.createTime).toLocaleString('chinese', { hour12: false })
+            item.goods.createTime = Util.getDateString(item.goods.createTime)
           })
           this.tableData = res.data.rows
           this.total_nums = res.data.total

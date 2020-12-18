@@ -7,4 +7,6 @@ Util.getPriceString = (val, num = 2) => {
   }
   return `￥${value.toFixed(num)}`
 }
+Util.getDateString = date => new Date(date).toLocaleString('chinese', { hour12: false }).replace(/\//g, '-').replace('24:00:00', '00:00:00')
+
 export default Util
