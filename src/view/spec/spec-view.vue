@@ -162,15 +162,13 @@ export default {
       try {
         this.loading = true
         const res = await Category.categoryList()
-        if (res.data.rows.length) {
-          this.categoryList = res.data.rows
-          this.categoryList.forEach(item => {
-            const { catName, id } = item
-            this.firstCategoryId.push({ catName, id })
-          })
-          if (this.form.firstCategoryId) {
-            this.updateSecondIdsByFirstId(this.form.firstCategoryId)
-          }
+        this.categoryList = res.data.rows
+        this.categoryList.forEach(item => {
+          const { catName, id } = item
+          this.firstCategoryId.push({ catName, id })
+        })
+        if (this.form.firstCategoryId) {
+          this.updateSecondIdsByFirstId(this.form.firstCategoryId)
         }
         this.loading = false
       } catch (e) {

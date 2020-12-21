@@ -316,18 +316,13 @@ export default {
         const res = await Coupon.list({ ...this.filterForm, pageSize, pageNumber }) // eslint-disable-line
         // console.log(res)
         this.loading = false
-        if (res.data.rows.length) {
-          res.data.rows.forEach(item => {
-            // item.createTime = new Date(item.createTime).toLocaleString('chinese', { hour12: false })
-            item.startTime = Util.getDateString(item.startTime)
-            item.endTime = Util.getDateString(item.endTime)
-          })
-          this.tableData = res.data.rows
-          this.total_nums = res.data.total
-        } else {
-          this.tableData = []
-          this.total_nums = 0
-        }
+        res.data.rows.forEach(item => {
+          // item.createTime = new Date(item.createTime).toLocaleString('chinese', { hour12: false })
+          item.startTime = Util.getDateString(item.startTime)
+          item.endTime = Util.getDateString(item.endTime)
+        })
+        this.tableData = res.data.rows
+        this.total_nums = res.data.total
       } catch (e) {
         this.loading = false
         console.log(e)

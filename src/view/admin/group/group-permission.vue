@@ -106,26 +106,24 @@ export default {
       if (this.id) {
         const res = await Admin.getRolePermission(this.id)
         // console.log(res)
-        if (res.rows.length) {
-          res.rows.forEach(item => {
-            item.name = item.menuName
-            let temItem = permissions.find(item1 => item.parentId === item1.id)
-            // console.log(temItem)
-            if (temItem) {
+        res.rows.forEach(item => {
+          item.name = item.menuName
+          let temItem = permissions.find(item1 => item.parentId === item1.id)
+          // console.log(temItem)
+          if (temItem) {
+            item.module = temItem.menuName
+            if (temItem.parentId === 0) {
               item.module = temItem.menuName
+            } else {
+              temItem = permissions.find(item1 => temItem.parentId === item1.id)
               if (temItem.parentId === 0) {
                 item.module = temItem.menuName
-              } else {
-                temItem = permissions.find(item1 => temItem.parentId === item1.id)
-                if (temItem.parentId === 0) {
-                  item.module = temItem.menuName
-                }
               }
-            } else {
-              item.module = item.menuName
             }
-          })
-        }
+          } else {
+            item.module = item.menuName
+          }
+        })
         // console.log(res)
         let temp = []
         const cache = {}

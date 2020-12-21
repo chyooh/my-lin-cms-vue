@@ -192,14 +192,11 @@ export default {
       try {
         this.loading = true
         const res = await Public.list({ ...this.filterForm, pageSize: this.pageCount, pageNumber: this.currentPage })
-        if (res.data.rows.length) {
-          res.data.rows.forEach(item => {
-            item.createTime = Util.getDateString(item.createTime)
-          })
-          this.tableData = res.data.rows
-        } else {
-          this.tableData = []
-        }
+        res.data.rows.forEach(item => {
+          item.createTime = Util.getDateString(item.createTime)
+        })
+        this.tableData = res.data.rows
+        this.total_nums = res.data.total
         this.loading = false
       } catch (e) {
         this.loading = false
@@ -241,13 +238,11 @@ export default {
       try {
         this.loading = true
         const res = await Category.categoryList()
-        if (res.data.rows.length) {
-          this.categoryList = res.data.rows
-          this.categoryList.forEach(item => {
-            const { catName, id } = item
-            this.firstCategoryId.push({ catName, id })
-          })
-        }
+        this.categoryList = res.data.rows
+        this.categoryList.forEach(item => {
+          const { catName, id } = item
+          this.firstCategoryId.push({ catName, id })
+        })
         this.loading = false
       } catch (e) {
         this.loading = false

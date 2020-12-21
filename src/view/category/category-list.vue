@@ -144,14 +144,10 @@ export default {
       try {
         this.loading = true
         const res = await Category.categoryList()
-        if (res.data.rows.length) {
-          res.data.rows.forEach(item => {
-            item.createTime = Util.getDateString(item.createTime)
-          })
-          this.tableData = res.data.rows
-        } else {
-          this.tableData = []
-        }
+        res.data.rows.forEach(item => {
+          item.createTime = Util.getDateString(item.createTime)
+        })
+        this.tableData = res.data.rows
 
         this.loading = false
       } catch (e) {

@@ -137,14 +137,10 @@ export default {
       try {
         this.loading = true
         const res = await Time.findByDayId(this.parentId)
-        if (res.data.length) {
-          res.data.forEach(item => {
-            item.createTime = Util.getDateString(item.createTime)
-          })
-          this.tableData = res.data
-        } else {
-          this.tableData = []
-        }
+        res.data.forEach(item => {
+          item.createTime = Util.getDateString(item.createTime)
+        })
+        this.tableData = res.data
         this.loading = false
       } catch (e) {
         this.loading = false

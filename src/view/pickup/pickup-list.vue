@@ -132,15 +132,11 @@ export default {
       try {
         this.loading = true
         const res = await Time.list()
-        if (res.data.length) {
-          res.data.forEach(item => {
-            item.createTime = Util.getDateString(item.createTime)
-            item.name = this.getWeekName(item.dayValue)
-          })
-          this.tableData = res.data
-        } else {
-          this.tableData = []
-        }
+        res.data.forEach(item => {
+          item.createTime = Util.getDateString(item.createTime)
+          item.name = this.getWeekName(item.dayValue)
+        })
+        this.tableData = res.data
 
         this.loading = false
       } catch (e) {

@@ -233,17 +233,12 @@ export default {
         }) // eslint-disable-line
         // console.log(res)
         loading.close()
-        if (res.data.rows.length) {
-          res.data.rows.forEach(item => {
-            item.order.createTime = Util.getDateString(item.order.createTime)
-          })
-          this.tableData = res.data.rows
-          // console.log(this.tableData)
-          this.total_nums = res.data.total
-        } else {
-          this.tableData = []
-          this.total_nums = 0
-        }
+        res.data.rows.forEach(item => {
+          item.order.createTime = Util.getDateString(item.order.createTime)
+        })
+        this.tableData = res.data.rows
+        // console.log(this.tableData)
+        this.total_nums = res.data.total
       } catch (e) {
         loading.close()
         console.log(e)

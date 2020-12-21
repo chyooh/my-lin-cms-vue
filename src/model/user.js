@@ -14,7 +14,7 @@ class User {
 
   async getCurrentInfo() {
     const info = await get('user/getCurrentInfo.json')
-    console.log(info)
+    // console.log(info)
     const { admin, avatar, email, id, nickname } = info.data
 
     const storeUser = store.getters.user === null ? {} : store.getters.user

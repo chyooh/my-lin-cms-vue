@@ -267,16 +267,11 @@ export default {
         const res = await Goods.goodsList({ ...this.filterForm, pageSize: this.pageCount, pageNumber: currentPage }) // eslint-disable-line
         // console.log(res)
         this.loading = false
-        if (res.data.rows.length) {
-          res.data.rows.forEach(item => {
-            item.goods.createTime = Util.getDateString(item.goods.createTime)
-          })
-          this.tableData = res.data.rows
-          this.total_nums = res.data.total
-        } else {
-          this.tableData = []
-          this.total_nums = 0
-        }
+        res.data.rows.forEach(item => {
+          item.goods.createTime = Util.getDateString(item.goods.createTime)
+        })
+        this.tableData = res.data.rows
+        this.total_nums = res.data.total
       } catch (e) {
         this.loading = false
         console.log(e)
@@ -287,13 +282,11 @@ export default {
       try {
         this.loading = true
         const res = await Category.categoryList()
-        if (res.data.rows.length) {
-          this.categoryList = res.data.rows
-          this.categoryList.forEach(item => {
-            const { catName, id } = item
-            this.firstCategoryId.push({ catName, id })
-          })
-        }
+        this.categoryList = res.data.rows
+        this.categoryList.forEach(item => {
+          const { catName, id } = item
+          this.firstCategoryId.push({ catName, id })
+        })
         this.loading = false
       } catch (e) {
         this.loading = false

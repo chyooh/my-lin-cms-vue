@@ -434,19 +434,17 @@ export default {
     async getAllCategory() {
       try {
         const res = await Category.categoryList()
-        if (res.data.rows.length) {
-          this.categoryList = res.data.rows
-          this.categoryList.forEach(item => {
+        this.categoryList = res.data.rows
+        this.categoryList.forEach(item => {
+          const { catName, id } = item
+          this.firstCategoryId.push({ catName, id })
+        })
+        const obj = this.categoryList.find(item => item.id === this.form.firstCategoryId)
+        if (obj && obj.children.length) {
+          obj.children.forEach(item => {
             const { catName, id } = item
-            this.firstCategoryId.push({ catName, id })
+            this.secondCategoryId.push({ catName, id })
           })
-          const obj = this.categoryList.find(item => item.id === this.form.firstCategoryId)
-          if (obj && obj.children.length) {
-            obj.children.forEach(item => {
-              const { catName, id } = item
-              this.secondCategoryId.push({ catName, id })
-            })
-          }
         }
       } catch (e) {
         console.log(e)
@@ -457,24 +455,22 @@ export default {
     async getAllPublicSpec() {
       try {
         const res = await Public.all()
-        if (res.data.length) {
-          this.publicSpecInfo = res.data
-          res.data.forEach(item => {
-            const obj = {}
-            obj.value = item.goodsPublicSpec.id
-            obj.label = item.goodsPublicSpec.goodsPublicSpecName
-            obj.children = []
-            if (item.goodsPublicSpecInfoVos.length) {
-              item.goodsPublicSpecInfoVos.forEach(child => {
-                const obj1 = {}
-                obj1.value = child.goodsPublicSpecInfo.id
-                obj1.label = child.goodsPublicSpecInfo.goodsPublicSpecValue
-                obj.children.push(obj1)
-              })
-            }
-            this.publicSpec.push(obj)
-          })
-        }
+        this.publicSpecInfo = res.data
+        res.data.forEach(item => {
+          const obj = {}
+          obj.value = item.goodsPublicSpec.id
+          obj.label = item.goodsPublicSpec.goodsPublicSpecName
+          obj.children = []
+          if (item.goodsPublicSpecInfoVos.length) {
+            item.goodsPublicSpecInfoVos.forEach(child => {
+              const obj1 = {}
+              obj1.value = child.goodsPublicSpecInfo.id
+              obj1.label = child.goodsPublicSpecInfo.goodsPublicSpecValue
+              obj.children.push(obj1)
+            })
+          }
+          this.publicSpec.push(obj)
+        })
       } catch (e) {
         console.log(e)
       }
@@ -867,16 +863,11 @@ export default {
       try {
         this.loading = true
         const res = await Private.infoList(this.goodsPrivateSpec.id)
-        if (res.data.length) {
-          res.data.forEach(item => {
-            item.createTime = Util.getDateString(item.createTime)
-          })
-          this.tableData = res.data
-          this.goodsPrivateSpecInfo = res.data
-        } else {
-          this.tableData = []
-          this.goodsPrivateSpecInfo = []
-        }
+        res.data.forEach(item => {
+          item.createTime = Util.getDateString(item.createTime)
+        })
+        this.tableData = res.data
+        this.goodsPrivateSpecInfo = res.data
         this.loading = false
       } catch (e) {
         this.loading = false

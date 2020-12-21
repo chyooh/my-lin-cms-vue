@@ -1,7 +1,9 @@
 <template>
   <div class="container goods-create">
     <div class="title">
-      {{ title }}
+      <div>
+        <span v-show="!isView">{{ title }}</span>
+      </div>
       <span v-if="type === 'edit'" class="back" @click="back"> <i class="iconfont icon-fanhui"></i> 返回 </span>
     </div>
     <el-row>
@@ -17,7 +19,7 @@
             @submit.native.prevent
           >
             <el-form-item label="商品名称" prop="goodsName">
-              <el-input size="medium" clearable v-model="form.goodsName"></el-input>
+              <el-input size="medium" clearable v-model="form.goodsName" :disabled="isView"></el-input>
             </el-form-item>
 
             <el-form-item label="一级分类" prop="firstCategoryId">
@@ -26,6 +28,7 @@
                 v-model="form.firstCategoryId"
                 placeholder="请选择"
                 @change="firstCategoryIdChange"
+                :disabled="type !== 'add'"
               >
                 <el-option
                   v-for="(group, index) in firstCategoryId"
@@ -42,6 +45,7 @@
                 v-model="form.secondCategoryId"
                 placeholder="请选择"
                 @change="secondCategoryIdChange"
+                :disabled="type !== 'add'"
               >
                 <el-option
                   v-for="(group, index) in secondCategoryId"
@@ -53,7 +57,7 @@
               </el-select>
             </el-form-item>
             <el-form-item label="回收均价" prop="avgPrice">
-              <el-input size="medium" type="number" clearable v-model="form.avgPrice"></el-input>
+              <el-input size="medium" type="number" clearable v-model="form.avgPrice" :disabled="isView"></el-input>
             </el-form-item>
             <el-form-item label="商品图片" prop="goodsImage">
               <upload-imgs
@@ -64,6 +68,7 @@
                 :remote-fuc="remoteFuc"
                 @onChange="handleChange('uploadImgs')"
                 @upload="handleUpload"
+                :disabled="isView"
               />
             </el-form-item>
             <el-form-item label="商品属性" prop="goodsPublicSpecInfos">
@@ -78,11 +83,14 @@
                 >
                   <el-collapse>
                     <el-collapse-item
-                      :title="item.goodsPublicSpecName"
                       :name="index"
                       v-for="(item, index) in dynamicValidateForm.list"
                       :key="item.goodsPublicSpecId"
                     >
+                      <div class="private-title" slot="title">
+                        <div>{{ item.goodsPublicSpecName }}</div>
+                        <el-button size="mini" @click.stop="removePublic(item)" :disabled="isView">删除</el-button>
+                      </div>
                       <div class="item-container" v-for="(child, j) in item.children" :key="j">
                         <div class="child-title">{{ child.goodsPublicSpecValue + ':' }}</div>
                         <div class="child-container">
@@ -136,7 +144,9 @@
                             ></el-input>
                           </el-form-item>
                           <el-form-item>
-                            <el-button size="mini" @click.prevent="removeValue(item, child)">删除属性值</el-button>
+                            <el-button size="mini" @click.prevent="removeValue(item, child)" :disabled="isView"
+                              >删除属性值</el-button
+                            >
                           </el-form-item>
                         </div>
                       </div>
@@ -150,7 +160,14 @@
                             @keyup.enter.native="addValue(item)"
                           ></el-input>
                         </el-form-item>
-                        <el-button class="addbtn" type="primary" size="mini" plain @click="addValue(item)">
+                        <el-button
+                          class="addbtn"
+                          type="primary"
+                          size="mini"
+                          plain
+                          @click="addValue(item)"
+                          :disabled="isView"
+                        >
                           添 加
                         </el-button>
                       </div>
@@ -159,6 +176,37 @@
                 </el-form>
 
                 <div v-else class="empty">请先选择分类</div>
+              </div>
+            </el-form-item>
+
+            <el-form-item label="剔除属性">
+              <div class="public-spec-container">
+                <el-form
+                  :model="dynamicValidateFormNoUsed"
+                  ref="dynamicValidateFormNoUsed"
+                  class="demo-dynamic"
+                  :inline="true"
+                  @submit.native.prevent
+                  v-if="dynamicValidateFormNoUsed.list.length"
+                >
+                  <el-collapse>
+                    <el-collapse-item
+                      :name="index"
+                      v-for="(item, index) in dynamicValidateFormNoUsed.list"
+                      :key="item.goodsPublicSpecId"
+                      disabled
+                    >
+                      <div class="private-title" slot="title">
+                        <div>{{ item.goodsPublicSpecName }}</div>
+                        <el-button size="mini" @click.stop="cancelRemovePublic(item)" :disabled="isView"
+                          >取消删除</el-button
+                        >
+                      </div>
+                    </el-collapse-item>
+                  </el-collapse>
+                </el-form>
+
+                <div v-else class="empty">暂无剔除属性</div>
               </div>
             </el-form-item>
 
@@ -180,7 +228,7 @@
                     >
                       <div class="private-title" slot="title">
                         <div>{{ item.goodsPrivateSpecName }}</div>
-                        <el-button size="mini" @click.prevent="removePrivate(item)">删除</el-button>
+                        <el-button size="mini" @click.stop="removePrivate(item)" :disabled="isView">删除</el-button>
                       </div>
                       <div class="item-container" v-for="(child, j) in item.children" :key="j">
                         <div class="child-title">{{ child.goodsPrivateSpecValue + ':' }}</div>
@@ -217,7 +265,7 @@
                             ></el-input>
                           </el-form-item>
                           <el-form-item>
-                            <el-button size="mini" @click.prevent="removePrivateValue(item, child)"
+                            <el-button size="mini" @click.prevent="removePrivateValue(item, child)" :disabled="isView"
                               >删除属性值</el-button
                             >
                           </el-form-item>
@@ -233,7 +281,14 @@
                             @keyup.enter.native="addPrivateValue(item)"
                           ></el-input>
                         </el-form-item>
-                        <el-button class="addbtn" type="primary" size="mini" plain @click="addPrivateValue(item)">
+                        <el-button
+                          class="addbtn"
+                          type="primary"
+                          size="mini"
+                          plain
+                          @click="addPrivateValue(item)"
+                          :disabled="isView"
+                        >
                           添 加
                         </el-button>
                       </div>
@@ -242,14 +297,17 @@
                 </el-form>
               </div>
               <div class="empty">
-                <el-button class="addbtn" type="primary" size="mini" plain @click="addPrivateName()"> 添 加 </el-button>
+                <el-button class="addbtn" type="primary" size="mini" plain @click="addPrivateName()" :disabled="isView">
+                  添 加
+                </el-button>
               </div>
             </el-form-item>
             <el-form-item label="是否推荐" prop="isHandpick">
-              <el-switch v-model="form.isHandpick" :active-value="1" :inactive-value="2"> </el-switch>
+              <el-switch v-model="form.isHandpick" :active-value="1" :inactive-value="2" :disabled="isView">
+              </el-switch>
             </el-form-item>
             <el-form-item label="状态" prop="status">
-              <el-radio-group v-model="form.status" size="mini">
+              <el-radio-group v-model="form.status" size="mini" :disabled="isView">
                 <el-radio :label="1" border>上架</el-radio>
                 <el-radio :label="2" border>下架</el-radio>
                 <el-radio :label="3" border>存为草稿</el-radio>
@@ -258,7 +316,7 @@
             </el-form-item>
 
             <el-form-item label="备注" prop="remarks">
-              <el-input size="medium" type="textarea" clearable v-model="form.remarks"></el-input>
+              <el-input size="medium" type="textarea" clearable v-model="form.remarks" :disabled="isView"></el-input>
             </el-form-item>
             <el-form-item class="submit">
               <template v-if="!isView">
@@ -429,6 +487,9 @@ export default {
       dynamicValidateFormPrivate: {
         list: [],
       },
+      dynamicValidateFormNoUsed: {
+        list: [],
+      },
     }
   },
   methods: {
@@ -445,7 +506,6 @@ export default {
             imgId: createId(),
           },
         ]
-        const list = []
         res.data.goodsPublicSpecVos.forEach(item => {
           const obj = {}
           obj.goodsPublicSpecName = item.goodsPublicSpec.goodsPublicSpecName
@@ -462,13 +522,10 @@ export default {
             obj1.price = child.price
             obj.children.push(obj1)
           })
-          list.push(obj)
+          this.dynamicValidateForm.list.push(obj)
         })
-        this.dynamicValidateForm.list = list
-        const list1 = []
         res.data.goodsPrivateSpecVos.forEach(item => {
           const obj = {}
-
           obj.goodsPrivateSpecName = item.goodsPrivateSpec.goodsPrivateSpecName
           obj.orderNumber = item.goodsPrivateSpec.orderNumber
           obj.onlyOneSelect = item.goodsPrivateSpec.onlyOneSelect
@@ -482,9 +539,16 @@ export default {
             obj1.price = child.price
             obj.children.push(obj1)
           })
-          list1.push(obj)
+          this.dynamicValidateFormPrivate.list.push(obj)
         })
-        this.dynamicValidateFormPrivate.list = list1
+        res.data.noUsedPublicSpecs.forEach(item => {
+          const obj = {}
+          obj.goodsPublicSpecId = item.id
+          obj.goodsPublicSpecName = item.goodsPublicSpecName
+          obj.priceFlag = item.priceFlag
+          obj.children = []
+          this.dynamicValidateFormNoUsed.list.push(obj)
+        })
       } catch (e) {
         console.log(e)
       }
@@ -494,15 +558,13 @@ export default {
     async getAllCategory() {
       try {
         const res = await Category.categoryList()
-        if (res.data.rows.length) {
-          this.categoryList = res.data.rows
-          this.categoryList.forEach(item => {
-            const { catName, id } = item
-            this.firstCategoryId.push({ catName, id })
-          })
-          if (this.id) {
-            this.updateSecondIdsByFirstId(this.form.firstCategoryId)
-          }
+        this.categoryList = res.data.rows
+        this.categoryList.forEach(item => {
+          const { catName, id } = item
+          this.firstCategoryId.push({ catName, id })
+        })
+        if (this.id) {
+          this.updateSecondIdsByFirstId(this.form.firstCategoryId)
         }
       } catch (e) {
         console.log(e)
@@ -517,16 +579,14 @@ export default {
           secondCategoryId: this.form.secondCategoryId,
         })
         this.dynamicValidateForm.list = []
-        if (res.data.length) {
-          res.data.forEach(item => {
-            const obj = {}
-            obj.goodsPublicSpecId = item.id
-            obj.goodsPublicSpecName = item.goodsPublicSpecName
-            obj.priceFlag = item.priceFlag
-            obj.children = []
-            this.dynamicValidateForm.list.push(obj)
-          })
-        }
+        res.data.forEach(item => {
+          const obj = {}
+          obj.goodsPublicSpecId = item.id
+          obj.goodsPublicSpecName = item.goodsPublicSpecName
+          obj.priceFlag = item.priceFlag
+          obj.children = []
+          this.dynamicValidateForm.list.push(obj)
+        })
       } catch (e) {
         console.log(e)
       }
@@ -703,6 +763,20 @@ export default {
     },
     addPrivateName() {
       this.innerVisible = true
+    },
+    removePublic(item) {
+      const index = this.dynamicValidateForm.list.indexOf(item)
+      if (index !== -1) {
+        this.dynamicValidateForm.list.splice(index, 1)
+        this.dynamicValidateFormNoUsed.list.push(item)
+      }
+    },
+    cancelRemovePublic(item) {
+      const index = this.dynamicValidateFormNoUsed.list.indexOf(item)
+      if (index !== -1) {
+        this.dynamicValidateFormNoUsed.list.splice(index, 1)
+        this.dynamicValidateForm.list.push(item)
+      }
     },
     removePrivate(item) {
       const index = this.dynamicValidateFormPrivate.list.indexOf(item)
@@ -933,5 +1007,9 @@ export default {
   justify-content: space-between;
   align-items: center;
   width: 100%;
+}
+.el-collapse {
+  border-bottom: 0;
+  border-top: 0;
 }
 </style>

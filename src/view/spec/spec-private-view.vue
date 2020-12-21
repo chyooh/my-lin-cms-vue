@@ -187,14 +187,10 @@ export default {
       try {
         this.loading = true
         const res = await Private.infoList(this.goodsPrivateSpecId)
-        if (res.data.length) {
-          res.data.forEach(item => {
-            item.createTime = Util.getDateString(item.createTime)
-          })
-          this.tableData = res.data
-        } else {
-          this.tableData = []
-        }
+        res.data.forEach(item => {
+          item.createTime = Util.getDateString(item.createTime)
+        })
+        this.tableData = res.data
         this.loading = false
       } catch (e) {
         this.loading = false
@@ -300,13 +296,11 @@ export default {
       try {
         this.loading = true
         const res = await Category.categoryList()
-        if (res.data.rows.length) {
-          this.categoryList = res.data.rows
-          this.categoryList.forEach(item => {
-            const { catName, id } = item
-            this.firstCategoryId.push({ catName, id })
-          })
-        }
+        this.categoryList = res.data.rows
+        this.categoryList.forEach(item => {
+          const { catName, id } = item
+          this.firstCategoryId.push({ catName, id })
+        })
         this.loading = false
       } catch (e) {
         this.loading = false

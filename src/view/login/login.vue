@@ -57,7 +57,7 @@ export default {
       try {
         // 尝试获取当前用户信息
         const user = await User.getCurrentInfo()
-        console.log(user)
+        // console.log(user)
         this.setUserAndState(user)
         this.setUserPermissions(user.permissions)
       } catch (e) {

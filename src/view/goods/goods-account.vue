@@ -155,16 +155,11 @@ export default {
         }) // eslint-disable-line
         // console.log(res)
         this.loading = false
-        if (res.data.rows.length) {
-          res.data.rows.forEach(item => {
-            item.createTime = Util.getDateString(item.createTime)
-          })
-          this.tableData = res.data.rows
-          this.total_nums = res.data.total
-        } else {
-          this.tableData = []
-          this.total_nums = 0
-        }
+        res.data.rows.forEach(item => {
+          item.createTime = Util.getDateString(item.createTime)
+        })
+        this.tableData = res.data.rows
+        this.total_nums = res.data.total
       } catch (e) {
         this.loading = false
         console.log(e)
