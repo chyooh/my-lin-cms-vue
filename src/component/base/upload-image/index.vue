@@ -116,13 +116,13 @@ import { getFileType, checkIsAnimated, isEmptyObj, createId } from './utils'
  * @property {number} height 高度必需等于
  * @property {number} minWidth 最小宽
  * @property {number} minHeight 最小高
- * @property {number} minSize 最小 size（Mb)
- * @property {number} maxSize 最大 size（Mb)
+ * @property {number} minSize 最小 size（Kb)
+ * @property {number} maxSize 最大 size（Kb)
  * @property {number} allowAnimated 是否允许上传动图, 0 不检测, 1 不允许动图, 2 只允许动图. 要检查此项, 需设置属性 animated-check 为 true
  */
 
 const ONE_KB = 1024
-const ONE_MB = ONE_KB * 1024
+// const ONE_MB = ONE_KB * 1024
 
 /**
  * 创建项, 如不传入参数则创建空项
@@ -408,8 +408,8 @@ export default {
         tips.push(`${getRangeTip('宽度', basicRule.minWidth, basicRule.maxWidth)}`)
       } else {
         // 宽高都不固定
-        tips.push(`${getRangeTip('宽度', basicRule.minWidth, basicRule.maxWidth)}`)
-        tips.push(`${getRangeTip('高度', basicRule.minHeight, basicRule.maxHeight)}`)
+        // tips.push(`${getRangeTip('宽度', basicRule.minWidth, basicRule.maxWidth)}`)
+        // tips.push(`${getRangeTip('高度', basicRule.minHeight, basicRule.maxHeight)}`)
       }
 
       // 宽高比限制提示语
@@ -423,7 +423,7 @@ export default {
 
       // 文件大小
       if (basicRule.minSize || basicRule.maxSize) {
-        tips.push(getRangeTip('文件大小', basicRule.minSize, basicRule.maxSize, 'Mb'))
+        tips.push(getRangeTip('文件大小', basicRule.minSize, basicRule.maxSize, 'Kb'))
       }
 
       // 是否动态图
@@ -433,6 +433,10 @@ export default {
         } else if (basicRule.allowAnimated === 1) {
           tips.push('只允许上传动图')
         }
+      }
+      // 是否限定格式
+      if (basicRule.type) {
+        tips.push(`格式为.${basicRule.type}`)
       }
 
       return tips
@@ -794,7 +798,7 @@ export default {
           }
         }
       }
-
+      // console.log(imgInfo)
       // 宽高限制
       if (rule.width) {
         if (imgInfo.width !== rule.width) {
@@ -837,11 +841,16 @@ export default {
       }
 
       // 文件大小
-      if (rule.minSize && imgInfo.size < rule.minSize * ONE_MB) {
-        throw new Error(`"${imgInfo.name}"图像文件大小比不符合要求, 至少为${rule.minSize}Mb`)
+      if (rule.minSize && imgInfo.size < rule.minSize * ONE_KB) {
+        throw new Error(`"${imgInfo.name}"图像文件大小比不符合要求, 至少为${rule.minSize}Kb`)
       }
-      if (rule.maxSize && imgInfo.size > rule.maxSize * ONE_MB) {
-        throw new Error(`"${imgInfo.name}"图像文件大小比不符合要求, 至多为${rule.maxSize}Mb`)
+      if (rule.maxSize && imgInfo.size > rule.maxSize * ONE_KB) {
+        throw new Error(`"${imgInfo.name}"图像文件大小比不符合要求, 至多为${rule.maxSize}Kb`)
+      }
+
+      // 文件类型
+      if (rule.type && imgInfo.file.type.split('/')[1] !== rule.type) {
+        throw new Error(`"${imgInfo.name}"图像格式不符合要求, 需为.${rule.type}格式`)
       }
 
       return true

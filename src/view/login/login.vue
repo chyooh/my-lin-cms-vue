@@ -32,8 +32,8 @@ export default {
       wait: 2000, // 2000ms之内不能重复发起请求
       throttleLogin: null, // 节流登录
       form: {
-        username: 'test',
-        password: '123',
+        username: '',
+        password: '',
       },
     }
   },
@@ -41,6 +41,14 @@ export default {
     async login() {
       // this.setUserAndState(null)
       const { username, password } = this.form
+      if (!username) {
+        this.$message.error('请输入账户名')
+        return false
+      }
+      if (!password) {
+        this.$message.error('请输入密码')
+        return false
+      }
       try {
         this.loading = true
         await User.login(username, password)

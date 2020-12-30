@@ -81,7 +81,7 @@ export default {
     }
     .form-item-long {
       .el-input--mini .el-input__inner {
-        width: initial;
+        width: 210px;
       }
     }
     .el-input--mini .el-input__inner {
@@ -104,7 +104,7 @@ export default {
   }
 
   .el-form--inline .el-form-item {
-    margin-bottom: 0px !important;
+    // margin-bottom: 0px !important;
     margin-right: 0;
   }
   .el-form--inline .el-form-item__content {
@@ -117,8 +117,13 @@ export default {
     margin-right: 10px;
   }
   .goods-create {
-    .el-form-item__content {
-      margin-bottom: 10px;
+    // .el-form-item__content {
+    //   margin-bottom: 0px;
+    // }
+    .add-container {
+      .el-form-item__content {
+        margin-bottom: 10px;
+      }
     }
   }
   .child-container {

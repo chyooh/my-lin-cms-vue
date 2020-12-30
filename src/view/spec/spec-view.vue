@@ -17,7 +17,7 @@
           label-width="120px"
           @submit.native.prevent
         >
-          <el-form-item label="规格名称" prop="goodsPublicSpecName">
+          <el-form-item label="属性名称" prop="goodsPublicSpecName">
             <el-input size="medium" clearable v-model="form.goodsPublicSpecName"></el-input>
           </el-form-item>
           <el-form-item label="一级分类" prop="firstCategoryId">
@@ -47,19 +47,21 @@
               </el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="规格排序" prop="orderNumber">
+          <el-form-item label="属性排序" prop="orderNumber">
             <el-input size="medium" type="number" clearable v-model="form.orderNumber"></el-input>
           </el-form-item>
           <el-form-item label="是否为单选" prop="onlyOneSelect">
             <el-switch v-model="form.onlyOneSelect" :active-value="1" :inactive-value="0"> </el-switch>
+            <div class="info">提示：若选中，则此属性只能选择一个值；若不选中，则此属性可以选择多个值。</div>
           </el-form-item>
           <el-form-item label="是否为必选" prop="mustSelect">
             <el-switch v-model="form.mustSelect" :active-value="1" :inactive-value="0"> </el-switch>
+            <div class="info">提示：若选中，则此属性为必选项，不可跳过；若不选中，则此属性可以跳过不选。</div>
           </el-form-item>
           <el-form-item label="是否决定价格" prop="priceFlag">
             <el-switch v-model="form.priceFlag" :active-value="1" :inactive-value="0"> </el-switch>
             <div class="info">
-              提示：决定价格的规格一般只有一个,比如内存（128G的和256G的机型价格不同,那么内存这个规格名就是决定价格的,否则就不是决定价格的）。
+              提示：决定价格的属性一般只有一个，比如内存（128G的和256G的机型价格不同，那么内存这个属性名就是决定价格的，否则就不是决定价格的）。
             </div>
           </el-form-item>
           <el-form-item class="submit" v-permission="['admin:goods:spec:edit', 'admin:goods:spec:add']">
@@ -82,7 +84,7 @@ export default {
     const checkName = (rule, value, callback) => {
       // eslint-disable-line
       if (!value) {
-        return callback(new Error('规格名不能为空'))
+        return callback(new Error('属性名不能为空'))
       }
       callback()
     }
@@ -94,7 +96,7 @@ export default {
     }
     return {
       type: 'add',
-      title: '新建规格',
+      title: '新建属性',
 
       loading: false,
       form: {
@@ -208,7 +210,7 @@ export default {
     if (this.$route.query.val) {
       const val = JSON.parse(this.$route.query.val)
       this.type = 'edit'
-      this.title = '编辑规格'
+      this.title = '编辑属性'
       this.form.id = val.id
       this.form.goodsPublicSpecName = val.goodsPublicSpecName
       this.form.firstCategoryId = val.firstCategoryId || null

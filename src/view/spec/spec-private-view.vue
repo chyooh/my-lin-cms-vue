@@ -2,7 +2,7 @@
   <div class="container">
     <el-row :gutter="20" type="flex" justify="space-between">
       <el-col :lg="10" :md="16" :sm="20" :xs="20">
-        <div class="header">修改规格名</div>
+        <div class="header">修改属性名</div>
         <el-form
           status-icon
           :rules="rules1"
@@ -12,7 +12,7 @@
           label-width="120px"
           @submit.native.prevent
         >
-          <el-form-item label="规格名名称" prop="goodsPrivateSpecName">
+          <el-form-item label="属性名名称" prop="goodsPrivateSpecName">
             <el-input size="medium" clearable v-model="form1.goodsPrivateSpecName"></el-input>
           </el-form-item>
           <el-form-item label="一级分类" prop="firstCategoryId">
@@ -42,7 +42,7 @@
               </el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="规格名排序" prop="orderNumber">
+          <el-form-item label="属性名排序" prop="orderNumber">
             <el-input size="medium" type="number" clearable v-model="form1.orderNumber"></el-input>
           </el-form-item>
           <el-form-item class="submit">
@@ -54,15 +54,15 @@
       <el-col :lg="14" :md="20" :sm="24" :xs="24">
         <div class="flex-container">
           <div class="header">
-            <div>规格值列表</div>
-            <el-button type="primary" plain @click="create" size="medium">添加规格值</el-button>
+            <div>属性值列表</div>
+            <el-button type="primary" plain @click="create" size="medium">添加属性值</el-button>
           </div>
           <span class="back" @click="back"> <i class="iconfont icon-fanhui"></i> 返回 </span>
         </div>
 
         <el-table :data="tableData" :default-sort="{ prop: 'id', order: 'descending' }" stripe v-loading="loading">
           <el-table-column fixed prop="id" label="id" sortable width="100"> </el-table-column>
-          <el-table-column fixed prop="goodsPrivateSpecValue" label="规格值名称" width="100"> </el-table-column>
+          <el-table-column fixed prop="goodsPrivateSpecValue" label="属性值名称" width="100"> </el-table-column>
 
           <el-table-column sortable prop="orderNumber" label="排序" width="100"> </el-table-column>
           <el-table-column sortable prop="createTime" label="创建时间" min-width="200"> </el-table-column>
@@ -89,10 +89,10 @@
           :rules="rules"
           style="margin-left: -35px; margin-bottom: -35px; margin-top: 15px"
         >
-          <el-form-item label="规格值名称" prop="goodsPrivateSpecValue">
+          <el-form-item label="属性值名称" prop="goodsPrivateSpecValue">
             <el-input size="medium" clearable v-model="form.goodsPrivateSpecValue"></el-input>
           </el-form-item>
-          <el-form-item label="规格值排序" prop="orderNumber">
+          <el-form-item label="属性值排序" prop="orderNumber">
             <el-input size="medium" type="number" clearable v-model="form.orderNumber"></el-input>
           </el-form-item>
         </el-form>
@@ -116,7 +116,7 @@ export default {
     const checkName = (rule, value, callback) => {
       // eslint-disable-line
       if (!value) {
-        return callback(new Error('规格名不能为空'))
+        return callback(new Error('属性名不能为空'))
       }
       callback()
     }
@@ -149,7 +149,7 @@ export default {
       loading1: false,
       rules: {
         // 表单验证规则
-        goodsPrivateSpecValue: [{ required: true, message: '规格值名称不能为空', trigger: 'blur' }],
+        goodsPrivateSpecValue: [{ required: true, message: '属性值名称不能为空', trigger: 'blur' }],
         orderNumber: [{ validator: checkOrder, trigger: ['blur', 'change'], required: true }],
       },
       type: 'add',
@@ -174,9 +174,9 @@ export default {
     title() {
       let title
       if (this.type === 'add') {
-        title = '创建规格值'
+        title = '创建属性值'
       } else {
-        title = '更新规格值'
+        title = '更新属性值'
       }
       return title
     },
@@ -239,7 +239,7 @@ export default {
       this.dialogFormVisible = true
     },
     handleDelete(val) {
-      this.$confirm('此操作将永久删除该规格值, 是否继续?', '提示', {
+      this.$confirm('此操作将永久删除该属性值, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning',

@@ -1,7 +1,7 @@
 const specRouter = {
   route: null,
   name: null,
-  title: '规格管理',
+  title: '属性管理',
   type: 'folder',
   icon: 'iconfont icon-dingdanguanli',
   filePath: 'view/goods/',
@@ -9,7 +9,7 @@ const specRouter = {
   inNav: true,
   children: [
     {
-      title: '规格列表',
+      title: '属性列表',
       type: 'view',
       name: 'specList',
       route: '/spec/list',
@@ -19,7 +19,7 @@ const specRouter = {
       permission: ['admin:goods:spec:view'],
     },
     {
-      title: '创建规格',
+      title: '创建属性',
       type: 'view',
       name: 'specDetail',
       route: '/spec/view',

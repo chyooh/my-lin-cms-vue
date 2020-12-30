@@ -2,7 +2,7 @@
   <div class="container">
     <div class="header">
       <!-- <div class="title">分类列表</div> -->
-      <el-button type="primary" plain @click="create" size="medium">创建私有规格</el-button>
+      <el-button type="primary" plain @click="create" size="medium">创建私有属性</el-button>
     </div>
 
     <el-table :data="tableData" :default-sort="{ prop: 'id', order: 'descending' }" stripe v-loading="loading">
@@ -25,7 +25,7 @@
     </el-table>
     <!-- 弹窗 -->
     <el-dialog
-      title="创建私有规格"
+      title="创建私有属性"
       :append-to-body="true"
       :visible.sync="dialogFormVisible"
       class="groupListInfoDialog"
@@ -40,7 +40,7 @@
           label-width="120px"
           @submit.native.prevent
         >
-          <el-form-item label="规格名名称" prop="goodsPrivateSpecName">
+          <el-form-item label="属性名名称" prop="goodsPrivateSpecName">
             <el-input size="medium" clearable v-model="form.goodsPrivateSpecName"></el-input>
           </el-form-item>
           <el-form-item label="一级分类" prop="firstCategoryId">
@@ -70,7 +70,7 @@
               </el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="规格排序" prop="orderNumber">
+          <el-form-item label="属性排序" prop="orderNumber">
             <el-input size="medium" type="number" clearable v-model="form.orderNumber"></el-input>
           </el-form-item>
           <el-form-item class="submit">
@@ -93,7 +93,7 @@ export default {
     const checkName = (rule, value, callback) => {
       // eslint-disable-line
       if (!value) {
-        return callback(new Error('规格名称不能为空'))
+        return callback(new Error('属性名称不能为空'))
       }
       callback()
     }
@@ -175,7 +175,7 @@ export default {
       this.$router.push({ path: '/spec-private/view', query: { val: JSON.stringify(val) } })
     },
     handleDelete(val) {
-      this.$confirm('此操作将永久删除该规格, 是否继续?', '提示', {
+      this.$confirm('此操作将永久删除该属性, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning',

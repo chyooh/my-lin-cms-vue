@@ -12,6 +12,12 @@ class Order {
     const res = await post('recovery/order/cancel.json', { orderNo })
     return res
   }
+
+  // 驳回用户订单取消
+  async rejectCancel(orderNo) {
+    const res = await post('recovery/order/rejectCancelOrder.json', { orderNo })
+    return res
+  }
 }
 
 export default new Order()

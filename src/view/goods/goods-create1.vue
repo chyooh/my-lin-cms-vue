@@ -95,9 +95,9 @@
             <el-form-item label="私有属性" prop="goodsPrivateSpecIds">
               <el-table :data="privateSpec" v-loading="loading">
                 <el-table-column fixed prop="id" label="id" width="60"> </el-table-column>
-                <el-table-column fixed prop="goodsPrivateSpecName" label="规格名称" width="100"> </el-table-column>
+                <el-table-column fixed prop="goodsPrivateSpecName" label="属性名称" width="100"> </el-table-column>
                 <el-table-column prop="orderNumber" label="排序" width="50"> </el-table-column>
-                <el-table-column label="规格值">
+                <el-table-column label="属性值">
                   <template slot-scope="props">
                     <el-tag
                       size="mini"
@@ -157,10 +157,10 @@
               label-width="120px"
               @submit.native.prevent
             >
-              <el-form-item label="规格名名称" prop="goodsPublicSpecName">
+              <el-form-item label="属性名名称" prop="goodsPublicSpecName">
                 <el-input size="medium" clearable v-model="form3.goodsPrivateSpecName"></el-input>
               </el-form-item>
-              <el-form-item label="规格名排序" prop="orderNumber">
+              <el-form-item label="属性名排序" prop="orderNumber">
                 <el-input size="medium" type="number" clearable v-model="form3.orderNumber"></el-input>
               </el-form-item>
               <el-form-item class="submit">
@@ -171,13 +171,13 @@
           </el-col>
           <el-col :lg="14" :md="20" :sm="24" :xs="24">
             <div class="header">
-              <div>规格值列表</div>
-              <el-button type="primary" plain @click="createValue" size="medium">添加规格值</el-button>
+              <div>属性值列表</div>
+              <el-button type="primary" plain @click="createValue" size="medium">添加属性值</el-button>
             </div>
 
             <el-table :data="tableData" :default-sort="{ prop: 'id', order: 'descending' }" stripe v-loading="loading">
               <el-table-column fixed prop="id" label="id" sortable width="100"> </el-table-column>
-              <el-table-column fixed prop="goodsPrivateSpecValue" label="规格值名称" width="100"> </el-table-column>
+              <el-table-column fixed prop="goodsPrivateSpecValue" label="属性值名称" width="100"> </el-table-column>
               <el-table-column sortable prop="orderNumber" label="排序" width="100"> </el-table-column>
               <el-table-column sortable prop="createTime" label="创建时间" min-width="200"> </el-table-column>
               <el-table-column label="操作" fixed="right" width="235">
@@ -202,10 +202,10 @@
               :rules="rules4"
               style="margin-left: -35px; margin-bottom: -35px; margin-top: 15px"
             >
-              <el-form-item label="规格值名称" prop="goodsPrivateSpecValue">
+              <el-form-item label="属性值名称" prop="goodsPrivateSpecValue">
                 <el-input size="medium" clearable v-model="form4.goodsPrivateSpecValue"></el-input>
               </el-form-item>
-              <el-form-item label="规格值排序" prop="orderNumber">
+              <el-form-item label="属性值排序" prop="orderNumber">
                 <el-input size="medium" type="number" clearable v-model="form4.orderNumber"></el-input>
               </el-form-item>
             </el-form>
@@ -275,8 +275,8 @@ export default {
     }
     return {
       title: '添加商品',
-      title1: '添加规格值',
-      title2: '添加规格名',
+      title1: '添加属性值',
+      title2: '添加属性名',
       type: 'add',
       type1: 'add',
       type2: 'add',
@@ -362,7 +362,7 @@ export default {
       },
       rules4: {
         // 表单验证规则
-        goodsPrivateSpecValue: [{ required: true, message: '规格值名称不能为空', trigger: 'blur' }],
+        goodsPrivateSpecValue: [{ required: true, message: '属性值名称不能为空', trigger: 'blur' }],
         orderNumber: [{ validator: checkOrder, trigger: ['blur', 'change'], required: true }],
       },
       priceCheck: (rule, value, callback) => {
@@ -690,7 +690,7 @@ export default {
     // 添加私有属性
     createSpec() {
       this.type2 = 'add'
-      this.title2 = '添加规格名'
+      this.title2 = '添加属性名'
       this.form3 = { ...this.baseForm3 }
       this.cacheForm3 = { ...this.baseForm3 }
       this.outerVisible = true
@@ -699,7 +699,7 @@ export default {
     // 编辑私有属性
     editSpec(val) {
       this.type2 = 'edit'
-      this.title2 = '编辑规格名'
+      this.title2 = '编辑属性名'
       this.form3.goodsPrivateSpecName = val.goodsPrivateSpecName
       this.form3.orderNumber = val.orderNumber
 
@@ -709,7 +709,7 @@ export default {
       this.outerVisible = true
     },
     handleDeletePrivate(val) {
-      this.$confirm('此操作将永久删除该规格, 是否继续?', '提示', {
+      this.$confirm('此操作将永久删除该属性, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning',
@@ -728,7 +728,7 @@ export default {
         }
       })
     },
-    // 确认创建规格名
+    // 确认创建属性名
     async submitFormOuter(formName) {
       this.$refs[formName].validate(async valid => {
         if (valid) {
@@ -763,13 +763,13 @@ export default {
     // 创建私有属性值
     createValue() {
       if (!this.goodsPrivateSpec) {
-        this.$message.error('请先创建规格名')
+        this.$message.error('请先创建属性名')
         return false
       }
       this.form4 = { ...this.baseForm4 }
       this.cacheForm4 = { ...this.baseForm4 }
       this.type1 = 'add'
-      this.title1 = '添加规格值'
+      this.title1 = '添加属性值'
       this.innerVisible = true
     },
 
@@ -781,13 +781,13 @@ export default {
 
       this.cacheForm4 = { ...this.form4 }
       this.type1 = 'edit'
-      this.title1 = '修改规格值'
+      this.title1 = '修改属性值'
       this.innerVisible = true
     },
 
     // 删除属性值
     handleDelete(val) {
-      this.$confirm('此操作将永久删除该规格值, 是否继续?', '提示', {
+      this.$confirm('此操作将永久删除该属性值, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning',
@@ -839,7 +839,7 @@ export default {
     // 确认添加私有属性
     confirmDone() {
       if (this.goodsPrivateSpecInfo.length < 1) {
-        this.$message.error('请添加规格值')
+        this.$message.error('请添加属性值')
         return false
       }
       const obj = {}
@@ -858,7 +858,7 @@ export default {
       }
       this.outerVisible = false
     },
-    // 获取规格值列表
+    // 获取属性值列表
     async getInfoList() {
       try {
         this.loading = true

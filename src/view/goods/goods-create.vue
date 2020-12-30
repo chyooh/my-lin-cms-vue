@@ -4,7 +4,9 @@
       <div>
         <span v-show="!isView">{{ title }}</span>
       </div>
-      <span v-if="type === 'edit'" class="back" @click="back"> <i class="iconfont icon-fanhui"></i> 返回 </span>
+      <span v-if="type === 'edit' || isCopy" class="back" @click="back">
+        <i class="iconfont icon-fanhui"></i> 返回
+      </span>
     </div>
     <el-row>
       <el-col :lg="20" :md="20" :sm="24" :xs="24">
@@ -129,7 +131,6 @@
                               v-model="child.end"
                               size="mini"
                               active-color="#13ce66"
-                              inactive-color="#ff4949"
                               :active-value="1"
                               :inactive-value="0"
                             >
@@ -250,7 +251,6 @@
                               v-model="child.end"
                               size="mini"
                               active-color="#13ce66"
-                              inactive-color="#ff4949"
                               :active-value="1"
                               :inactive-value="0"
                             >
@@ -297,7 +297,7 @@
                 </el-form>
               </div>
               <div class="empty">
-                <el-button class="addbtn" type="primary" size="mini" plain @click="addPrivateName()" :disabled="isView">
+                <el-button type="primary" size="medium" plain @click="addPrivateName()" :disabled="isView">
                   添 加
                 </el-button>
               </div>
@@ -307,10 +307,9 @@
               </el-switch>
             </el-form-item>
             <el-form-item label="状态" prop="status">
-              <el-radio-group v-model="form.status" size="mini" :disabled="isView">
+              <el-radio-group v-model="form.status" size="medium" :disabled="isView">
                 <el-radio :label="1" border>上架</el-radio>
                 <el-radio :label="2" border>下架</el-radio>
-                <el-radio :label="3" border>存为草稿</el-radio>
                 <el-radio :label="4" border disabled>备份</el-radio>
               </el-radio-group>
             </el-form-item>
@@ -360,7 +359,7 @@
           <el-form-item label="属性名称" prop="goodsPrivateSpecName">
             <el-input size="medium" clearable v-model="form4.goodsPrivateSpecName"></el-input>
           </el-form-item>
-          <el-form-item label="规格排序" prop="orderNumber">
+          <el-form-item label="属性排序" prop="orderNumber">
             <el-input size="medium" type="number" clearable v-model="form4.orderNumber"></el-input>
           </el-form-item>
           <el-form-item label="是否为单选" prop="onlyOneSelect">
@@ -431,6 +430,7 @@ export default {
       id: null,
       title: '添加商品',
       type: 'add',
+      isCopy: false,
       innerVisible: false, // 内层弹窗
       form: {
         id: null,
@@ -454,9 +454,9 @@ export default {
       },
       loading: false,
       rules1: {
-        minWidth: 100,
-        minHeight: 100,
-        maxSize: 2,
+        ratio: [1, 1],
+        maxSize: 128,
+        type: 'webp',
       },
       categoryList: [],
       firstCategoryId: [],
@@ -651,7 +651,7 @@ export default {
               } = this.form
 
               let res
-              if (this.type === 'add') {
+              if (this.type === 'add' || this.isCopy) {
                 res = await Goods.save({
                   goodsName,
                   firstCategoryId,
@@ -736,7 +736,7 @@ export default {
           key: Date.now(),
           price: item.priceFlag === 1 ? 100 : 0,
           end: 0,
-          orderNumber: 1,
+          orderNumber: item.children.length + 1,
         })
         item.tempValue = ''
       } else {
@@ -754,7 +754,7 @@ export default {
           key: Date.now(),
           price: 0,
           end: 0,
-          orderNumber: 1,
+          orderNumber: item.children.length + 1,
         })
         item.tempValue = ''
       } else {
@@ -901,14 +901,18 @@ export default {
   },
 
   async created() {
-    const { id, isView } = this.$route.query
+    const { id, isView, isCopy } = this.$route.query
     if (isView) {
       this.isView = true
     }
     if (id) {
       this.id = id
-      this.type = 'edit'
-      this.title = '编辑商品'
+      if (isCopy) {
+        this.isCopy = isCopy
+      } else {
+        this.type = 'edit'
+        this.title = '编辑商品'
+      }
       await this.getView(id)
     }
     this.getAllCategory()

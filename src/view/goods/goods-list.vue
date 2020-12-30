@@ -119,7 +119,7 @@
       </div>
       <div class="form-item-div">
         <el-form-item class="submit">
-          <el-button size="mini" type="primary" @click="submitFilterForm('filterForm')">搜 索</el-button>
+          <el-button size="mini" type="primary" @click="submitFilterForm()">搜 索</el-button>
           <el-button size="mini" @click="resetFilterForm('filterForm')">重 置</el-button>
         </el-form-item>
       </div>
@@ -173,7 +173,7 @@
           {{ props.row.goods.remarks }}
         </template>
       </el-table-column>
-      <el-table-column label="操作" fixed="right" width="100">
+      <el-table-column label="操作" fixed="right" width="150">
         <template slot-scope="props">
           <el-button v-permission="'admin:goods:view'" type="" plain @click="handleView(props.row.goods.id)" size="mini"
             >查看</el-button
@@ -185,6 +185,14 @@
             @click="handleEdit(props.row.goods.id)"
             size="mini"
             >编辑</el-button
+          >
+          <el-button
+            v-permission="'admin:goods:add'"
+            type="success"
+            plain
+            @click="handleCopy(props.row.goods.id)"
+            size="mini"
+            >复制</el-button
           >
           <el-button
             v-permission="'admin:goods:del'"
@@ -233,7 +241,6 @@ export default {
         { label: '不限', value: null },
         { label: '上架', value: 1 },
         { label: '下架', value: 2 },
-        { label: '草稿', value: 3 },
         { label: '备份', value: 4 },
       ],
       loading: false,
@@ -305,6 +312,12 @@ export default {
         query: { id },
       })
     },
+    async handleCopy(id) {
+      this.$router.push({
+        path: '/goods/add',
+        query: { id, isCopy: true },
+      })
+    },
     async handleDel(id) {
       this.$confirm('此操作将永久删除该商品, 是否继续?', '提示', {
         confirmButtonText: '确定',
@@ -330,17 +343,9 @@ export default {
       await this.getGoodsList()
       this.loading = false
     },
-    submitFilterForm(formName) {
-      this.$refs[formName].validate(async valid => {
-        // eslint-disable-line
-        if (valid) {
-          this.currentPage = 1
-          await this.getGoodsList()
-        } else {
-          console.log('error submit!!')
-          this.$message.error('请填写正确的信息')
-        }
-      })
+    submitFilterForm() {
+      this.currentPage = 1
+      this.getGoodsList()
     },
     resetFilterForm(formName) {
       this.$refs[formName].resetFields()

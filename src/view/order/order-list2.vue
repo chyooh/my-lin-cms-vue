@@ -12,89 +12,142 @@
       class="form"
       inline
     >
-      <div class="form-item-div form-item-long">
-        <el-form-item label="订单号" prop="orderNo">
-          <el-input size="mini" clearable v-model="filterForm.orderNo"></el-input>
-        </el-form-item>
-      </div>
+      <div class="form-left">
+        <div class="main-input">
+          <div class="form-item-div form-item-long">
+            <el-form-item label="订单号" prop="orderNo">
+              <el-input size="mini" clearable v-model="filterForm.orderNo"></el-input>
+            </el-form-item>
+          </div>
 
-      <div class="form-item-div">
-        <el-form-item label="创建时间">
-          <el-form-item prop="filter_createTimes">
-            <el-date-picker
-              size="mini"
-              v-model="filterForm.filter_createTimes"
-              type="date"
-              value-format="yyyy-MM-dd"
-              placeholder="选择开始时间"
-              :picker-options="{
-                disabledDate(time) {
-                  return time.getTime() > Date.now()
-                },
-              }"
-              style="width: 100%"
-            ></el-date-picker>
-          </el-form-item>
-          <div class="line">-</div>
-          <el-form-item prop="filter_createTimee">
-            <el-date-picker
-              size="mini"
-              v-model="filterForm.filter_createTimee"
-              type="date"
-              value-format="yyyy-MM-dd"
-              :picker-options="{
-                disabledDate(time) {
-                  return (
-                    time.getTime() > Date.now() ||
-                    time.getTime() < new Date(filterForm.filter_createTimes + ' 00:00:00')
-                  )
-                },
-              }"
-              placeholder="选择结束时间"
-              style="width: 100%"
-            ></el-date-picker>
-          </el-form-item>
-        </el-form-item>
+          <div class="form-item-div">
+            <el-form-item label="创建时间">
+              <el-form-item prop="filter_createTimes">
+                <el-date-picker
+                  size="mini"
+                  v-model="filterForm.filter_createTimes"
+                  type="date"
+                  value-format="yyyy-MM-dd"
+                  placeholder="选择开始时间"
+                  :picker-options="{
+                    disabledDate(time) {
+                      return time.getTime() > Date.now()
+                    },
+                  }"
+                  style="width: 100%"
+                ></el-date-picker>
+              </el-form-item>
+              <div class="line">-</div>
+              <el-form-item prop="filter_createTimee">
+                <el-date-picker
+                  size="mini"
+                  v-model="filterForm.filter_createTimee"
+                  type="date"
+                  value-format="yyyy-MM-dd"
+                  :picker-options="{
+                    disabledDate(time) {
+                      return (
+                        time.getTime() > Date.now() ||
+                        time.getTime() < new Date(filterForm.filter_createTimes + ' 00:00:00')
+                      )
+                    },
+                  }"
+                  placeholder="选择结束时间"
+                  style="width: 100%"
+                ></el-date-picker>
+              </el-form-item>
+            </el-form-item>
+          </div>
+        </div>
+        <div class="sub-input">
+          <el-collapse-transition>
+            <div v-show="isOpen">
+              <div class="form-item-div">
+                <el-form-item label="更新时间">
+                  <el-form-item prop="filter_updateTimes">
+                    <el-date-picker
+                      size="mini"
+                      v-model="filterForm.filter_updateTimes"
+                      type="date"
+                      value-format="yyyy-MM-dd"
+                      placeholder="选择开始时间"
+                      :picker-options="{
+                        disabledDate(time) {
+                          return time.getTime() > Date.now()
+                        },
+                      }"
+                      style="width: 100%"
+                    ></el-date-picker>
+                  </el-form-item>
+                  <div class="line">-</div>
+                  <el-form-item prop="filter_updateTimee">
+                    <el-date-picker
+                      size="mini"
+                      v-model="filterForm.filter_updateTimee"
+                      type="date"
+                      value-format="yyyy-MM-dd"
+                      :picker-options="{
+                        disabledDate(time) {
+                          return (
+                            time.getTime() > Date.now() ||
+                            time.getTime() < new Date(filterForm.filter_updateTimes + ' 00:00:00')
+                          )
+                        },
+                      }"
+                      placeholder="选择结束时间"
+                      style="width: 100%"
+                    ></el-date-picker>
+                  </el-form-item>
+                </el-form-item>
+              </div>
+            </div>
+          </el-collapse-transition>
+        </div>
       </div>
-      <div class="form-item-div">
-        <el-form-item class="submit">
-          <el-button size="mini" type="primary" @click="submitFilterForm('filterForm')">搜 索</el-button>
-          <el-button size="mini" @click="resetFilterForm('filterForm')">重 置</el-button>
-        </el-form-item>
+      <div class="form-right">
+        <div class="form-item-div">
+          <el-form-item class="submit">
+            <el-button size="mini" @click="isOpen = !isOpen">高级筛选</el-button>
+            <el-button size="mini" type="primary" @click="submitFilterForm('filterForm')">搜 索</el-button>
+            <el-button size="mini" @click="resetFilterForm('filterForm')">重 置</el-button>
+          </el-form-item>
+        </div>
       </div>
     </el-form>
-    <el-tabs v-model="activeId" @tab-click="handleTabClick">
-      <el-tab-pane v-for="item in status" :key="item.id" :name="item.id">
-        <span slot="label" class="tabs-label">{{ item.label }}</span>
-      </el-tab-pane>
-    </el-tabs>
-    <div class="table-container">
+    <sticky-top>
+      <el-tabs v-model="activeId" @tab-click="handleTabClick">
+        <el-tab-pane v-for="item in status" :key="item.id" :name="item.id">
+          <span slot="label" class="tabs-label">{{ item.label }}</span>
+        </el-tab-pane>
+      </el-tabs>
       <div class="table-title">
         <el-row>
           <el-col :span="6">商品信息</el-col>
-          <el-col :span="2">回收价格</el-col>
-          <el-col :span="2">优惠券</el-col>
+          <el-col :span="3">回收价格</el-col>
+          <el-col :span="2">加价券</el-col>
           <el-col :span="2">运费</el-col>
-          <el-col :span="3">预付款</el-col>
+          <el-col :span="2">预付款</el-col>
           <el-col :span="3">交易状态</el-col>
           <el-col :span="3">用户地址</el-col>
           <el-col :span="3">备注</el-col>
         </el-row>
       </div>
+    </sticky-top>
+    <div class="table-container" v-loading="loading">
       <template v-if="tableData.length > 0">
         <div class="goods-item" v-for="(goods, index) in tableData" :key="index">
           <el-row class="goods-title">
             <div class="margin-right10">{{ goods.order.createTime }}</div>
             <div>订单号：{{ goods.order.orderNo }}</div>
           </el-row>
-          <el-row class="content">
+          <el-row class="content order-info">
             <el-col :span="6">
               <div class="shangpin">
                 <img :src="goods.goodsVos[0].goods.goodsImage" alt="" />
                 <div class="right-shangpin">
                   <div class="name">{{ goods.goodsVos[0].goods.goodsName }}</div>
                   <div class="tag-container">
-                    <span>规格：</span>
+                    <span>属性：</span>
                     <div>
                       <el-tag
                         size="small"
@@ -106,35 +159,35 @@
                       </el-tag>
                     </div>
                   </div>
-                  <div>
+                  <!-- <div>
                     <l-icon name="shen" color="#ff9900" width="12" height="12"></l-icon>
                     <l-icon name="qi" color="orange" width="12" height="12"></l-icon>
-                  </div>
-                  <div>
+                  </div> -->
+                  <!-- <div>
                     <el-button size="mini" type="primary" @click="modifyPrice(goods.id)">修改价格</el-button>
                     <el-button size="mini" @click="addOrder(goods.id)">补订单</el-button>
-                  </div>
+                  </div> -->
                 </div>
               </div>
             </el-col>
-            <el-col :span="2">
-              <div>{{ Util.getPriceString(goods.goodsPrice) }}</div>
+            <el-col :span="3">
+              <div>{{ Util.getPriceString(goods.order.price) }}</div>
             </el-col>
             <el-col :span="2">
-              <div v-for="(item, index) in goods.coupons" :key="index">
-                <el-tag size="small" type="danger">
+              <template v-for="(item, index) in goods.coupons">
+                <el-tag size="small" type="danger" v-if="item && item.name" :key="index">
                   {{ item && item.name }}
                 </el-tag>
-              </div>
+              </template>
             </el-col>
             <el-col :span="2">
-              <div>运费：{{ Util.getPriceString(goods.order.postFee || 0) }}</div>
+              <div>{{ Util.getPriceString(goods.order.postFee || 0) }}</div>
             </el-col>
-            <el-col :span="3">
+            <el-col :span="2">
               <div>{{ Util.getPriceString(goods.order.prePayment || 0) }}</div>
             </el-col>
             <el-col :span="3">
-              {{ goods.order.status === 0 ? '未完成' : goods.order.status === 1 ? '已完成' : '已取消' }}
+              {{ goods.order.statusText }}
             </el-col>
             <el-col :span="3">
               <div>{{ goods.orderShipping.senderName }}</div>
@@ -145,18 +198,27 @@
                 }}
               </div>
             </el-col>
-            <el-col :span="3">{{ goods.order.remark }}</el-col>
+            <el-col :span="3">{{ goods.order.remark || '无' }}</el-col>
           </el-row>
           <el-row class="content">
             <el-col>
-              <div class="margin-bottom10">
-                认证资料：周（33333****99999），人脸识别通过 性别：男性 年龄：28 <span>会员等级：VIP0</span>
+              <div class="margin-bottom10" v-if="goods.order.status === 7">
+                取消原因：<span>{{ goods.order.cancelReason }}</span>
               </div>
-              <div>
-                <el-button type="primary" size="mini">复制地址</el-button>
-                <el-button type="warning" size="mini">未设置地址</el-button>
+              <div v-permission="'admin:order:edit'">
+                <template v-if="goods.order.status === 7">
+                  <el-button type="danger" size="mini" @click="confirmCancel(goods.order.orderNo)">通过取消</el-button>
+                  <el-button type="warning" size="mini" @click="rejectCancel(goods.order.orderNo)">驳回取消</el-button>
+                </template>
                 <el-button type="success" size="mini">区块链</el-button>
                 <el-button type="primary" size="mini">交易快照</el-button>
+                <el-button
+                  v-if="goods.order.status < 5"
+                  type="danger"
+                  size="mini"
+                  @click="confirmCancel(goods.order.orderNo)"
+                  >取消订单</el-button
+                >
               </div>
             </el-col>
           </el-row>
@@ -174,6 +236,7 @@
       <div v-else class="empty">暂无订单</div>
       <el-row></el-row>
     </div>
+
     <!-- 分页 -->
     <div class="pagination">
       <el-pagination
@@ -208,23 +271,33 @@ export default {
         orderNo: null,
         filter_createDates: null,
         filter_createDatee: null,
+        filter_updateTimes: null,
+        filter_updateTimee: null,
         status: null,
       },
       Util,
       activeId: '1',
+      // 订单状态  1.待处理  2.待取件  3.运输中  4.已签收  5.交易完成 6.订单取消 7.取消中
       status: [
         { id: '1', label: '全部', value: null },
-        { id: '3', label: '未完成', value: 0 },
-        { id: '2', label: '已完成', value: 1 },
-        { id: '4', label: '已取消', value: 2 },
+        { id: '2', label: '待处理', value: 1 },
+        { id: '3', label: '待取件', value: 2 },
+        { id: '4', label: '运输中', value: 3 },
+        { id: '5', label: '已签收', value: 4 },
+        { id: '6', label: '已完成', value: 5 },
+        { id: '7', label: '已取消', value: 6 },
+        { id: '8', label: '取消中', value: 7 },
       ],
+      isOpen: false,
+      loading: false,
     }
   },
   methods: {
     // 根据分组 刷新/获取分组内的用户
     async getOrderList() {
       const { currentPage } = this
-      const loading = this.$loading({ target: '.table-container' })
+      // const loading = this.$loading({ target: '.table-container' })
+      this.loading = true
       try {
         const res = await Order.list({
           ...this.filterForm,
@@ -232,22 +305,48 @@ export default {
           pageNumber: currentPage,
         }) // eslint-disable-line
         // console.log(res)
-        loading.close()
+        // loading.close()
+        this.loading = false
         res.data.rows.forEach(item => {
           item.order.createTime = Util.getDateString(item.order.createTime)
+          item.order.statusText = this.getStatusText(item.order.status)
         })
         this.tableData = res.data.rows
         // console.log(this.tableData)
         this.total_nums = res.data.total
       } catch (e) {
-        loading.close()
+        // loading.close()
+        this.loading = false
         console.log(e)
+      }
+    },
+    getStatusText(status) {
+      switch (status) {
+        case 1:
+          return '待处理'
+        case 2:
+          return '待取件'
+        case 3:
+          return '运输中'
+        case 4:
+          return '已签收'
+        case 5:
+          return '交易完成'
+        case 6:
+          return '订单取消'
+        case 7:
+          return '订单取消中'
+        case 8:
+          return '已评价'
+        default:
+          return '待处理'
       }
     },
     // 切换table页
     async handleCurrentChange(val) {
+      this.backTop()
       this.currentPage = val
-      console.log(this.currentPage)
+      // console.log(this.currentPage)
       await this.getOrderList()
     },
     submitFilterForm(formName) {
@@ -263,6 +362,7 @@ export default {
       })
     },
     resetFilterForm(formName) {
+      this.isOpen = false
       this.$refs[formName].resetFields()
       this.getOrderList()
     },
@@ -280,10 +380,77 @@ export default {
         this.getOrderList()
       }
     },
+    toggleOpen() {
+      this.isOpen = !this.isOpen
+    },
+    handleScroll(e) {
+      this.scrollY = e.target.scrollTop
+      this.showBackTop = e.target.scrollTop > 100 // 页面滚动距离大于100的时候显示回到top的标识
+      this.targetDom = e
+    },
+    // 滑动到顶部
+    backTop() {
+      const _this = this
+      let timer = requestAnimationFrame(function fn() {
+        const currentTop = _this.targetDom.target.scrollTop
+        if (currentTop > 0) {
+          // 平滑滚动
+          const scrollSpeed = currentTop + (0 - currentTop) / 6
+          _this.targetDom.target.scrollTop = scrollSpeed
+          timer = requestAnimationFrame(fn)
+        } else {
+          cancelAnimationFrame(timer)
+        }
+      })
+    },
+    confirmCancel(orderNo) {
+      this.$confirm('此操作将取消该订单, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      }).then(async () => {
+        try {
+          this.loading = true
+          const res = await Order.cancel(orderNo)
+          this.loading = false
+          this.$message.success(`${res.msg}`)
+          this.getOrderList()
+        } catch (e) {
+          this.loading = false
+          console.log(e)
+        }
+      })
+    },
+    rejectCancel(orderNo) {
+      this.$confirm('此操作将拒绝用户的取消订单请求, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      }).then(async () => {
+        try {
+          this.loading = true
+          const res = await Order.rejectCancel(orderNo)
+          this.loading = false
+          this.$message.success(`${res.msg}`)
+          this.getOrderList()
+        } catch (e) {
+          this.loading = false
+          console.log(e)
+        }
+      })
+    },
   },
   async created() {
     await this.getOrderList()
     // this.tableData = orderList
+  },
+  mounted() {
+    // 监听页面滚动
+    window.addEventListener('scroll', this.handleScroll, true)
+  },
+
+  destroyed() {
+    window.removeEventListener('scroll', this.handleScroll)
   },
 }
 </script>
@@ -291,7 +458,6 @@ export default {
 <style lang="scss" scoped>
 .container {
   padding: 0 10px;
-  background-color: #ffffff;
 
   .header {
     display: flex;
@@ -312,6 +478,16 @@ export default {
     justify-content: flex-end;
     margin: 20px;
   }
+  .form {
+    display: flex;
+    .form-left {
+      flex: 1;
+    }
+    .form-right {
+      width: 230px;
+      text-align: right;
+    }
+  }
 }
 
 .info {
@@ -324,28 +500,37 @@ export default {
   margin-left: -55px;
   margin-bottom: -20px;
 }
-.my-draw {
-  .form {
-    padding: 0 20px;
+// .my-draw {
+//   .form {
+//     padding: 0 20px;
+//   }
+//   .el-date-editor.el-input {
+//     width: 100%;
+//   }
+// }
+
+.table-title {
+  padding: 5px 0px 20px;
+  font-size: 14px;
+  border-bottom: solid 1px #ddd;
+  .el-col {
+    font-weight: 700;
+    text-align: center;
+    padding: 0 10px;
   }
-  .el-date-editor.el-input {
-    width: 100%;
+  .el-col:first-child {
+    text-align: left;
   }
 }
 .table-container {
   font-size: 12px;
+  position: relative;
+  background-color: #ffffff;
   .el-col {
     text-align: center;
   }
   .el-col:first-child {
     text-align: left;
-  }
-  .table-title {
-    padding: 10px 0;
-    font-size: 14px;
-    .el-col {
-      font-weight: 700;
-    }
   }
   .goods-title {
     display: flex;
@@ -364,12 +549,19 @@ export default {
     .el-col {
       padding: 0 10px;
       div {
-        margin-bottom: 10px;
+        margin: 5px 0;
       }
     }
     .beizhu {
       border-bottom: dashed 1px #cccccc;
     }
+    .el-tag {
+      margin-bottom: 5px;
+    }
+  }
+  .order-info {
+    display: flex;
+    align-items: center;
   }
   .shangpin {
     display: flex;
@@ -397,7 +589,7 @@ export default {
 }
 .empty {
   text-align: center;
-  margin: 50px;
+  padding: 50px;
   color: #999;
   font-size: 14px;
 }

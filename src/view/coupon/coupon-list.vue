@@ -169,6 +169,11 @@
     <el-table :data="tableData" stripe v-loading="loading">
       <el-table-column fixed prop="id" label="id" width="50"> </el-table-column>
       <el-table-column fixed prop="name" label="名称" width="150"> </el-table-column>
+      <el-table-column fixed label="类型" width="70">
+        <template slot-scope="props">
+          {{ props.row.type === 1 ? '平台券' : '券码券' }}
+        </template>
+      </el-table-column>
       <el-table-column fixed prop="totalNum" label="发放总数" width="80"> </el-table-column>
       <el-table-column fixed prop="limitNum" label="每人限领" width="80"> </el-table-column>
       <el-table-column label="状态" width="50">
@@ -183,35 +188,36 @@
           {{ Util.getPriceString(props.row.formValue) }}
         </template>
       </el-table-column>
-      <el-table-column label="使用门槛" width="80">
-        <template slot-scope="props">
-          {{ props.row.threshold === 1 ? '不限制' : '满额使用' }}
-        </template>
-      </el-table-column>
+      <el-table-column label="领取后有效天数" prop="validDays" width="120"></el-table-column>
       <el-table-column label="门槛额度" width="80">
         <template slot-scope="props">
           {{ props.row.threshold === 1 ? '无门槛' : props.row.thresholdValue }}
         </template>
       </el-table-column>
-      <el-table-column label="指定商品" width="150">
+      <el-table-column label="指定商品" width="120">
         <template slot-scope="props">
           <div v-if="props.row.assign === 1">全部商品可用</div>
           <div v-else>
             <el-tag
               class="goodsid-tag"
-              v-for="(item, index) in props.row.goodsIds"
-              :key="index"
+              v-for="item in props.row.goodsCouponVos"
+              :key="item.goodsId"
               size="small"
-              type="danger"
+              effect="plain"
             >
-              {{ item }}
+              {{ item.goodsName }}
             </el-tag>
           </div>
         </template>
       </el-table-column>
+      <el-table-column label="是否可叠加" width="90">
+        <template slot-scope="props">
+          {{ props.row.overlayUse === 1 ? '可叠加' : '不可叠加' }}
+        </template>
+      </el-table-column>
       <el-table-column sortable prop="startTime" label="优惠券开始时间" width="150"> </el-table-column>
       <el-table-column sortable prop="endTime" label="优惠券结束时间" width="150"> </el-table-column>
-      <el-table-column prop="url" label="优惠券活动页面链接" width="300"> </el-table-column>
+      <!-- <el-table-column prop="url" label="优惠券活动页面链接" width="300"> </el-table-column> -->
       <!-- <el-table-column sortable prop="createTime" label="创建时间" width="150"> </el-table-column> -->
       <el-table-column label="操作" fixed="right" width="200">
         <template slot-scope="props">
@@ -289,7 +295,6 @@ export default {
         { label: '不限', value: null },
         { label: '上架', value: 1 },
         { label: '下架', value: 2 },
-        { label: '回收站', value: 3 },
         { label: '已过期', value: 4 },
       ],
       filterForm: {
@@ -318,8 +323,8 @@ export default {
         this.loading = false
         res.data.rows.forEach(item => {
           // item.createTime = new Date(item.createTime).toLocaleString('chinese', { hour12: false })
-          item.startTime = Util.getDateString(item.startTime)
-          item.endTime = Util.getDateString(item.endTime)
+          item.startTime = item.startTime ? Util.getDateString(item.startTime) : item.startTime
+          item.endTime = item.endTime ? Util.getDateString(item.endTime) : item.endTime
         })
         this.tableData = res.data.rows
         this.total_nums = res.data.total
