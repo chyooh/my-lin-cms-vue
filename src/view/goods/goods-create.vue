@@ -61,18 +61,40 @@
             <el-form-item label="回收均价" prop="avgPrice">
               <el-input size="medium" type="number" clearable v-model="form.avgPrice" :disabled="isView"></el-input>
             </el-form-item>
-            <el-form-item label="商品图片" prop="goodsImage">
-              <upload-imgs
-                :value="form.initImg"
-                ref="uploadImgs"
-                :rules="rules1"
-                :max-num="1"
-                :remote-fuc="remoteFuc"
-                @onChange="handleChange('uploadImgs')"
-                @upload="handleUpload"
-                :disabled="isView"
-              />
-            </el-form-item>
+            <div class="flex-container">
+              <el-form-item label="商品图片" prop="goodsImage">
+                <upload-imgs
+                  :value="form.initImg"
+                  ref="uploadImgs"
+                  :rules="rules1"
+                  :max-num="1"
+                  :remote-fuc="remoteFuc"
+                  @onChange="handleChange('uploadImgs')"
+                  @upload="handleUpload"
+                  :disabled="isView"
+                  :width="80"
+                  :height="80"
+                  :show-tip="false"
+                />
+                <div class="info">提示：前端展示图片，尺寸为1：1，小于128kb，格式为webp。</div>
+              </el-form-item>
+              <el-form-item label="订单图片" prop="goodsOrderCenterImage">
+                <upload-imgs
+                  :value="form.initImg1"
+                  ref="uploadImgs1"
+                  :rules="rules2"
+                  :max-num="1"
+                  :remote-fuc="remoteFuc"
+                  @onChange="handleChange('uploadImgs1')"
+                  @upload="handleUpload1"
+                  :disabled="isView"
+                  :width="80"
+                  :height="80"
+                  :show-tip="false"
+                />
+                <div class="info">提示：订单中心展示图片，尺寸为1：1，小于128kb，格式为jpg/png。</div>
+              </el-form-item>
+            </div>
             <el-form-item label="商品属性" prop="goodsPublicSpecInfos">
               <div class="public-spec-container">
                 <el-form
@@ -438,11 +460,13 @@ export default {
         firstCategoryId: null,
         secondCategoryId: null,
         goodsImage: '',
+        goodsOrderCenterImage: '',
         isHandpick: 2,
         status: 1,
         remarks: '',
         avgPrice: null,
         initImg: [],
+        initImg1: [],
       },
       rules: {
         goodsName: [{ validator: checkName, trigger: ['blur', 'change'], required: true }],
@@ -456,7 +480,12 @@ export default {
       rules1: {
         ratio: [1, 1],
         maxSize: 128,
-        type: 'webp',
+        type: ['webp'],
+      },
+      rules2: {
+        ratio: [1, 1],
+        maxSize: 128,
+        type: ['jpg', 'png'],
       },
       categoryList: [],
       firstCategoryId: [],
@@ -506,6 +535,16 @@ export default {
             imgId: createId(),
           },
         ]
+        if (this.form.goodsOrderCenterImage) {
+          this.form.initImg1 = [
+            {
+              id: createId(),
+              display: this.form.goodsOrderCenterImage,
+              src: '',
+              imgId: createId(),
+            },
+          ]
+        }
         res.data.goodsPublicSpecVos.forEach(item => {
           const obj = {}
           obj.goodsPublicSpecName = item.goodsPublicSpec.goodsPublicSpecName
@@ -641,6 +680,7 @@ export default {
                 firstCategoryId,
                 secondCategoryId,
                 goodsImage,
+                goodsOrderCenterImage,
                 isHandpick,
                 status,
                 remarks,
@@ -657,6 +697,7 @@ export default {
                   firstCategoryId,
                   secondCategoryId,
                   goodsImage,
+                  goodsOrderCenterImage,
                   isHandpick,
                   status,
                   remarks,
@@ -672,6 +713,7 @@ export default {
                   firstCategoryId,
                   secondCategoryId,
                   goodsImage,
+                  goodsOrderCenterImage,
                   isHandpick,
                   status,
                   remarks,
@@ -721,6 +763,14 @@ export default {
         this.form.goodsImage = result[0].src
       } else {
         this.form.goodsImage = ''
+      }
+    },
+
+    handleUpload1(result) {
+      if (result.length) {
+        this.form.goodsOrderCenterImage = result[0].src
+      } else {
+        this.form.goodsOrderCenterImage = ''
       }
     },
 
@@ -1015,5 +1065,11 @@ export default {
 .el-collapse {
   border-bottom: 0;
   border-top: 0;
+}
+
+.info {
+  color: #999999;
+  font-size: 12px;
+  line-height: 1.5;
 }
 </style>

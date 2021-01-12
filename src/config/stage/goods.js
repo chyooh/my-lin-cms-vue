@@ -16,7 +16,7 @@ const goodsRouter = {
       filePath: 'view/goods/goods-list.vue',
       inNav: true,
       icon: 'iconfont icon-shangpinliebiao',
-      permission: ['admin:goods:view'],
+      permission: ['admin:goods:list'],
     },
     {
       title: '添加商品',
@@ -30,5 +30,9 @@ const goodsRouter = {
     }
   ],
 }
-
+// admin:goods:list 商品信息
+// admin:goods:add 商品新增
+// admin:goods:edit 商品更新
+// admin:goods:view 商品查看
+// admin:goods:del 商品删除
 export default goodsRouter

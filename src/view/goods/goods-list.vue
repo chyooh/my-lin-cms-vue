@@ -130,12 +130,12 @@
           {{ props.row.goods.id }}
         </template>
       </el-table-column>
-      <el-table-column fixed label="图片" width="150">
+      <el-table-column fixed label="图片" width="100">
         <template slot-scope="props">
           <el-image :src="props.row.goods.goodsImage" fit="contain"></el-image>
         </template>
       </el-table-column>
-      <el-table-column fixed prop="goodsName" label="名称" width="150">
+      <el-table-column fixed prop="goodsName" label="名称" width="200">
         <template slot-scope="props">
           {{ props.row.goods.goodsName }}
         </template>
@@ -145,7 +145,7 @@
           {{ `${props.row.secondCategoryName}-${props.row.firstCategoryName}` }}
         </template>
       </el-table-column>
-      <el-table-column label="状态" width="150">
+      <el-table-column label="状态" width="100">
         <template slot-scope="props">
           {{
             props.row.goods.status === 1
@@ -173,7 +173,7 @@
           {{ props.row.goods.remarks }}
         </template>
       </el-table-column>
-      <el-table-column label="操作" fixed="right" width="150">
+      <el-table-column label="操作" fixed="right" width="260">
         <template slot-scope="props">
           <el-button v-permission="'admin:goods:view'" type="" plain @click="handleView(props.row.goods.id)" size="mini"
             >查看</el-button
@@ -367,6 +367,20 @@ export default {
     await this.getGoodsList()
     await this.getAllCategory()
   },
+  beforeRouteEnter(to, from, next) {
+    // to.meta.keepAlive = true;
+    to.meta.keepAlive = true
+    next()
+  },
+  // beforeRouteLeave(to, from, next) {
+  //   // to.meta.keepAlive = true;
+  //   const { path } = to
+  //   if (path === '/about') {
+  //     // console.log('t')
+  //     from.meta.keepAlive = false
+  //   }
+  //   next()
+  // },
 }
 </script>
 
@@ -393,6 +407,9 @@ export default {
     justify-content: flex-end;
     margin: 20px;
   }
+  // .el-image {
+  //   width: 60px;
+  // }
 }
 
 .info {

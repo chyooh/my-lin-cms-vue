@@ -80,7 +80,13 @@
     </el-form>
     <el-table :data="tableData" stripe v-loading="loading">
       <el-table-column fixed prop="id" label="id" width="50"> </el-table-column>
-      <el-table-column fixed prop="riskinfoNsfCommon" label="风险等级" width="150"> </el-table-column>
+      <el-table-column fixed prop="riskinfoNsfCommon" label="风险等级" width="150">
+        <template slot-scope="props">
+          <el-tag type="danger">{{
+            props.row.riskinfoNsfCommon === 'rank1' ? '低' : props.row.riskinfoNsfCommon === 'rank2' ? '中' : '高'
+          }}</el-tag>
+        </template>
+      </el-table-column>
       <el-table-column fixed prop="username" label="用户名称" width="150"> </el-table-column>
       <el-table-column fixed prop="userId" label="用户id" width="180"> </el-table-column>
       <el-table-column fixed prop="uniqueId" label="唯一识别码" width="280"> </el-table-column>

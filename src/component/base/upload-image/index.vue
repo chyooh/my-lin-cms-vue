@@ -61,7 +61,7 @@ todo: 文件判断使用 serveWorker 优化性能
           @keydown="handleKeydown($event, item.id, i)"
         >
           <i class="el-icon-plus" style="font-size: 3em"></i>
-          <div v-html="rulesTip.join('<br>')" style="margin-top: 1em"></div>
+          <div v-if="showTip" v-html="rulesTip.join('<br>')" style="margin-top: 1em"></div>
         </div>
       </template>
     </template>
@@ -281,7 +281,7 @@ export default {
     rules: {
       type: [Object, Function],
       default: () => ({
-        maxSize: 2,
+        maxSize: 2048,
       }),
     },
     /** 是否禁用, 禁用后只可展示 不可进行编辑操作, 包括: 新增, 修改, 删除, 改变顺序 */
@@ -308,6 +308,11 @@ export default {
     animatedCheck: {
       type: Boolean,
       default: false,
+    },
+    /** 是否显示提示文字 */
+    showTip: {
+      type: Boolean,
+      default: true,
     },
   },
   computed: {
@@ -436,7 +441,7 @@ export default {
       }
       // 是否限定格式
       if (basicRule.type) {
-        tips.push(`格式为.${basicRule.type}`)
+        tips.push(`格式为.${basicRule.type.join('/')}`)
       }
 
       return tips
@@ -635,7 +640,7 @@ export default {
     /**
      * 获取当前组件数据
      */
-    async getValue() {
+    async getValue(obj = null) {
       const { itemList, isStable, min } = this
       // 检查是否有不符合要求的空项
       const l = isStable ? itemList.length : itemList.length - 1
@@ -693,7 +698,7 @@ export default {
         return val
       })
       // 获取数据成功后发出
-      this.$emit('upload', result)
+      this.$emit('upload', result, obj)
       return result
     },
     /**
@@ -849,8 +854,14 @@ export default {
       }
 
       // 文件类型
-      if (rule.type && imgInfo.file.type.split('/')[1] !== rule.type) {
-        throw new Error(`"${imgInfo.name}"图像格式不符合要求, 需为.${rule.type}格式`)
+      if (rule.type) {
+        const imgType = imgInfo.file.type.split('/')[1]
+        if (rule.type.find(item => item === 'jpg') && !rule.type.find(item => item === 'jpeg')) {
+          rule.type.push('jpeg')
+        }
+        if (!rule.type.find(item => item === imgType)) {
+          throw new Error(`"${imgInfo.name}"图像格式为.${imgType}, 需为.${rule.type.join('/')}格式`)
+        }
       }
 
       return true
@@ -924,7 +935,6 @@ export default {
       window.URL.revokeObjectURL(this.itemList[index].display)
       // 替换图片
       this.itemList[index] = createItem(imgInfoList[0], this.itemList[index])
-
       // 如果需要设置的图像数量大于1, 需要执行追加图片逻辑
       if (imgInfoList.length > 1) {
         // 最大图片数量限制

@@ -16,7 +16,7 @@ const specRouter = {
       filePath: 'view/spec/spec-list.vue',
       inNav: true,
       icon: 'iconfont icon-shangpinliebiao',
-      permission: ['admin:goods:spec:view'],
+      permission: ['admin:goods:spec:list'],
     },
     {
       title: '创建属性',
@@ -30,5 +30,9 @@ const specRouter = {
     },
   ],
 }
-
+// admin:goods:spec:list 商品规格
+// admin:goods:spec:add 商品规格新增
+// admin:goods:spec:edit 商品规格更新
+// admin:goods:spec:view 商品规格查看
+// admin:goods:spec:del 商品规格删除
 export default specRouter

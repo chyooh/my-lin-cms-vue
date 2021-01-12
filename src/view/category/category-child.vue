@@ -1,44 +1,48 @@
 <template>
   <div class="container">
-    <div class="header">
-      <el-button v-permission="'admin:category:add'" type="primary" plain @click="create" size="medium"
-        >创建子分类</el-button
-      >
-      <div class="title">{{ title1 }}</div>
-      <span class="back" @click="back"> <i class="iconfont icon-fanhui"></i> 返回 </span>
-    </div>
+    <el-row>
+      <el-col :lg="16" :md="20" :sm="24" :xs="24">
+        <div class="header">
+          <el-button v-permission="'admin:category:add'" type="primary" plain @click="create" size="medium"
+            >创建子分类</el-button
+          >
+          <div class="title">{{ title1 }}</div>
+          <span class="back" @click="back"> <i class="iconfont icon-fanhui"></i> 返回 </span>
+        </div>
 
-    <el-table :data="tableData" :default-sort="{ prop: 'id', order: 'descending' }" stripe v-loading="loading">
-      <el-table-column fixed prop="id" label="id" sortable width="100"> </el-table-column>
-      <!-- <el-table-column fixed prop="coverImage" label="图片" width="100">
+        <el-table :data="tableData" :default-sort="{ prop: 'id', order: 'descending' }" stripe v-loading="loading">
+          <el-table-column fixed prop="id" label="id" sortable width="100"> </el-table-column>
+          <!-- <el-table-column fixed prop="coverImage" label="图片" width="100">
         <template slot-scope="props">
           <el-image :src="props.row.coverImage" fit="contain"></el-image>
         </template>
       </el-table-column> -->
-      <el-table-column fixed prop="catName" label="名称" width="100"> </el-table-column>
-      <el-table-column sortable prop="orderNumber" label="排序" width="100"> </el-table-column>
-      <el-table-column sortable prop="createTime" label="创建时间"> </el-table-column>
-      <el-table-column label="操作" fixed="right" width="200">
-        <template slot-scope="props">
-          <el-button
-            v-permission="'admin:category:edit'"
-            type="primary"
-            plain
-            @click="handleEdit(props.row)"
-            size="mini"
-            >编辑</el-button
-          >
-          <el-button
-            v-permission="'admin:category:del'"
-            type="danger"
-            plain
-            @click="handleDelete(props.row)"
-            size="mini"
-            >删除</el-button
-          >
-        </template>
-      </el-table-column>
-    </el-table>
+          <el-table-column fixed prop="catName" label="名称" width="100"> </el-table-column>
+          <el-table-column sortable prop="orderNumber" label="排序" width="100"> </el-table-column>
+          <el-table-column sortable prop="createTime" label="创建时间"> </el-table-column>
+          <el-table-column label="操作" fixed="right" width="200">
+            <template slot-scope="props">
+              <el-button
+                v-permission="'admin:category:edit'"
+                type="primary"
+                plain
+                @click="handleEdit(props.row)"
+                size="mini"
+                >编辑</el-button
+              >
+              <el-button
+                v-permission="'admin:category:del'"
+                type="danger"
+                plain
+                @click="handleDelete(props.row)"
+                size="mini"
+                >删除</el-button
+              >
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-col>
+    </el-row>
     <!-- 弹窗 -->
     <el-dialog :title="title" :append-to-body="true" :visible.sync="dialogFormVisible" class="groupListInfoDialog">
       <div style="margin-top: -25px">

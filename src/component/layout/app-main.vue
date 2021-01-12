@@ -1,7 +1,15 @@
 <template>
   <section class="container">
     <div class="wrapper" id="wrapper">
-      <transition name="fade-transform" mode="out-in"> <router-view></router-view> </transition>
+      <keep-alive>
+        <transition name="fade-transform" mode="out-in" v-if="$route.meta.keepAlive">
+          <router-view class="router-view"></router-view>
+        </transition>
+      </keep-alive>
+      <transition name="fade-transform" mode="out-in" v-if="!$route.meta.keepAlive">
+        <router-view class="router-view"></router-view>
+      </transition>
+      <!-- <router-view></router-view> -->
     </div>
   </section>
 </template>

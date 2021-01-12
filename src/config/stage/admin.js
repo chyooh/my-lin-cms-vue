@@ -16,7 +16,6 @@ const adminRouter = {
       icon: 'iconfont icon-huiyuanguanli',
       filePath: 'view/admin/user/',
       inNav: true,
-      permission: ['admin:user:list'],
       children: [
         {
           title: '用户列表',
@@ -26,7 +25,7 @@ const adminRouter = {
           filePath: 'view/admin/user/user-list.vue',
           inNav: true,
           icon: 'iconfont icon-huiyuanguanli',
-          permission: ['admin:user:view'],
+          permission: ['admin:user:list'],
         },
         {
           title: '添加用户',
@@ -48,7 +47,6 @@ const adminRouter = {
       icon: null,
       filePath: 'view/admin/group',
       inNav: true,
-      permission: ['admin:role:list'],
       children: [
         {
           route: '/admin/group/list',
@@ -58,7 +56,7 @@ const adminRouter = {
           filePath: 'view/admin/group/group-list.vue',
           title: '角色列表',
           icon: 'iconfont icon-huiyuanguanli',
-          permission: ['admin:role:view'],
+          permission: ['admin:role:list'],
         },
         {
           route: '/admin/group/add',
@@ -84,5 +82,22 @@ const adminRouter = {
     },
   ],
 }
+// admin:user:list 用户管理
+// admin:user:add 用户新增
+// admin:user:view 用户查看
+// admin:user:edit 用户更新
+// admin:user:del 用户删除
+
+// admin:role:list 角色管理
+// admin:role:add 角色添加
+// admin:role:view 角色查看
+// admin:role:edit 角色更新
+// admin:role:del 角色删除
+
+// admin:menu:list 菜单管理
+// admin:menu:add 菜单添加
+// admin:menu:view 菜单查看
+// admin:menu:edit 菜单更新
+// admin:menu:del 菜单删除
 
 export default adminRouter

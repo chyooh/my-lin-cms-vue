@@ -18,13 +18,13 @@
           >
             <el-form-item label="信用等级" prop="riskinfoNsfCommon">
               <el-radio-group v-model="form.riskinfoNsfCommon" size="medium" :disabled="type === 'edit'">
-                <el-radio label="rank1" border>rank1</el-radio>
-                <el-radio label="rank2" border>rank2</el-radio>
-                <el-radio label="rank3" border>rank3</el-radio>
+                <el-radio label="rank1" border>高</el-radio>
+                <el-radio label="rank2" border>中</el-radio>
+                <el-radio label="rank3" border>低</el-radio>
               </el-radio-group>
             </el-form-item>
             <el-form-item label="百分比(%)" prop="precent">
-              <el-input size="medium" type="number" :min="0" :max="100" clearable v-model="form.precent"></el-input>
+              <el-input size="medium" type="number" :min="0" :max="100" v-model="form.precent"></el-input>
             </el-form-item>
 
             <el-form-item class="submit" v-permission="['admin:coupon:edit', 'admin:coupon:add']">
@@ -45,8 +45,8 @@ import Credit from '@/model/credit'
 export default {
   data() {
     const checkPrice = (rule, value, callback) => {
-      if (value < 1 || value > 100) {
-        return callback(new Error('百分比只能为1-100'))
+      if (!value || value > 100) {
+        return callback(new Error('百分比只能为0-100'))
       }
       callback()
     }

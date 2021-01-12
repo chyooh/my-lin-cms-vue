@@ -7,6 +7,7 @@ import categoryConfig from './category'
 import logisticsConfig from './logistics'
 import pickupTimeConfig from './pickup-time'
 import creditConfig from './credit'
+import adConfig from './ad'
 
 // import bookConfig from './book' // 引入图书管理路由文件
 // import pluginsConfig from './plugin'
@@ -76,6 +77,7 @@ let homeRouter = [
   goodsConfig,
   specConfig,
   categoryConfig,
+  adConfig,
   couponConfig,
   creditConfig,
   logisticsConfig,

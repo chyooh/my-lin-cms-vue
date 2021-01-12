@@ -16,7 +16,7 @@ const logisticsRouter = {
       filePath: 'view/logistics/logistics-list.vue',
       inNav: true,
       icon: 'iconfont icon-shangpinliebiao',
-      permission: ['admin:logistics_company:view'],
+      permission: ['admin:logistics_company:list'],
     },
     {
       title: '添加物流公司',
@@ -30,5 +30,8 @@ const logisticsRouter = {
     },
   ],
 }
-
+// admin:logistics_company:add 物流公司添加
+// admin:logistics_company:edit 物流公司更新
+// admin:logistics_company:view 物流公司查询
+// admin:logistics_company:del 物流公司删除
 export default logisticsRouter

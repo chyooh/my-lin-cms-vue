@@ -141,4 +141,7 @@ export default {
     }
   }
 }
+.flex-container {
+  display: flex;
+}
 </style>

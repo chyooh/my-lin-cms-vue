@@ -4,133 +4,148 @@
       <div class="title">分类列表</div>
       <el-button type="primary" plain @click="create" size="medium">创建属性</el-button>
     </div> -->
-    <el-form
-      :model="filterForm"
-      status-icon
-      label-position="right"
-      ref="filterForm"
-      @submit.native.prevent
-      class="form"
-      inline
-    >
-      <div class="form-item-div">
-        <el-form-item label="属性名" prop="goodsPublicSpecNameLike">
-          <el-input size="mini" clearable v-model="filterForm.goodsPublicSpecNameLike"></el-input>
-        </el-form-item>
-      </div>
 
-      <div class="form-item-div">
-        <el-form-item label="一级分类" prop="firstCategoryId">
-          <el-select
-            size="mini"
-            v-model="filterForm.firstCategoryId"
-            placeholder="请选择"
-            @change="firstCategoryIdChange"
-          >
-            <el-option v-for="(group, index) in firstCategoryId" :key="index" :label="group.catName" :value="group.id">
-            </el-option>
-          </el-select>
-        </el-form-item>
-      </div>
-      <div class="form-item-div">
-        <el-form-item label="二级分类" prop="secondCategoryId">
-          <el-select size="mini" v-model="filterForm.secondCategoryId" placeholder="请选择">
-            <el-option v-for="(group, index) in secondCategoryId" :key="index" :label="group.catName" :value="group.id">
-            </el-option>
-          </el-select>
-        </el-form-item>
-      </div>
+    <el-row>
+      <el-col :lg="20" :md="20" :sm="24" :xs="24">
+        <el-form
+          :model="filterForm"
+          status-icon
+          label-position="right"
+          ref="filterForm"
+          @submit.native.prevent
+          class="form"
+          inline
+        >
+          <div class="form-item-div">
+            <el-form-item label="属性名" prop="goodsPublicSpecNameLike">
+              <el-input size="mini" clearable v-model="filterForm.goodsPublicSpecNameLike"></el-input>
+            </el-form-item>
+          </div>
 
-      <div class="form-item-div">
-        <el-form-item label="创建时间">
-          <el-form-item prop="filter_createTimes">
-            <el-date-picker
-              size="mini"
-              v-model="filterForm.filter_createTimes"
-              type="date"
-              value-format="yyyy-MM-dd"
-              placeholder="选择开始时间"
-              :picker-options="{
-                disabledDate(time) {
-                  return time.getTime() > Date.now()
-                },
-              }"
-              style="width: 100%"
-            ></el-date-picker>
-          </el-form-item>
-          <div class="line">-</div>
-          <el-form-item prop="filter_createTimee">
-            <el-date-picker
-              size="mini"
-              v-model="filterForm.filter_createTimee"
-              type="date"
-              value-format="yyyy-MM-dd"
-              :picker-options="{
-                disabledDate(time) {
-                  return (
-                    time.getTime() > Date.now() ||
-                    time.getTime() < new Date(filterForm.filter_createTimes + ' 00:00:00')
-                  )
-                },
-              }"
-              placeholder="选择结束时间"
-              style="width: 100%"
-            ></el-date-picker>
-          </el-form-item>
-        </el-form-item>
-      </div>
-      <div class="form-item-div">
-        <el-form-item class="submit">
-          <el-button size="mini" type="primary" @click="submitFilterForm('filterForm')">搜 索</el-button>
-          <el-button size="mini" @click="resetFilterForm('filterForm')">重 置</el-button>
-        </el-form-item>
-      </div>
-    </el-form>
-    <el-table :data="tableData" :default-sort="{ prop: 'id', order: 'descending' }" stripe v-loading="loading">
-      <el-table-column fixed prop="id" label="id" sortable width="100"> </el-table-column>
-      <el-table-column fixed prop="goodsPublicSpecName" label="名称" width="220"> </el-table-column>
-      <el-table-column label="分类" width="150">
-        <template slot-scope="props">
-          {{ `${props.row.secondCategoryName}-${props.row.firstCategoryName}` }}
-        </template>
-      </el-table-column>
-      <el-table-column sortable prop="orderNumber" label="排序" width="100"> </el-table-column>
-      <el-table-column sortable prop="createTime" label="创建时间" width="220"> </el-table-column>
-      <el-table-column> </el-table-column>
-      <el-table-column label="操作" fixed="right" width="150">
-        <template slot-scope="props">
-          <el-button
-            type="primary"
-            plain
-            @click="goToChildren(props.row)"
-            size="mini"
-            v-permission="['admin:goods:spec:edit', 'admin:goods:spec:view']"
-            >查看</el-button
-          >
-          <el-button
-            type="danger"
-            plain
-            @click="handleDelete(props.row)"
-            size="mini"
-            v-permission="'admin:goods:spec:del'"
-            >删除</el-button
-          >
-        </template>
-      </el-table-column>
-    </el-table>
+          <div class="form-item-div">
+            <el-form-item label="一级分类" prop="firstCategoryId">
+              <el-select
+                size="mini"
+                v-model="filterForm.firstCategoryId"
+                placeholder="请选择"
+                @change="firstCategoryIdChange"
+              >
+                <el-option
+                  v-for="(group, index) in firstCategoryId"
+                  :key="index"
+                  :label="group.catName"
+                  :value="group.id"
+                >
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </div>
+          <div class="form-item-div">
+            <el-form-item label="二级分类" prop="secondCategoryId">
+              <el-select size="mini" v-model="filterForm.secondCategoryId" placeholder="请选择">
+                <el-option
+                  v-for="(group, index) in secondCategoryId"
+                  :key="index"
+                  :label="group.catName"
+                  :value="group.id"
+                >
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </div>
 
-    <!-- 分页 -->
-    <div class="pagination">
-      <el-pagination
-        @current-change="handleCurrentChange"
-        :background="true"
-        :page-size="pageCount"
-        :current-page="currentPage"
-        layout="prev, pager, next, jumper"
-        :total="total_nums"
-      >
-      </el-pagination>
-    </div>
+          <div class="form-item-div">
+            <el-form-item label="创建时间">
+              <el-form-item prop="filter_createTimes">
+                <el-date-picker
+                  size="mini"
+                  v-model="filterForm.filter_createTimes"
+                  type="date"
+                  value-format="yyyy-MM-dd"
+                  placeholder="选择开始时间"
+                  :picker-options="{
+                    disabledDate(time) {
+                      return time.getTime() > Date.now()
+                    },
+                  }"
+                  style="width: 100%"
+                ></el-date-picker>
+              </el-form-item>
+              <div class="line">-</div>
+              <el-form-item prop="filter_createTimee">
+                <el-date-picker
+                  size="mini"
+                  v-model="filterForm.filter_createTimee"
+                  type="date"
+                  value-format="yyyy-MM-dd"
+                  :picker-options="{
+                    disabledDate(time) {
+                      return (
+                        time.getTime() > Date.now() ||
+                        time.getTime() < new Date(filterForm.filter_createTimes + ' 00:00:00')
+                      )
+                    },
+                  }"
+                  placeholder="选择结束时间"
+                  style="width: 100%"
+                ></el-date-picker>
+              </el-form-item>
+            </el-form-item>
+          </div>
+          <div class="form-item-div">
+            <el-form-item class="submit">
+              <el-button size="mini" type="primary" @click="submitFilterForm('filterForm')">搜 索</el-button>
+              <el-button size="mini" @click="resetFilterForm('filterForm')">重 置</el-button>
+            </el-form-item>
+          </div>
+        </el-form>
+        <el-table :data="tableData" :default-sort="{ prop: 'id', order: 'descending' }" stripe v-loading="loading">
+          <el-table-column fixed prop="id" label="id" sortable width="100"> </el-table-column>
+          <el-table-column fixed prop="goodsPublicSpecName" label="名称" width="220"> </el-table-column>
+          <el-table-column label="分类" width="150">
+            <template slot-scope="props">
+              {{ `${props.row.secondCategoryName}-${props.row.firstCategoryName}` }}
+            </template>
+          </el-table-column>
+          <el-table-column sortable prop="orderNumber" label="排序" width="100"> </el-table-column>
+          <el-table-column sortable prop="createTime" label="创建时间" width="220"> </el-table-column>
+          <el-table-column> </el-table-column>
+          <el-table-column label="操作" fixed="right" width="150">
+            <template slot-scope="props">
+              <el-button
+                type="primary"
+                plain
+                @click="goToChildren(props.row)"
+                size="mini"
+                v-permission="['admin:goods:spec:edit', 'admin:goods:spec:view']"
+                >查看</el-button
+              >
+              <el-button
+                type="danger"
+                plain
+                @click="handleDelete(props.row)"
+                size="mini"
+                v-permission="'admin:goods:spec:del'"
+                >删除</el-button
+              >
+            </template>
+          </el-table-column>
+        </el-table>
+
+        <!-- 分页 -->
+        <div class="pagination">
+          <el-pagination
+            @current-change="handleCurrentChange"
+            :background="true"
+            :page-size="pageCount"
+            :current-page="currentPage"
+            layout="prev, pager, next, jumper"
+            :total="total_nums"
+          >
+          </el-pagination>
+        </div>
+      </el-col>
+    </el-row>
   </div>
 </template>
 

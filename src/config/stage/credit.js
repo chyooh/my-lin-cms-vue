@@ -16,7 +16,7 @@ const orderRouter = {
       filePath: 'view/credit/credit-assess-list.vue',
       inNav: true,
       icon: 'iconfont icon-shangpinliebiao',
-      permission: ['admin:app:user:view'],
+      permission: ['admin:app:user:list'],
     }, {
       title: '信用额度列表',
       type: 'view',
@@ -25,19 +25,15 @@ const orderRouter = {
       filePath: 'view/credit/credit-list.vue',
       inNav: true,
       icon: 'iconfont icon-shangpinliebiao',
-      permission: ['admin:credit:payment:view'],
-    }, {
-      title: '添加信用额度',
-      type: 'view',
-      name: 'creditCreate',
-      route: '/credit/add',
-      filePath: 'view/credit/credit-create.vue',
-      inNav: true,
-      icon: 'iconfont icon-add',
-      permission: ['admin:credit:payment:add'],
+      permission: ['admin:credit:payment:list'],
     },
   ],
 }
-// admin:credit:payment:del
-// admin:credit:payment:edit
+// admin:app:user:list 用户评估结果列表
+// admin:app:user:view 用户评估结果列表查询
+// admin:credit:payment:list 信用风险额度管理
+// admin:credit:payment:add 信用额度的添加
+// admin:credit:payment:view 信用额度的查询
+// admin:credit:payment:del 信用额度的删除
+// admin:credit:payment:edit 信用额度的更新
 export default orderRouter
